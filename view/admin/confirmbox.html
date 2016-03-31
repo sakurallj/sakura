@@ -1,0 +1,49 @@
+<div class="modal small fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modalmsg-dialog modal-dialog">
+        <div class="modal-content modal-modalmsg">
+            <div class="modalmsg-dialog modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h4 class="modal-title">操作确认</h3>
+            </div>
+            <div class="modal-body">
+                <p class="error-text" style="margin-top: 10px;font-size: 14px"><i class="icon-warning-sign modal-icon" style="margin-right: 20px"></i><div class="msg_confirm" style="margin-top: 10px;font-size: 14px">您确认要删除该模块吗？</div></p>
+            </div>
+            <div class="modal-footer" id="confirmbox1">
+                <button class="btn btn-default" data-dismiss="modal" id="id_no" aria-hidden="true">取消</button>
+                <button class="btn btn-primary" data-dismiss="modal" id="id_yes">确定</button>
+            </div>
+            <div class="modal-footer hidden" id="confirmbox2">
+                <button class="btn btn-default" data-dismiss="modal" id="id_no2" aria-hidden="true">取消</button>
+                <button class="btn btn-primary" data-dismiss="modal" id="id_yes2">确定</button>
+            </div>
+            <div class="modal-footer hidden" id="confirmbox3">
+                <button class="btn btn-default" data-dismiss="modal" id="id_no3" aria-hidden="true">取消</button>
+                <button class="btn btn-primary" data-dismiss="modal" id="id_yes3">确定</button>
+            </div>
+            <div class="modal-footer hidden" id="alertbox1">
+                <button class="btn btn-primary" data-dismiss="modal" id="id_ok" aria-hidden="true">确定</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+function showmodelbox(boxid,txt,type){//type=1表示confirm,type=2表示alert
+    $("#myModal .modal-footer").each(function(k,v){
+        $(v).addClass("hidden");
+    });
+    if(type==1){
+        $(".msg_confirm").html(txt);
+        $("#confirmbox1").removeClass("hidden");
+    }else if(type==2){
+        $(".msg_confirm").html(txt);
+        $("#alertbox1").removeClass("hidden");
+    }else if(type==3){
+        $(".msg_confirm").html(txt);
+        $("#confirmbox2").removeClass("hidden");
+    }else if(type==4){
+        $(".msg_confirm").html(txt);
+        $("#confirmbox3").removeClass("hidden");
+    }
+    $(boxid).modal('toggle');
+}
+</script>

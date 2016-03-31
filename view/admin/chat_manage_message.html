@@ -1,0 +1,334 @@
+﻿<link rel="stylesheet" type="text/css" href="./{{$user_dir_theme}}/css/list-table.css">
+<link rel="stylesheet" type="text/css" href="./{{$user_dir_theme}}/css/chat_manage_message.css">
+<!--评论详情-->
+<div class="modal fade" id="comment" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" id="modal_detail_msg">
+
+    </div>
+</div>
+<!--进入聊天室-->
+<div class="modal fade" id="inroom" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" id="modal_inroom">
+        <iframe src="/chat/index?do=inroom&roomNum={{$roomNum}}" width="600" height="640" >
+            脚本之家使用了框架技术，但是您的浏览器不支持框架，请升级您的浏览器以便正常访问脚本之家。
+        </iframe>
+    </div>
+</div>
+<!--添加评论 -->
+<div class="modal fade" id="modal_add_msg" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">评论详情</h4>
+            </div>
+            <div class="modal-body" id="top_msg" style="min-height: 350px">
+            </div>
+            <div class="modal-footer">
+                <input type="text" class="form-control comment-input" id="model_top_input_msg" maxlength="500" placeholder="输入评论内容">
+                <button type="button" class="btn btn-primary" id="model_add_msg_btn" data-puid=" ">发送</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--正文-->
+<div class="content">
+    <div class="header">
+        <h1 class="page-title">评论管理</h1>
+        <ul class="breadcrumb">
+            <li><a href="/chat/index">聊天室列表</a></li>
+            <li class="active">评论管理</li>
+        </ul>
+    </div>
+    <div class="main-content">
+        <!--<ul class="nav nav-tabs nav-justified">-->
+        <!--<li role="presentation"><a href="{{$userManageUrl}}">用户管理</a></li>-->
+        <!--<li role="presentation" class="active"><a href="{{$msgManageUrl}}">评论管理</a></li>-->
+        <!--</ul>-->
+        <div class="btn-toolbar list-toolbar pull-left">
+            <button class="btn btn-primary add_top_msg" data-type="top_btn" data-toggle="modal" href="#modal_add_msg">
+                添加
+            </button>
+            <button class="btn btn-danger del_msg" data-type="top_btn">删除</button>
+            <button class="btn btn-danger in_room" data-type="top_btn" data-toggle="modal" href="#inroom">进入聊天室</button>
+            <div class="form-group search">
+                <button class="btn btn-info" id="search">搜索</button>
+                <input class="form-control" id="search_user_name" value="{{$searchUserName}}" type="text"
+                       placeholder="输入用户名">
+                <input class="form-control" id="search_msg" value="{{$searchMsg}}" type="text" placeholder="输入评论内容片段">
+            </div>
+        </div>
+        <table class="table">
+            <thead>
+            <tr>
+                <th><input type="checkbox" name="topCheckbox" value="-1"/></th>
+                <th>用户名称</th>
+                <th>评论</th>
+                <th>评论图片</th>
+                <th>发表时间</th>
+                <th>类型</th>
+                <th>优先级</th>
+                <th style="width: 3.5em">操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            {{foreach from=$ar name=nar item=row}}
+            <tr>
+                <td><input type="checkbox" name="checkbox" value="{{$row.id}}" data-uid="{{$row.fdUId}}"/></td>
+                <td class="tdOverHidden">{{$row.fdName}}</td>
+                <td class="rp-message">{{$row.fdMessage}}</td>
+                <td>
+                    {{if $row.fdImageBase64 neq ""}}
+                    <a href="{{$row.fdImageBase64}}" data-lightbox="image" class="lightbox_img">
+                        <img src="{{$row.fdImageBase64}}" class="img-rounded " style="width: 50px">
+                    </a>
+                    {{/if}}
+                </td>
+                <td>{{$row.fdMillisecond/1000|date_format:"%Y-%m-%d %H:%M"}}</td>
+                <td>
+                    {{if $row.fdParentUId eq ""||$row.fdParentUId eq "0"}}
+                    <span class="process-notStart">主评论</span>
+                    {{else}}
+                    <span class="process-work">&nbsp;&nbsp;回复&nbsp;&nbsp;</span>
+                    {{/if}}
+                </td>
+                <td>
+                    {{if $row.fdPriority eq "1"}}
+                    <span class="process-notStart">已置顶</span>
+                    {{else}}
+                    <span class="process-work">未置顶</span>
+                    {{/if}}
+                </td>
+                <td>
+                    <a href="#comment" role="button" data-uid="{{$row.fdUId}}"
+                       data-puid="{{$row.fdParentUId}}"
+                       data-toggle="modal" title="详情" class="show_detail"><i class="icon-comments"></i></a>
+                    <a href="javascript:;" data-id="{{$row.id}}" title="删除" data-uid="{{$row.fdUId}}" class="del_msg"><i
+                            class="icon-trash" style="margin-left: 4px"></i></a>
+                    {{if $row.fdParentUId eq ""||$row.fdParentUId eq "0"}}
+                        {{if $row.fdPriority eq "1"}}
+                        <a href="javascript:;" role="button" data-uid="{{$row.fdUId}}" class="msg_stick_del" title="取消置顶"><i
+                                class="icon-arrow-down "></i></a>
+                        {{else}}
+                        <a href="javascript:;" role="button" data-uid="{{$row.fdUId}}" class="msg_stick" title="置顶"><i
+                                class="icon-arrow-up"></i></a>
+                        {{/if}}
+                    {{/if}}
+                </td>
+
+            </tr>
+            {{/foreach}}
+            </tbody>
+        </table>
+        <div class="clearfix"></div>
+        <nav>
+            <div class="page" style="text-align:center" id="msg_page">
+                {{$sy}}
+            </div>
+        </nav>
+        <footer>
+            <hr>
+            <p class="pull-right">© 2016 <a href="" target="_blank">广州涛略科技有限公司</a></p>
+        </footer>
+    </div>
+</div>
+<div class="hidden">
+    <div id="message_templ">
+        <div class="media">
+            <div class="media-left">
+                <a href="#">
+                    <img class="media-object" src="{header}">
+                </a>
+            </div>
+            <div class="media-body">
+                <h4 class="media-heading">{name}</h4>
+                <span>{message}</span>
+                <img src="{msgImgUrl}" alt="">
+
+                <div id="child_media">
+                    <!-- 回复 -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript" src="./{{$user_dir_theme}}/../public/chatroom/js/jquery.qqFace.js"></script>
+<script>
+    (function ($) {
+        $(function () {
+            $("#search").bind("click", function () {
+                var searchMsg = $("#search_msg").val();
+                var searchUserName = $("#search_user_name").val();
+                window.location.href = "/chat/index?do=messagemanage&roomNum={{$roomNum}}&searchMsg="
+                        + searchMsg + "&searchUserName=" + searchUserName;
+            });
+            $(".del_msg").unbind("click").bind("click", function () {
+                var ar = new Array(), uids = new Array();
+                var type = $(this).data("type");
+                if (type == "top_btn") {
+                    $.each($("input[type=checkbox]:checked"), function (k, v) {
+                        ar[k] = v.value;
+                        uids[k] = $(v).data("uid");
+                    });
+                }
+                else {
+                    if (ar.length == 0) {
+                        ar[0] = $(this).data("id");
+                        uids[0] = $(this).data("uid");
+                    }
+                }
+                if (ar.length > 0) {
+                    modalmsg.confirm("确定删除评论吗？", function () {
+                        $.ajax({
+                            type: "GET",
+                            url: "/chat/message?do=delmsg",
+                            data: {
+                                ids: ar
+                            },
+                            cache: false
+                        }).done(function (msg) {
+                            var msgJson = JSON.parse(msg);
+                            if (msgJson[0] == "0") {
+                                window.location.reload();
+                            }
+                        });
+                    });
+
+                }
+                else{
+                    modalmsg.alert("请选择要删除的评论");
+                }
+            });
+            $(".rp-message").each(function () {
+                $(this).html(replace_em($(this).html()));
+            });
+            //表情转换
+            function replace_em(str) {
+                str = str.replace(/\</g, '&lt;');
+                str = str.replace(/\>/g, '&gt;');
+                str = str.replace(/\n/g, '<br/>');
+                str = str.replace(/\[em_([0-9]*)\]/g,
+                        '<img src="./{{$user_dir_theme}}/../public/chatroom/images/arclist/$1.gif" border="0" />');
+                return str;
+            }
+
+            var dm = $("#modal_detail_msg");
+            $(".show_detail").bind("click", function () {
+                var uid = $(this).data("uid");
+                var puid = $(this).data("puid");
+                if (uid) {
+                    $.ajax({
+                        type: "GET",
+                        url: "/chat/message?do=getmsg",
+                        data: {
+                            UId: uid,
+                            roomNum: "{{$roomNum}}"
+                        },
+                        cache: false
+                    }).done(function (msg) {
+                        dm.empty().append(msg);
+                    });
+                }
+
+            });
+            var topMsgDom = $("#top_msg");
+            $("#model_add_msg_btn").bind("click", function () {
+                var msg = $("#model_top_input_msg").val();
+                if (msg) {
+                    $.ajax({
+                        type: "GET",
+                        url: "/chat/message?do=addmsg",
+                        data: {
+                            fdMessage: msg,
+                            fdType: "text",
+                            fdRoomNum: "{{$roomNum}}",
+                            fdHeader: "./{{$user_dir_theme}}/images/default_header.jpg"
+                        },
+                        cache: false
+                    }).done(function (res) {
+                        var msgJson = JSON.parse(res);
+                        if (msgJson[0] == "0") {
+                            topMsgDom.append(nano($("#message_templ").html(), {
+                                header: "./{{$user_dir_theme}}/images/default_header.jpg",
+                                name: "{{$smarty.session.uname}}",
+                                message: msg
+                            }));
+                            $("#model_top_input_msg").val("");
+                            topMsgDom.get(0).scrollTop = topMsgDom.get(0).scrollHeight;
+                        }
+                        else {
+                            modalmsg.alert("发送失败，请稍后重试");
+                        }
+                    });
+                }
+                else {
+                    modalmsg.alert("发送的内容为空");
+                }
+            });
+            $(".msg_stick").bind("click", function () {
+                var uid = $(this).data("uid");
+                if(uid){
+                    modalmsg.confirm("确定置顶吗?", function () {
+                        $.ajax({
+                            type: "POST",
+                            url: "/chat/message?do=stick",
+                            data: {
+                                uid: uid,
+                                updatedByNum: "U{{$roomNum}}-{{$smarty.session.uid}}"
+                            },
+                            cache: false
+                        }).done(function (msg) {
+                            var msgJson = JSON.parse(msg);
+                            if (msgJson[0] == "0") {
+                                window.location.reload();
+                            }
+                        });
+                    });
+                }
+                else{
+                    modalmsg.alert("请重试");
+                }
+            });
+            $(".msg_stick_del").bind("click", function () {
+                var uid = $(this).data("uid");
+                if(uid){
+                    modalmsg.confirm("确定取消置顶吗?", function () {
+                        $.ajax({
+                            type: "POST",
+                            url: "/chat/message?do=stickdel",
+                            data: {
+                                uid: uid,
+                                updatedByNum: "U{{$roomNum}}-{{$smarty.session.uid}}"
+                            },
+                            cache: false
+                        }).done(function (msg) {
+                            var msgJson = JSON.parse(msg);
+                            if (msgJson[0] == "0") {
+                                window.location.reload();
+                            }
+                        });
+                    });
+                }
+                else{
+                    modalmsg.alert("请重试");
+                }
+            });
+
+//            $(".in_room").bind("click", function () {
+//                $.ajax({
+//                    type: "POST",
+//                    url: "/chat/index?do=inroom",
+//                    data: {
+//                        roomNum: '{{$roomNum}}'
+//                    },
+//                    cache: false
+//                }).done(function (msg) {
+//                    $("#modal_inroom").append(msg);
+//                });
+//            });
+        });
+    })(window.jQuery);
+</script>

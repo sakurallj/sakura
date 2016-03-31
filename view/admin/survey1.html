@@ -1,0 +1,221 @@
+
+<!--正文-->
+<div class="content">
+    <div class="header">
+        {{if $do eq 'add'}}
+        <h1 class="page-title">新建调查问卷</h1>
+        {{elseif $do eq 'edit'}}
+        <h1 class="page-title">编辑调查问卷</h1>
+        {{elseif $do eq 'manage'}}
+        <h1 class="page-title">调查问卷列表</h1>
+        {{/if}}
+        <ul class="breadcrumb">
+            <li><a href="">投票管理</a> </li>
+            {{if $do eq 'add'}}
+            <li class="active">新建调查问卷</li>
+            {{elseif $do eq 'edit'}}
+            <li class="active">编辑调查问卷</li>
+            {{elseif $do eq 'manage'}}
+            <li class="active">调查问卷列表</li>
+            {{/if}}
+        </ul>
+    </div>
+    {{if $do eq 'add' || $do eq 'edit'}}
+    <div class="main-content">
+        <form>
+            <div class="form-group">
+                <label class="form-label form-group-left" for="title"><span class="must">*</span>标题</label>
+                <input type="text" class="form-control form-group-right" id="fdTitle" name="fdTitle" value="{{$row.fdTitle}}" placeholder="不超过35字">
+            </div>
+            <div class="form-group">
+                <label class="form-label form-group-left" for="fdDescription">描述</label>
+                <textarea class="form-control form-group-right" id="fdDescription" name="fdDescription" value="{{$row.fdDescription}}" placeholder=""></textarea>
+            </div>
+            <div class="form-group left50">
+                <label class="form-label form-group-left"><span class="must">*</span>起始时间</label>
+                <input type="text" class="form-control form-group-right" name="fdStartTime" id="fdStartTime" value="{{$row.fdStartTime}}" readonly>
+                <label class="form-label form-group-left"><span class="must">*</span>截止时间</label>
+                <input type="text" class="form-control form-group-right" name="fdEndTime" id="fdEndTime" value="{{$row.fdEndTime}}" readonly>
+            </div>
+            <div class="form-group">
+                <label class="form-label form-group-left">投票权限</label>
+                <div class="form-group-right checkbox-group">
+                    <label class="checkbox-inline">
+                        <input class="allow-lo" type="checkbox" name="fdLoginFlag" id="fdLoginFlag" value="1" placeholder=""> 需要登录才能参与
+                    </label>
+                    <label class="checkbox-inline">
+                        <input class="allow-ed" type="checkbox" placeholder=""> 允许每天投票
+                    </label>
+                </div>
+            </div>
+            <div class="form-group left50 dropdown time-of-od">
+                <label class="input-time-label form-group-left" for="dropdownMenu1">每天投票次数</label>
+                <input class="form-control input-time form-group-right dropdown-toggle" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenu1">
+                    <li><a href="#">1</a></li>
+                    <li><a href="#">2</a></li>
+                    <li><a href="#">3</a></li>
+                    <li><a href="#">不限</a></li>
+                </ul>
+            </div>
+            <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+                <div class="panel panel-default">
+                    <div class="panel-heading" role="tab" id="headingOne">
+                        <h4 class="panel-title">
+                            <span>
+                                问题一
+                            </span>
+                            <a class="collapse-panel" role="button" data-toggle="collapse" href="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+                                编辑/收起
+                            </a>
+                        </h4>
+                    </div>
+                    <div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
+                        <div class="panel-body">
+                            <div class="form-group">
+                                <label class="form-label form-group-left" for="">标题</label>
+                                <input type="text" class="form-control form-group-right" id="" placeholder="不超过35字">
+                            </div>
+                            <div class="clearfix"></div>
+                            <div class="form-group">
+                                <label class="form-label form-group-left"> </label>
+                                <div class="form-group-right">
+                                    <label class="radio-inline">
+                                        <input type="radio" name="inlineRadioOptions" id="inlineRadio1" value="option1"> 单选
+                                    </label>
+                                    <label class="radio-inline">
+                                        <input type="radio" name="inlineRadioOptions" id="inlineRadio2" value="option2"> 多选
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label form-group-left">选项一</label>
+                                <input type="text" class="form-control form-group-right" placeholder="">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label form-group-left">选项二</label>
+                                <input type="text" class="form-control form-group-right" placeholder="">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label form-group-left">选项三</label>
+                                <input type="text" class="form-control form-group-right" placeholder="">
+                            </div>
+                            <div class="clearfix"></div>
+                            <footer>
+                                <hr>
+                                <div class="q-footer-btn">
+                                    <button class="btn btn-primary">添加选项</button>
+                                    <button class="btn btn-danger">删除选项</button>
+                                </div>
+                            </footer>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading" role="tab" id="headingTwo">
+                        <h4 class="panel-title">
+                            <span>
+                                问题二
+                            </span>
+                            <a class="collapse-panel" role="button" data-toggle="collapse" href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                编辑/收起
+                            </a>
+                        </h4>
+                    </div>
+                    <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+                        <div class="panel-body">
+                            <div class="form-group">
+                                <label class="form-label form-group-left" for="">标题</label>
+                                <input type="text" class="form-control form-group-right" id="" placeholder="不超过35字">
+                            </div>
+                            <div class="clearfix"></div>
+                            <div class="form-group">
+                                <label class="form-label form-group-left"> </label>
+                                <div class="form-group-right">
+                                    <label class="radio-inline">
+                                        <input type="radio" name="inlineRadioOptions" value="option1"> 单选
+                                    </label>
+                                    <label class="radio-inline">
+                                        <input type="radio" name="inlineRadioOptions" value="option2"> 多选
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label form-group-left">选项一</label>
+                                <input type="text" class="form-control form-group-right" placeholder="">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label form-group-left">选项二</label>
+                                <input type="text" class="form-control form-group-right" placeholder="">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label form-group-left">选项三</label>
+                                <input type="text" class="form-control form-group-right" placeholder="">
+                            </div>
+                            <div class="clearfix"></div>
+                            <footer>
+                                <hr>
+                                <div class="q-footer-btn">
+                                    <button class="btn btn-primary">添加选项</button>
+                                    <button class="btn btn-danger">删除选项</button>
+                                </div>
+                            </footer>
+                        </div>
+                    </div>
+                </div>
+                <div class="div-add-que">
+                    <button class="btn btn-info btn-add-que">添加问题</button>
+                    <button class="btn btn-warning btn-delete-que">删除问题</button>
+                </div>
+            </div>
+        
+        <div class="clearfix"></div>
+        <div class="finish">
+            <button class="btn btn-success" id="stbtn">完成</button>
+            <button class="btn btn-default">取消</button>
+        </div>
+        </form>
+        <footer>
+            <hr>
+            <p class="pull-right">© 2016 <a href="" target="_blank">广州涛略科技有限公司</a></p>
+        </footer>
+    </div>
+    {{/if}}
+</div>
+</body>
+<script type="text/javascript" src="js/jquery.min.js"></script>
+<script type="text/javascript" src="js/bootstrap.min.js"></script>
+<script type="text/javascript" src="js/all-purpose.js"></script>
+<script>
+    $(document).ready(function(){
+        $('.allow-ed').click(function(){
+            if($('.allow-ed:checked').length>0){
+                $('.time-of-od').css({'display':'block'});
+            }
+            else{
+                $('.time-of-od').css({'display':'none'});
+            }
+        })
+    })
+    $("#stbtn").click(function(){
+            if(confirm("确定提交？")){
+                var fdTitle=$("#fdTitle").val();
+                var fdDescription=$("#fdDescription").val();
+                var fdStartTime=$("#fdStartTime").val();
+                var fdLoginFlag='';
+                $('input[name="fdLoginFlag"]:checked').each(function(){
+                    if(fdLoginFlag==''){
+                        fdLoginFlag = $(this).attr("value");
+                    }
+                    else{
+                        fdLoginFlag = fdLoginFlag + ',' + $(this).attr("value");
+                    }
+                });
+                //alert(fdLoginFlag);return false;
+                $("#f1").submit();
+            }
+    });
+    $('#fdStartTime').datetimepicker();
+    $('#fdEndTime').datetimepicker();
+</script>
+</html>

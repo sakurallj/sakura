@@ -1,0 +1,311 @@
+{{if $do eq 'manage'}}
+<div class="content">
+    <div class="header">
+        <h1 class="page-title">模块列表</h1>
+        <ul class="breadcrumb">
+            <li><a href="">模块管理</a> </li>
+            <li class="active">模块列表</li>
+        </ul>
+    </div>
+    <div class="main-content">
+        <div class="btn-toolbar list-toolbar pull-left">
+            <a class="btn btn-danger" href="#myModal" id="delall">删除</a>
+            <form method="get">
+                <div class="form-group search">
+                <input typ="button" class="btn btn-info" type="submit" value="搜索"/>
+                <input type="hidden" value="1" name="ye">
+                <input class="form-control" type="text" name="keyword" value="{{$search}}" placeholder="search">
+                </div>
+            </form>
+        </div>
+        <table class="table">
+            <thead>
+            <tr>
+                <th class="table-checkbox"><input type="checkbox"></th>
+                <th class="table-title">模块名称</th>
+                <th>功能描述</th>
+                <th>Key</th>
+                <th>模块功能</th>
+                <th style="width: 3.5em;">操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            {{foreach from=$ar name=nar item=row}}
+            <tr>
+                <td><input type="checkbox" name="checkbox" value="{{$row.id}}"></td>
+                <td style="width:15%;">{{$row.fdName}}</td>
+                <td style="width:15%;">{{$row.fdDescription}}</td>
+                <td style="width:10%;">{{$row.fdKey}}</td>
+                <td><div style="word-wrap:break-word;word-break:break-all;overflow:hidden;">{{$row.fdFunctions}}</div></td>
+                <td>
+                    <a href="/admin/sysmodule?do=edit&id={{$row.id}}&ye={{$ye}}&keyword={{$search}}"><i class="icon-pencil"></i></a>
+                    <a href="#myModal" role="button" data="{{$row.id}}" name="delbtn"><i class="icon-trash"></i></a>
+                </td>
+            </tr>
+            {{/foreach}}
+            </tbody>
+        </table>
+        <div class="clearfix"></div>
+        <div class="page">
+            {{$sy}}
+        </div>
+        <footer>
+            <hr>
+            <p class="pull-right">© 2016 <a href="" target="_blank">广州涛略科技有限公司</a></p>
+        </footer>
+    </div>
+</div>
+{{include file="confirmbox.html"}}
+{{include file="fade.html"}}
+<script>
+$(document).ready(function(){
+    $("#id_yes").click(function(){
+        obj=$(this);
+        var ar=new Array();
+        $.each($("input[type=checkbox]:checked"),function(k,v){
+            ar[k]=v.value
+        });
+        if(ar.length>0){
+            $.ajax({
+                type: "GET",
+                url: "/admin/sysmodule?do=del",
+                data: "ids="+ar,
+                dataType:'json',
+                cache:false,
+                success: function(msg){
+                    if(msg.error_code==0){
+                        window.location.reload();
+                        //$(obj).parent().parent().remove();
+                    }else{
+                        console.log(msg.error_msg)
+                    }
+                    
+                },
+                error:function(){alert('error')},
+                timeout:5000
+            });
+        }
+    });
+
+
+    $("a[name=delbtn]").click(function(){
+        id=$(this).attr('data');
+        showmodelbox('#myModal','您确认要删除该模块吗？<br>此操作无法撤销。',3);
+        $("#id_yes2").click(function(){
+                $.ajax({
+                    type: "GET",
+                    url: "/admin/sysmodule?do=del",
+                    data: "ids="+id,
+                    dataType:'json',
+                    cache:false,
+                    success: function(msg){
+                        if(msg.error_code==0){
+                            window.location.reload();
+                        }else{
+                            $(".msg_font").html(msg.error_msg);
+                            showmsgbox("msgbox");
+                        }
+                        
+                    },
+                    error:function(){alert('error')},
+                    timeout:5000
+                });
+        });
+    });
+
+    $("#delall").click(function(){
+        f=false;
+        $.each($("input[type=checkbox][name=checkbox]:checked"),function(k,v){
+            f=true;
+        });
+        if(f){
+            showmodelbox('#myModal','您确认要删除这些模块吗？<br>此操作无法撤销。',1);
+        }else{
+            showmodelbox('#myModal','请选择要删除的记录',2);
+        }
+    });
+
+});
+</script>
+{{/if}}
+
+{{if $do eq 'add' || $do eq 'edit'}}
+<div class="content">
+    <div class="header">
+        <h1 class="page-title">{{if $do eq 'add'}}新建模块{{elseif $do eq 'edit'}}编辑模块{{/if}}</h1>
+        <ul class="breadcrumb">
+            <li><a href="">模块管理</a> </li>
+            <li class="active">{{if $do eq 'add'}}新建模块{{elseif $do eq 'edit'}}编辑模块{{/if}}</li>
+        </ul>
+    </div>
+    <div class="main-content">
+        <form name="f1" id="f1" method="post">
+            <div class="form-group">
+                <label class="form-label form-group-left" for="form-title">模块名称<strong class="must"> *</strong></label>
+                <input type="hidden" name="id" id="id" value="{{$row.id}}"/>
+                <input type="text" class="form-control form-group-right require" id="fdName" placeholder="不超过35字" value="{{$row.fdName}}" name="fdName" onblur="validatatext_ex(this,'sfdname','请填写模块名称','input-error');" onfocus="clearme('sfdname','')"><div id="sfdname" ></div>
+            </div>
+            <div class="clearfix"></div>
+            <div class="form-group">
+                <label class="form-label form-group-left" for="">Key<strong class="must"> *</strong></label>
+                <input class="form-control form-group-right require" id="fdKey" name="fdKey" placeholder="" value="{{$row.fdKey}}" onblur="validatatext_ex(this,'skey','请填写key','input-error');" onfocus="clearme('skey','')"><div id="skey" ></div>
+            </div>
+            <div class="clearfix"></div>
+            <div class="form-group">
+                <label class="form-label form-group-left" for="form-description">功能描述</label>
+                <textarea class="form-control form-group-right" id="form-description" placeholder="" name="fdDescription">{{$row.fdDescription}}</textarea>
+            </div>
+            <div id="cnt">
+                <button type="button" class="btn btn-primary btn-add-power">添加功能</button>
+                {{foreach from=$ar name=nar key=k item=iar}}
+                <div class="form-group form-group-power">
+                    <label class="form-label form-group-left">功能<span class="must"> *</span></label>
+                    <div class="form-group-right">
+                        <input class="form-power-right form-control" type="text" name="item[{{$iar.id}}][fdName]" value="{{$iar.fdName}}" style="width:22%">
+                        <label class="form-power-right form-label">模块key</label>
+                        <input class="form-power-right form-control" type="text" name="item[{{$iar.id}}][fdMethod]" value="{{$iar.fdMethod}}" style="width:15%">
+                        <label class="form-power-right form-label">action</label>
+                        <input class="form-power-right form-control" type="text" name="item[{{$iar.id}}][fdAction]" value="{{$iar.fdAction}}" style="width:15%">
+                        <label class="form-power-right form-label">do</label>
+                        <input class="form-power-right form-control" type="text" name="item[{{$iar.id}}][fdDo]" value="{{$iar.fdDo}}" style="width:15%">
+                        <button type="button" class="close" aria-label="Close" data="{{$iar.id}}"><span aria-hidden="true">&times;</span></button>
+                    </div>
+                </div>
+                {{/foreach}}
+            </div>
+        </form>
+        <div class="clearfix"></div>
+        <div class="finish">
+            <button class="btn btn-success" id="stbtn">完成</button>
+            {{if $do eq 'edit'}}<input type="button" class="btn btn-default" onclick="window.location.href = window.document.referrer;" value="取消"/>{{/if}}
+        </div>
+        {{include file="fade.html"}}
+        <footer>
+            <hr>
+            <p class="pull-right">© 2016 <a href="" target="_blank">广州涛略科技有限公司</a></p>
+        </footer>
+    </div>
+</div>
+{{include file="confirmbox.html"}}
+<div style="display:none">
+<script>
+//$("#fdKey").focus();
+$(document).ready(function(){
+    $('.allow-ed').click(function(){
+        if($('.allow-ed:checked').length>0){
+            $('.time-of-od').css({'display':'block'});
+        }
+        else{
+            $('.time-of-od').css({'display':'none'});
+        }
+    })
+
+    tmpi=0;
+    $('.btn-add-power').click(function(){
+        var newPower = document.createElement('div');
+        newPower.setAttribute("class","form-group form-group-power");
+        newPower.innerHTML='<label class="form-label form-group-left">功能<span class="must"> *</span></label><div class="form-group-right"><input class="form-power-right form-control require" type="text" name="item[a_'+tmpi+'][fdName]"><label class="form-power-right form-label">action</label><input class="form-power-right form-control" name="item[a_'+tmpi+'][fdAction]"><label class="form-power-right form-label">do</label><input class="form-power-right form-control" name="item[a_'+tmpi+'][fdDo]"><button type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>';
+        $('#cnt').append(newPower);
+        tmpi++;
+    });
+
+    $("#cnt").on('click','.close',function(){
+        obj=$(this);
+        if(obj.attr("data")!=undefined){//调用ajax
+            id=obj.attr("data");
+            var ret;
+            ret=confirm("确认要删除吗？");
+            if(ret!=false){
+                $.ajax({
+                    type: "GET",
+                    url: "/admin/sysmodule?do=delitem",
+                    data: "ids="+id+"&moduleid={{$row.id}}",
+                    dataType:'json',
+                    cache:false,
+                    success: function(msg){
+                        if(msg.error_code==0){
+                            obj.parent().parent().remove();
+                        }else{
+                            alert(msg.error_msg)
+                        }
+                        
+                    },
+                    error:function(){alert('error')},
+                    timeout:5000
+                })
+            }
+        }else{
+            obj.parent().parent().remove();
+        }
+    });
+
+    $("#f1").on('focus','.error',function(){
+        $(this).removeClass("error");
+    });
+
+});
+
+a1=false;
+$("#stbtn").click(function(){
+    // fdname=$("#fdKey").val();
+    // validateAjax(fdname,'skey','input-error','fdKey=','该模块已存在');
+    // if(a1==false){
+    //     return false;
+    // }
+    formchecker.check("#f1");
+    if(!formchecker.flag){
+        //$(".msg_font").html("请正确填写该字段内容");
+        //showmsgbox("msgbox");
+        //$("#skey").html("请正确填写该字段内容");
+        return false;
+    }
+    $("#f1").submit();
+    //$("#id_yes").html("确认");
+    //showmodelbox('#myModal','您确认要提交吗？',1);
+});
+
+// $("#id_yes").click(function(){
+//     formchecker.check("#f1");
+//     if(!formchecker.flag){
+//         $(".msg_font").html("请正确填写该字段内容");
+//         showmsgbox("msgbox");
+//         return false;
+//     }
+//     $("#f1").submit();
+// });
+
+function aj(dat,shw){
+    var tmp;
+    tmp=$.ajax({
+    type: "POST",
+    url: "/admin/ckkey?id={{$row.id}}",
+    data: dat,
+    dataType:'json',
+    success: function(msg){
+            if(msg.error_code!=0){
+                a1=false
+                //$(".msg_font").html(msg.error_msg);
+                //showmsgbox("msgbox");
+                //$("#fdKey").addClass("error");
+                $("#"+shw).html(msg.error_msg);
+            }else{
+                a1=true;
+                $("#"+shw).html('');
+            }
+            str='';
+        },
+    error:function(){
+        console.log("error")
+        }
+    });
+}
+
+function validatatext_ex(obj,target,txt,cls){
+    ret=validateText($(obj).val(),target,txt,cls);
+    if(!ret){
+        $(obj).addClass("error");
+    }
+}
+</script>
+</div>
+{{/if}}

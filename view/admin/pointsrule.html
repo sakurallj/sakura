@@ -1,0 +1,286 @@
+{{if $do eq 'manage'}}
+<div class="content">
+    <div class="header">
+        <h1 class="page-title">积分规则列表</h1>
+        <ul class="breadcrumb">
+            <li><a href="">积分规则管理</a> </li>
+            <li class="active">积分规则列表</li>
+        </ul>
+    </div>
+    <div class="main-content">
+        <div class="btn-toolbar list-toolbar pull-left">
+            <button class="btn btn-success" onclick="setstatus(0)">启用</button>
+            <button class="btn btn-default" onclick="setstatus(1)">停用</button>
+            <a class="btn btn-danger" href="#myModal" name="delbtn" data-type="top_btn">删除</a>
+            
+        </div>
+        <table class="table">
+            <thead>
+            <tr>
+                <th class="table-checkbox"><input type="checkbox"></th>
+                <th class="table-title">规则名称</th>
+                <th>Key</th>
+                <th>频率</th>
+                <th>状态</th>
+                <th style="width: 3.5em;">操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            {{foreach from=$ar name=nar item=row}}
+            <tr>
+                <td><input type="checkbox" name="checkbox" value="{{$row.id}}"></td>
+                <td style="width:15%;">{{$row.fdDescription}}</td>
+                <td style="width:15%;">{{$row.fdAction}}</td>
+                <td style="width:10%;">{{$row.fdRate}}</td>
+                <td>{{if $row.fdDisabled eq '0'}}<span class="status-work">正常</span>{{else}}<span class="status-stop">停止</span>{{/if}}</td>
+                <td>
+                    <a href="/member/pointsrule?do=edit&id={{$row.id}}&ye={{$ye}}&keyword={{$search}}"><i class="icon-pencil"></i></a>
+                    <a href="#myModal" role="button" data="{{$row.id}}" name="delbtn"><i class="icon-trash"></i></a>
+                </td>
+            </tr>
+            {{/foreach}}
+            </tbody>
+        </table>
+        <div class="clearfix"></div>
+        <div class="page">
+            {{$sy}}
+        </div>
+        <footer>
+            <hr>
+            <p class="pull-right">© 2016 <a href="" target="_blank">广州涛略科技有限公司</a></p>
+        </footer>
+    </div>
+</div>
+{{include file="confirmbox.html"}}
+{{include file="fade.html"}}
+<script>
+$(document).ready(function(){
+    $("a[name=delbtn]").click(function(){
+        var ar=new Array();
+        var type = $(this).data("type");
+        if(type=="top_btn"){
+            $.each($("input[type=checkbox][name=checkbox]:checked"),function(k,v){
+                ar[k]=v.value;
+            });
+        }
+        else{
+            if(ar.length==0){
+                ar[0]=$(this).attr("data");
+            }
+        }
+        if(ar.length>0){
+            modalmsg.confirm("您确认要删除该规则吗？<br>此操作无法撤销。",function(){
+                $.ajax({
+                    type: "GET",
+                    url: "/member/pointsrule?do=del",
+                    data: "ids="+ar,
+                    dataType:'json',
+                    cache:false
+                }).done(function(msg){
+                    if(msg.error_code==0){
+                        window.location.reload();
+                    }
+                });
+            });
+
+        }
+        else{
+            modalmsg.alert("请选择要删除的规则");
+        }
+    });
+
+});
+
+function setstatus(status){
+    var ar=new Array();
+    $.each($("input[type=checkbox][name=checkbox]:checked"),function(k,v){
+        ar[k]=v.value
+    });
+    if(ar.length>0){
+        if(status==0){
+            modalmsg.confirm("确定启用吗？",function(){
+                $.ajax({
+                    type: "GET",
+                    url: "/member/pointsrule?do=ajax_setpointsrulestatus",
+                    data: "ids="+ar+"&status="+status,
+                    dataType:'json',
+                    cache:false
+                }).done(function(msg){
+                    if(msg.error_code==0){
+                        window.location.reload();
+                    }
+                });
+
+            });
+        }else{
+            modalmsg.confirm("确定停用吗？",function(){
+                $.ajax({
+                    type: "GET",
+                    url: "/member/pointsrule?do=ajax_setpointsrulestatus",
+                    data: "ids="+ar+"&status="+status,
+                    dataType:'json',
+                    cache:false
+                }).done(function(msg){
+                    if(msg.error_code==0){
+                        window.location.reload();
+                    }
+                });
+
+            });
+        }
+    }else{
+        modalmsg.alert("请选择要停用的规则");
+    }
+}
+</script>
+{{/if}}
+
+{{if $do eq 'add' || $do eq 'edit'}}
+<div class="content">
+    <div class="header">
+        <h1 class="page-title">{{if $do eq 'add'}}新建积分规则{{elseif $do eq 'edit'}}编辑积分规则{{/if}}</h1>
+        <ul class="breadcrumb">
+            <li><a href="">积分规则管理</a> </li>
+            <li class="active">{{if $do eq 'add'}}新建积分规则{{elseif $do eq 'edit'}}编辑积分规则{{/if}}</li>
+        </ul>
+    </div>
+    <div class="main-content">
+        <form name="f1" id="f1" method="post">
+            <div class="form-group">
+                <label class="form-label form-group-left" for="form-title">名称<strong class="must"> *</strong></label>
+                <input type="hidden" name="id" id="id" value="{{$row.id}}"/>
+                <input type="text" class="form-control form-group-right require" placeholder="不超过35字" name="fdDescription" id="fdDescription" value="{{$row.fdDescription}}" onblur="validatatext_ex(this,'sfdname','请填写规则名称','input-error');" onfocus="clearme('sfdname','')"><div id="sfdname" ></div>
+            </div>
+            <div class="clearfix"></div>
+            <div class="form-group">
+                <label class="form-label form-group-left" for="">Key<strong class="must"> *</strong></label>
+                <input class="form-control form-group-right require" placeholder="" name="fdAction" id="fdAction" value="{{$row.fdAction}}" onblur="validatatext_ex(this,'skey','请填写key','input-error');" onfocus="clearme('skey','')"><div id="skey" ></div>
+            </div>
+            <div class="clearfix"></div>
+            <!--<div class="form-group">
+                <label class="form-label form-group-left" for="form-description">功能描述</label>
+                <textarea class="form-control form-group-right" id="form-description" placeholder="" name="fdDescription">{{$row.fdDescription}}</textarea>
+            </div>-->
+            <div class="form-group">
+                <label class="form-label form-group-left" for="form-description">获得积分数<strong class="must"> *</strong></label>
+                <input class="form-control form-group-right require" placeholder="" onblur="validateNum_ex(this,'spoints','input-error')" onfocus="clearme('spoints','')" name="fdPoints" id="fdPoints" value="{{$row.fdPoints}}" ><div id="spoints"></div>
+            </div>
+            <div class="clearfix"></div>
+
+            <div class="form-group form-group-select">
+                <label class="form-label form-group-left" for="form-description">频率</label>
+                <select name="fdRate" id="fdRate" class="dropdown-toggle form-select-character form-group-right">
+                    <option value="day" {{if $row.fdRate eq 'day'}}selected='selected'{{/if}}>每天</option>
+                    <option value="once" {{if $row.fdRate eq 'once'}}selected='selected'{{/if}}>只一次</option>
+                    <option value="times" {{if $row.fdRate eq 'times'}}selected='selected'{{/if}}>按次</option>
+                    <option value="hour" {{if $row.fdRate eq 'hour'}}selected='selected'{{/if}}>按小时</option>
+                </select>
+            </div>
+            <div class="clearfix"></div>
+
+            <div class="form-group">
+                <label class="form-label form-group-left" for="form-description">数值<strong class="must"> *</strong></label>
+                <input class="form-control form-group-right require" placeholder="" onblur="validateNum_ex(this,'sfdnum','input-error')" onfocus="clearme('sfdnum','')"name="fdRateValue" id="fdRateValue" value="{{$row.fdRateValue}}" ><div id="sfdnum"></div>
+            </div>
+            
+        </form>
+        <div class="clearfix"></div>
+        <div class="finish">
+            <button class="btn btn-success" id="stbtn">完成</button>
+            {{if $do eq 'edit'}}<input type="button" class="btn btn-default" onclick="window.location.href = window.document.referrer;" value="取消"/>{{/if}}
+        </div>
+        {{include file="fade.html"}}
+        <footer>
+            <hr>
+            <p class="pull-right">© 2016 <a href="" target="_blank">广州涛略科技有限公司</a></p>
+        </footer>
+    </div>
+</div>
+{{include file="confirmbox.html"}}
+<div style="display:none">
+<script>
+//$("#fdKey").focus();
+$(document).ready(function(){
+
+    $("#f1").on('focus','.error',function(){
+        $(this).removeClass("error");
+    });
+
+});
+
+a1=false;
+$("#stbtn").click(function(){
+    // fdname=$("#fdKey").val();
+    // validateAjax(fdname,'skey','input-error','fdKey=','该模块已存在');
+    // if(a1==false){
+    //     return false;
+    // }
+    validatatext_ex("#fdDescription",'sfdname','请填写规则名称','input-error');
+    validatatext_ex("#fdAction",'skey','请填写key','input-error');
+    validateNum_ex("#fdPoints",'spoints','input-error');
+    validateNum_ex("#fdRateValue",'sfdnum','input-error');
+
+    formchecker.check("#f1");
+    if(!formchecker.flag){
+        return false;
+    }
+    $("#f1").submit();
+});
+
+// $("#id_yes").click(function(){
+//     formchecker.check("#f1");
+//     if(!formchecker.flag){
+//         $(".msg_font").html("请正确填写该字段内容");
+//         showmsgbox("msgbox");
+//         return false;
+//     }
+//     $("#f1").submit();
+// });
+
+function aj(dat,shw){
+    var tmp;
+    tmp=$.ajax({
+    type: "POST",
+    url: "/admin/ckkey?id={{$row.id}}",
+    data: dat,
+    dataType:'json',
+    success: function(msg){
+            if(msg.error_code!=0){
+                a1=false
+                //$(".msg_font").html(msg.error_msg);
+                //showmsgbox("msgbox");
+                //$("#fdKey").addClass("error");
+                $("#"+shw).html(msg.error_msg);
+            }else{
+                a1=true;
+                $("#"+shw).html('');
+            }
+            str='';
+        },
+    error:function(){
+        console.log("error")
+        }
+    });
+}
+
+function validatatext_ex(obj,target,txt,cls){
+    ret=validateText($(obj).val(),target,txt,cls);
+    if(!ret){
+        $(obj).addClass("error");
+    }
+}
+
+function validateNum_ex(obj,htmlname,htmlclass){
+    num=$(obj).val();
+    if(parseInt(num)<=0){
+        $(obj).addClass("error");
+        $("#"+htmlname).addClass('input-error').html('请填写一个大于0的整数');
+    }
+    ret= validateNum($(obj).val(),htmlname,htmlclass);
+    if(!ret){
+        $(obj).addClass("error");
+    }
+}
+</script>
+</div>
+{{/if}}

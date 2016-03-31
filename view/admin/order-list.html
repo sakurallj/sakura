@@ -1,0 +1,246 @@
+
+<!--正文-->
+<div class="content">
+    <div class="header">
+        <h1 class="page-title">订单列表</h1>
+        <ul class="breadcrumb">
+            <li><a href="/order/index">订单管理</a></li>
+            <li class="active">订单列表</li>
+        </ul>
+    </div>
+    <div class="main-content">
+        <div class="btn-toolbar list-toolbar pull-left">
+            <button class="btn btn-success start_event" data-type="top_btn">启用</button>
+            <button class="btn btn-default stop_event" data-type="top_btn">停用</button>
+            <button class="btn btn-danger del_event" data-dismiss="modal" data-type="top_btn">删除</button>
+            <div class=" search form-group-select">
+                <button class="btn btn-info" id="search_btn">搜索</button>
+                <div class="dropdown form-group-right">
+                    <select class="dropdown-toggle form-select-character" id="search_process">
+                        <option value="">订单状态</option>
+                        <option value="dfk"  {{if $status=="dfk"}}selected{{/if}}>待付款</option>
+                        <option value="yqx"  {{if $status=="yqx"}}selected{{/if}}>已取消</option>
+                        <option value="yfk"  {{if $status=="yfk"}}selected{{/if}}>已付款</option>
+                        <option value="sqtk" {{if $status=="sqtk"}}selected{{/if}}>申请退款</option>
+                        <option value="tkz"  {{if $status=="tkz"}}selected{{/if}}>退款中</option>
+                        <option value="ytk"  {{if $status=="ytk"}}selected{{/if}}>已退款</option>
+                        <option value="bhz"  {{if $status=="bhz"}}selected{{/if}}>备货中</option>
+                        <option value="qfh"  {{if $status=="qfh"}}selected{{/if}}>已发货</option>
+                        <option value="yqs"  {{if $status=="yqs"}}selected{{/if}}>已签收</option>
+                        <option value="dpj"  {{if $status=="dpj"}}selected{{/if}}>待评价</option>
+                        <option value="ypj"  {{if $status=="ypj"}}selected{{/if}}>已评价</option>
+                    </select>
+                </div>
+                <input class="form-control" value="{{$eventName}}" type="text" placeholder="输入活动名称" id="search_name">
+            </div>
+        </div>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th class="table-checkbox"><input type="checkbox" value="-1"></th>
+                    <th class="table-title">订单编号</th>
+                    <th>下单时间</th>
+                    <th>订单总额(元)</th>
+                    <th>发货时间</th>
+                    <th>状态</th>
+                    <th style="width: 3.5em;">操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{foreach from=$ar name=nar item=row}}
+                <tr>
+                    <td><input type="checkbox" value="{{$row.id}}"></td>
+                    <td>
+                        <a data-toggle="modal" class="event_detail"
+                           data-target="#result" href="javascritp:;"
+                           data-url="/event/index?do=detail&id={{$row.id}}">
+                        {{$row.fdTitle}}</a>
+                    </td>
+                    {{if $smarty.session.partnerid == 1}}
+                    <td>{{$row.partnerName}}</td>
+                    {{/if}}
+                    <td>{{$row.joinerTotal}}</td>
+                    <td>{{$row.fdCreated|date_format:'%Y-%m-%d %H:%M:%S'}}</td>
+                    <td>
+                        {{if $row.fdStatus=="dfk"}}
+                        <span class="status-stop">待付款</span>
+                        {{elseif $row.fdStatus=="yqx"}}
+                        <span class="status-stop">已取消</span>
+                        {{elseif $row.fdStatus=="sqtk"}}
+                        <span class="status-stop">已付款</span>
+                        {{elseif $row.fdStatus=="sqtk"}}
+                        <span class="status-stop">申请退款</span>
+                        {{elseif $row.fdStatus=="tkz"}}
+                        <span class="status-stop">退款中</span>
+                        {{elseif $row.fdStatus=="ytk"}}
+                        <span class="status-stop">已退款</span>
+                        {{elseif $row.fdStatus=="bhz"}}
+                        <span class="status-stop">备货中</span>
+                        {{elseif $row.fdStatus=="yfh"}}
+                        <span class="status-stop">已发货</span>
+                        {{elseif $row.fdStatus=="yqs"}}
+                        <span class="status-stop">已签收</span>
+                        {{elseif $row.fdStatus=="dpj"}}
+                        <span class="status-stop">待评价</span>
+                        {{elseif $row.fdStatus=="ypj"}}
+                        <span class="status-stop">已评价</span>
+                        {{else}}
+                        <span class="status-work">-</span>
+                        {{/if}}
+                    </td>
+                    <td>
+                        <a href="/event/index?do=edit&id={{$row.id}}" data-id="{{$row.id}}" title="编辑"><i class="icon-pencil"></i></a>
+                        <a  href="javascript:;" data-id="{{$row.id}}" class="del_event" title="删除">
+                            <i class="icon-trash"></i>
+                        </a>
+                    </td>
+                </tr>
+                {{/foreach}}
+            </tbody>
+        </table>
+        <div class="clearfix"></div>
+        <div class="page" style="text-align:center">
+            {{$sy}}
+        </div>
+        <footer>
+            <hr>
+            <p class="pull-right">© 2016 <a href="" target="_blank">广州涛略科技有限公司</a></p>
+        </footer>
+    </div>
+</div>
+<script>
+    (function($){
+        $(".event_detail").bind("click",function(){
+            var url = $(this).data("url");
+            $.ajax({
+                url:url,
+                type:"get"
+            }).done(function(msg){
+                $("#modal_event_detail").empty().append(msg);
+            });
+        });
+        $(".del_event").click(function(){
+            var ar=new Array();
+            var type = $(this).data("type");
+            if(type=="top_btn"){
+                $.each($("input[type=checkbox]:checked"),function(k,v){
+                    ar[k]=v.value;
+                });
+            }
+            else{
+                if(ar.length==0){
+                    ar[0]=$(this).data("id");
+                }
+            }
+            if(ar.length>0){
+                modalmsg.confirm("确定删除吗？",function(){
+                    $.ajax({
+                        type: "GET",
+                        url: "/event/index?do=del",
+                        data: {
+                            ids:ar
+                        },
+                        cache:false
+                    }).done(function(msg){
+                        var msgJson = JSON.parse(msg);
+                        if(msgJson[0]==0){
+                            window.location.reload();
+                        }else{
+                            alert(msgJson[1])
+                        }
+                    });
+                });
+
+            }
+            else{
+                modalmsg.alert("请选择要删除的报名");
+            }
+        });
+        $(".stop_event").bind("click",function(){
+            var ar=new Array();
+            var type = $(this).data("type");
+            if(type=="top_btn"){
+                $.each($("input[type=checkbox]:checked"),function(k,v){
+                    ar[k]=v.value;
+                });
+            }
+            else{
+                if(ar.length==0){
+                    ar[0]=$(this).data("id");
+                }
+            }
+
+            if(ar.length>0){
+                modalmsg.confirm("确定停用吗？",function(){
+                    $.ajax({
+                        type: "GET",
+                        url: "/event/index?do=stopevent",
+                        data: {
+                            ids:ar
+                        },
+                        cache:false
+                    }).done(function(msg){
+                        var msgJson = JSON.parse(msg);
+                        if(msgJson[0]==0){
+                            window.location.reload();
+                        }else{
+                            alert(msgJson[1])
+                        }
+                    });
+                });
+            }
+            else{
+                modalmsg.alert("请选择要停用的报名");
+            }
+        });
+        $(".start_event").bind("click",function(){
+            var ar=new Array();
+            var type = $(this).data("type");
+            if(type=="top_btn"){
+                $.each($("input[type=checkbox]:checked"),function(k,v){
+                    ar[k]=v.value;
+                });
+            }
+            else{
+                if(ar.length==0){
+                    ar[0]=$(this).data("id");
+                }
+            }
+
+            if(ar.length>0){
+                modalmsg.confirm("确定启用吗？",function(){
+                    $.ajax({
+                        type: "GET",
+                        url: "/event/index?do=startevent",
+                        data: {
+                            ids:ar
+                        },
+                        cache:false
+                    }).done(function(msg){
+                        var msgJson = JSON.parse(msg);
+                        if(msgJson[0]==0){
+                            window.location.reload();
+                        }else{
+                            alert(msgJson[1])
+                        }
+                    });
+                });
+            }
+            else{
+                modalmsg.alert("请选择要启用的报名");
+            }
+
+        });
+        $("#search_btn").bind("click",function(){
+            var eventName = $("#search_event_name").val();
+            var partnerId = $("#search_partner").val();
+            var process   = $("#search_process").val();
+            window.location.href='/event/index?eventName='+eventName
+                    +'&partnerid='+partnerId
+                    +'&process='+process;
+        });
+        $("#clear_search").bind("click",function(){
+            window.location.href='/event/index';
+        });
+    })(window.jQuery);
+</script>

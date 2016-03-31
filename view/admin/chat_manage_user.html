@@ -1,0 +1,284 @@
+﻿<link rel="stylesheet" type="text/css" href="./{{$user_dir_theme}}/css/list-table.css">
+<link rel="stylesheet" type="text/css" href="./{{$user_dir_theme}}/css/chat_manage_user.css">
+<!--禁言模态框-->
+<div class="modal fade"  id="modal-ban-comment" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title">禁言</h4>
+			</div>
+			<div class="modal-body" id="modal-add-select-body">
+				<div class="form-group form-group-select">
+					<label class="form-label form-group-left" for="">禁言时长：</label>
+					<div class="dropdown form-group-right">
+						<select class="dropdown-toggle form-select-character forbit_time_sel">
+							<option value="30">0.5小时</option>
+							<option value="60">1小时</option>
+							<option value="120">2小时</option>
+							<option value="300">5小时</option>
+							<option value="720">12小时</option>
+							<option value="1440">1天</option>
+							<option value="2880">2天</option>
+							<option value="10080">1周</option>
+							<option value="17280">12天</option>
+							<option value="-1">永久</option>
+						</select>
+					</div>
+					<div class="clearfix"></div>
+				</div>
+				<div class="clearfix"></div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-primary" id="modal_forbit_btn" data-dismiss="modal">确定</button>
+			</div>
+		</div><!-- /.modal-content -->
+	</div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<!--正文-->
+<div class="content">
+	<div class="header">
+		<h1 class="page-title">用户管理</h1>
+		<ul class="breadcrumb">
+			<li><a href="/chat/index">聊天室列表</a> </li>
+			<li class="active">用户管理</li>
+		</ul>
+	</div>
+	<div class="main-content">
+		<!--<ul class="nav nav-tabs nav-justified">-->
+			<!--<li role="presentation" class="active"><a href="{{$userManageUrl}}">用户管理</a></li>-->
+			<!--<li role="presentation" ><a href="{{$msgManageUrl}}">评论管理</a></li>-->
+		<!--</ul>-->
+		<div class="btn-toolbar list-toolbar pull-left">
+			<button class="btn btn-success forbit" data-type="top_btn" >禁言</button>
+			<button class="btn btn-default unforbit" data-type="top_btn">取消禁言</button>
+			<button class="btn btn-danger del_user" data-type="top_btn" >删除</button>
+			<div class="form-group search">
+				<button class="btn btn-info" id="search_user">搜索</button>
+				<input class="form-control" id="search_user_name" value="{{$searchName}}" type="text" placeholder="输入用户名">
+			</div>
+		</div>
+		<table class="table sort-table">
+			<thead>
+				<tr>
+					<th><input type="checkbox" name="topCheckbox" value="-1"/></th>
+					<th>用户编号</th>
+					<th>用户头像</th>
+					<th>用户名称</th>
+					<th>加入时间</th>
+					<th>评论总数</th>
+					<th>上一次发言时间</th>
+					<th>禁言开始时间</th>
+					<th>禁言结束时间</th>
+					<th>评论被删除次数</th>
+					<th>违规次数</th>
+					<th>状态</th>
+					<th style="width: 3.5em">操作</th>
+				</tr>
+			</thead>
+			<tbody>
+				{{foreach from=$ar name=nar item=row}}
+				<tr >
+					<td ><input type="checkbox" name="checkbox" value="{{$row.id}}"  data-num="{{$row.fdNum}}"/></td>
+					<td>{{$row.fdNum}}</td>
+					<td><img src="{{$row.fdHeaderImgUrl}}" class="img-circle" style="height: 40px"></td>
+					<td>{{$row.fdName}}</td>
+					<td>{{$row.fdMillisecond/1000|date_format:"%Y-%m-%d %H:%M"}}</td>
+					<td>
+						{{$row.messageTotal|default:0}}
+
+					</td>
+					<td>{{if $row.lastMsgTime=="-" }}{{$row.lastMsgTime}}
+						{{else}}{{$row.lastMsgTime/1000|date_format:"%Y-%m-%d %H:%M"}}{{/if}}</td>
+					<td>{{$row.fdForbiBtTime}}</td>
+					<td>{{$row.fdForbiEtTime}}</td>
+					<td>{{$row.fdDeleteMsgNum}}</td>
+					<td>{{$row.fdIllegalNum}}</td>
+					<td >
+						{{if $row.fdStatus eq "using"}}
+						使用中
+						{{elseif $row.fdStatus  eq "deleted"}}
+						已踢出
+						{{elseif $row.fdStatus  eq "forbit"}}
+						已禁言
+						{{else}}
+						-
+						{{/if}}
+					</td>
+					<td>
+						{{if $row.fdStatus eq "forbit"}}
+						<a href="javascript:;" class="unforbit" data-id="{{$row.id}}" title="取消禁言" data-num="{{$row.fdNum}}">
+							<i class="icon-volume-up" aria-hidden="true"></i>
+						</a>
+						{{else}}
+						<a href="javascript:;" class="forbit" data-id="{{$row.id}}" title="禁言"   data-num="{{$row.fdNum}}">
+							<i class="icon-volume-down " aria-hidden="true"></i>
+						</a>
+						{{/if}}
+						<a  href="javascript:;" style="margin-left: 4px" data-id="{{$row.id}}"  title="删除" data-num="{{$row.fdNum}}" class="del_user"><i class="icon-trash"></i></a>
+						<a href="{{$msgManageUrl}}&searchUserName={{$row.fdName}}" title="评论管理"><i class="icon-comments"></i></a >
+					</td>
+
+				</tr>
+				{{/foreach}}
+			</tbody>
+		</table>
+		<div class="clearfix"></div>
+		<nav>
+			<div class="page" style="text-align:center" id="user_page">
+				{{$sy}}
+			</div>
+		</nav>
+		<footer>
+			<hr>
+			<p class="pull-right">© 2016 <a href="" target="_blank">广州涛略科技有限公司</a></p>
+		</footer>
+	</div>
+</div>
+<div  id="forbit_time_templ" class="hidden">
+	<div class="form-group form-group-select">
+		<label class="form-label form-group-left">禁言时长：</label>
+		<div class="dropdown form-group-right">
+			<select class="dropdown-toggle form-select-character forbit_time_sel" id="">
+				<option value="30">0.5小时</option>
+				<option value="60">1小时</option>
+				<option value="120">2小时</option>
+				<option value="300">5小时</option>
+				<option value="720">12小时</option>
+				<option value="1440">1天</option>
+				<option value="2880">2天</option>
+				<option value="10080">1周</option>
+				<option value="17280">12天</option>
+				<option value="-1">永久</option>
+			</select>
+		</div>
+		<div class="clearfix"></div>
+	</div>
+	<div class="clearfix"></div>
+</div>
+
+<script>
+	(function($){
+		$(function(){
+
+			$("#search_user").bind("click",function(){
+				var searchName = $("#search_user_name").val();
+				window.location.href="/chat/index?do=usermanage&roomNum={{$roomNum}}&searchName="+searchName;
+			});
+
+			$(".forbit").unbind("click").bind("click",function(){
+				var ar=new Array(),nums=new Array();
+				var type = $(this).data("type");
+				if(type=="top_btn"){
+					$.each($("input[type=checkbox]:checked"),function(k,v){
+						ar[k]=v.value;
+						nums[k]=$(v).data("num");
+					});
+				}
+				else{
+					if(ar.length==0){
+						ar[0]=$(this).data("id");
+						nums[0]=$(this).data("num");
+					}
+				}
+				if(ar.length>0){
+					modalmsg.popup("选择禁言时间",$("#forbit_time_templ").html(), function(){
+//						ltutils.showLoading({
+//							loading:{
+//								msg:"禁言需要较长的执行时间，请耐心等待..."
+//							}
+//						});
+						var time   = $($(".forbit_time_sel")[1]).val();
+						$.ajax({
+							type: "POST",
+							url: "/chat/user?do=forbit",
+							data: {
+								ids:ar,
+								value:time
+							}
+						}).done(function(msg){
+							var msgJson = JSON.parse(msg);
+							if(msgJson[0]=="0"){
+								window.location.reload();
+							}
+						});
+					});
+				}
+				else{
+					modalmsg.alert("请选择要禁言的用户");
+				}
+			});
+			//取消禁言
+			$(".unforbit").unbind("click").bind("click",function(){
+				var ar=new Array(),nums=new Array();
+				var type = $(this).data("type");
+				if(type=="top_btn"){
+					$.each($("input[type=checkbox]:checked"),function(k,v){
+						ar[k]=v.value;
+						nums[k]=$(v).data("num");
+					});
+				}
+				else{
+					if(ar.length==0){
+						ar[0]=$(this).data("id");
+						nums[0]=$(this).data("num");
+					}
+				}
+				if(ar.length>0){
+					modalmsg.confirm("确定取消禁言吗?", function () {
+						$.ajax({
+							url: "/chat/user?do=unforbit",
+							type: "POST",
+							data: {
+								ids: ar
+							}
+						}).done(function (msg) {
+							var msgJson = JSON.parse(msg);
+							if(msgJson[0]=="0"){
+								window.location.reload();
+							}
+						});
+					});
+				}
+				else{
+					modalmsg.alert("请选择要取消禁言的用户");
+				}
+			});
+			//删除所有评论
+			$(".del_user").unbind("click").bind("click",function(){
+				var ar=new Array();
+				var type = $(this).data("type");
+				if(type=="top_btn"){
+					$.each($("input[type=checkbox]:checked"),function(k,v){
+						ar[k]=v.value;
+					});
+				}
+				else{
+					if(ar.length==0){
+						ar[0]=$(this).data("id");
+					}
+				}
+				if(ar.length>0){
+					modalmsg.confirm("确定删除该用户吗", function () {
+						$.ajax({
+							url: "/chat/user?do=del",
+							type: "get",
+							data: {
+									ids:ar
+							}
+						}).done(function (msg) {
+							var msgJson = JSON.parse(msg);
+							if(msgJson[0]=="0"){
+								window.location.reload();
+							}
+						});
+					});
+				}
+				else{
+					modalmsg.alert("请选择要删除的用户");
+				}
+			});
+
+		});
+	})(window.jQuery);
+</script>

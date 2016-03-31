@@ -1,0 +1,271 @@
+<div class="modal fade" id="result" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">详细信息</h4>
+            </div>
+            <div class="modal-body" id="modal_event_detail">
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal">确定</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<!--正文-->
+<div class="content">
+    <div class="header">
+        <h1 class="page-title">报名列表</h1>
+        <ul class="breadcrumb">
+            <li><a href="/event/index">报名管理</a></li>
+            <li class="active">报名列表</li>
+        </ul>
+    </div>
+    <div class="main-content">
+        <div class="btn-toolbar list-toolbar pull-left">
+            <button class="btn btn-success start_event" data-type="top_btn">启用</button>
+            <button class="btn btn-default stop_event" data-type="top_btn">停用</button>
+            <button class="btn btn-danger del_event" data-dismiss="modal" data-type="top_btn">删除</button>
+            <!--
+            <div class="form-group search">
+                <button class="btn btn-info">搜索</button>
+                <input class="form-control" type="text" placeholder="search">
+            </div>
+            -->
+            <div class=" search form-group-select">
+                <!--<button class="btn btn-default" id="clear_search">清除</button>-->
+                <button class="btn btn-info" id="search_btn">搜索</button>
+                {{if $smarty.session.partnerid == 1}}
+                <div class="dropdown form-group-right">
+                    <select class="dropdown-toggle form-select-character" id="search_partner">
+                        <option value="">选择电台</option>
+                        {{foreach from=$partners name=nar item=partner}}
+                        <option value="{{$partner.id}}" {{if $partnerid==$partner.id}}selected{{/if}}>
+                            {{$partner.fdName}}
+                        </option>
+                        {{/foreach}}
+                    </select>
+                </div>
+                {{/if}}
+                <div class="dropdown form-group-right">
+                    <select class="dropdown-toggle form-select-character" id="search_process">
+                        <option value="">报名进程</option>
+                        <option value="unstart" {{if $process=="unstart"}}selected{{/if}}>未开始</option>
+                        <option value="start"   {{if $process=="start"}}  selected{{/if}}>进行中</option>
+                        <option value="stop"    {{if $process=="stop"}}   selected{{/if}}>已结束</option>
+                    </select>
+                </div>
+                <input class="form-control" value="{{$eventName}}" type="text" placeholder="输入活动名称" id="search_event_name">
+            </div>
+        </div>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th class="table-checkbox"><input type="checkbox" value="-1"></th>
+                    <th class="table-title">活动名称</th>
+                    {{if $smarty.session.partnerid == 1}}
+                    <th>所属电台</th>
+                    {{/if}}
+                    <!--<th>开始日期</th>-->
+                    <!--<th>结束日期</th>-->
+                    <th>已报名人数</th>
+                    <th>添加时间</th>
+                    <th>活动进程</th>
+                    <th >状态</th>
+                    <th style="width: 3.5em;">操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{foreach from=$ar name=nar item=row}}
+                <tr>
+                    <td><input type="checkbox" value="{{$row.id}}"></td>
+                    <td>
+                        <a data-toggle="modal" class="event_detail"
+                           data-target="#result" href="javascritp:;"
+                           data-url="/event/index?do=detail&id={{$row.id}}">
+                        {{$row.fdTitle}}</a>
+                    </td>
+                    {{if $smarty.session.partnerid == 1}}
+                    <td>{{$row.partnerName}}</td>
+                    {{/if}}
+                    <!--<td>{{$row.fdBTime|date_format:'%Y-%m-%d'}}</td>-->
+                    <!--<td>{{$row.fdETime|date_format:'%Y-%m-%d'}}</td>-->
+                    <td>{{$row.joinerTotal}}</td>
+                    <td>{{$row.fdCreated|date_format:'%Y-%m-%d %H:%M:%S'}}</td>
+                    <td>
+                        {{if $row.fdProcessStatus=="stop"}}
+                        <span class="process-end">已结束</span>
+                        {{elseif $row.fdProcessStatus=="start"}}
+                        <span class="process-work">进行中</span>
+                        {{else}}
+                        <span class="process-notStart">未开始</span>
+                        {{/if}}
+                    </td>
+                    <td>
+                        {{if $row.fdStatus=="stop"}}
+                        <span class="status-stop">停用</span>
+                        {{else}}
+                        <span class="status-work">启用</span>
+                        {{/if}}
+                    </td>
+                    <td>
+                        <a href="/event/index?do=edit&id={{$row.id}}" data-id="{{$row.id}}" title="编辑"><i class="icon-pencil"></i></a>
+                        <a  href="javascript:;" data-id="{{$row.id}}" class="del_event" title="删除">
+                            <i class="icon-trash"></i>
+                        </a>
+                    </td>
+                </tr>
+                {{/foreach}}
+            </tbody>
+        </table>
+        <div class="clearfix"></div>
+        <div class="page" style="text-align:center">
+            {{$sy}}
+        </div>
+        <footer>
+            <hr>
+            <p class="pull-right">© 2016 <a href="" target="_blank">广州涛略科技有限公司</a></p>
+        </footer>
+    </div>
+</div>
+<script>
+    (function($){
+        $(".event_detail").bind("click",function(){
+            var url = $(this).data("url");
+            $.ajax({
+                url:url,
+                type:"get"
+            }).done(function(msg){
+                $("#modal_event_detail").empty().append(msg);
+            });
+        });
+        $(".del_event").click(function(){
+            var ar=new Array();
+            var type = $(this).data("type");
+            if(type=="top_btn"){
+                $.each($("input[type=checkbox]:checked"),function(k,v){
+                    ar[k]=v.value;
+                });
+            }
+            else{
+                if(ar.length==0){
+                    ar[0]=$(this).data("id");
+                }
+            }
+            if(ar.length>0){
+                modalmsg.confirm("确定删除吗？",function(){
+                    $.ajax({
+                        type: "GET",
+                        url: "/event/index?do=del",
+                        data: {
+                            ids:ar
+                        },
+                        cache:false
+                    }).done(function(msg){
+                        var msgJson = JSON.parse(msg);
+                        if(msgJson[0]==0){
+                            window.location.reload();
+                        }else{
+                            alert(msgJson[1])
+                        }
+                    });
+                });
+
+            }
+            else{
+                modalmsg.alert("请选择要删除的报名");
+            }
+        });
+        $(".stop_event").bind("click",function(){
+            var ar=new Array();
+            var type = $(this).data("type");
+            if(type=="top_btn"){
+                $.each($("input[type=checkbox]:checked"),function(k,v){
+                    ar[k]=v.value;
+                });
+            }
+            else{
+                if(ar.length==0){
+                    ar[0]=$(this).data("id");
+                }
+            }
+
+            if(ar.length>0){
+                modalmsg.confirm("确定停用吗？",function(){
+                    $.ajax({
+                        type: "GET",
+                        url: "/event/index?do=stopevent",
+                        data: {
+                            ids:ar
+                        },
+                        cache:false
+                    }).done(function(msg){
+                        var msgJson = JSON.parse(msg);
+                        if(msgJson[0]==0){
+                            window.location.reload();
+                        }else{
+                            alert(msgJson[1])
+                        }
+                    });
+                });
+            }
+            else{
+                modalmsg.alert("请选择要停用的报名");
+            }
+        });
+        $(".start_event").bind("click",function(){
+            var ar=new Array();
+            var type = $(this).data("type");
+            if(type=="top_btn"){
+                $.each($("input[type=checkbox]:checked"),function(k,v){
+                    ar[k]=v.value;
+                });
+            }
+            else{
+                if(ar.length==0){
+                    ar[0]=$(this).data("id");
+                }
+            }
+
+            if(ar.length>0){
+                modalmsg.confirm("确定启用吗？",function(){
+                    $.ajax({
+                        type: "GET",
+                        url: "/event/index?do=startevent",
+                        data: {
+                            ids:ar
+                        },
+                        cache:false
+                    }).done(function(msg){
+                        var msgJson = JSON.parse(msg);
+                        if(msgJson[0]==0){
+                            window.location.reload();
+                        }else{
+                            alert(msgJson[1])
+                        }
+                    });
+                });
+            }
+            else{
+                modalmsg.alert("请选择要启用的报名");
+            }
+
+        });
+        $("#search_btn").bind("click",function(){
+            var eventName = $("#search_event_name").val();
+            var partnerId = $("#search_partner").val();
+            var process   = $("#search_process").val();
+            window.location.href='/event/index?eventName='+eventName
+                    +'&partnerid='+partnerId
+                    +'&process='+process;
+        });
+        $("#clear_search").bind("click",function(){
+            window.location.href='/event/index';
+        });
+    })(window.jQuery);
+</script>

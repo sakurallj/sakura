@@ -1,0 +1,14 @@
+{{if $header neq ''}}{{include file=$header}}{{/if}}
+<body>
+<!--顶部导航-->
+<div id="insert-top">
+{{include file="topmenu.html"}}
+</div>
+<!--侧边栏-->
+<div id="insert-side">
+{{include file="leftmenu.html"}}
+</div>
+<!--正文-->
+{{include file=$display}}
+</body>
+{{if $footer neq ''}}{{include file=$footer}}{{/if}}

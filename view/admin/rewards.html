@@ -1,0 +1,474 @@
+{{if $do eq 'manage'}}
+<link rel="stylesheet" type="text/css" href="./{{$user_dir_theme}}/css/list-table.css">
+<div class="modal fade"  id="detail" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">详细信息</h4>
+            </div>
+            <div class="modal-body">
+                <table class="table modal-table table-striped">
+                    <tbody>
+                        <tr>
+                            <td>奖项:</td>
+                            <td><div id="rdlevel"></div></td>
+                        </tr>
+                        <tr>
+                            <td>奖品:</td>
+                            <td><div id="rdname"></div></td>
+                        </tr>
+                        <tr>
+                            <td>类别：</td>
+                            <td><div id="rdtype"></div></td>
+                        </tr>
+                        <tr>
+                            <td>数量：</td>
+                            <td><div id="rdnum"></div></td>
+                        </tr>
+                        <tr>
+                            <td>中奖几率：</td>
+                            <td><div id="rdrate"></div></td>
+                        </tr>
+                        <tr>
+                            <td>寄送奖品：</td>
+                            <td><div id="rddelivery"></div></td>
+                        </tr>
+                        <tr>
+                            <td>已被抽中数量：</td>
+                            <td><div id="rduse"></div></td>
+                        </tr>
+                        <tr>
+                            <td>描述：</td>
+                            <td><div id="rddes"></div></td>
+                        </tr>
+                        <tr>
+                            <td>图片:</td>
+                            <td><div id="rdlogo"></div></td>
+                        </tr>
+                        
+                        <tr>
+                            <td>赞助商:</td>
+                            <td><div id="rdsurport"></div></td>
+                        </tr>
+                        <tr>
+                            <td>奖品介绍:</td>
+                            <td><div id="rdintro"></div></td>
+                        </tr>
+                        
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal">确定</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<!--删除确认-->
+{{include file="confirmbox.html"}}
+<div class="content">
+    <div class="header">
+        <h1 class="page-title">奖品管理</h1>
+        <ul class="breadcrumb">
+            <li><a href="">抽奖管理</a> </li>
+            <li><a href="/lottery/index?ltype=1">抽奖列表</a></li>
+            <li class="active">奖品管理</li>
+        </ul>
+    </div>
+    <div class="main-content">
+        
+        <div class="btn-toolbar list-toolbar pull-left">
+            <a class="btn btn-danger" href="#myModal" id="delall">删除</a>
+        </div>
+        <table class="table">
+            <thead>
+            <tr>
+                <th class="table-checkbox"><input type="checkbox"></th>
+                <th class="table-title">奖项</th>
+                <th>奖品</th>
+                <th>奖品数量</th>
+                <th>已被抽中数量</th>
+                <th>中奖几率</th>
+                <th>类别</th>
+                <th>寄送奖品</th>
+                <th style="width: 3.5em;">操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            {{foreach from=$ar name=nar item=row}}
+            <tr>
+                <td><input type="checkbox" name="checkbox" value="{{$row.id}}" /></td>
+                <td><a name="userinfo" data-target="#detail" href="#detail" data="{{$row.id}}" >{{$row.fdLevel}}</a></td>
+                <td>{{$row.fdName}}</td>
+                <td>{{$row.fdOriginNum}}</td>
+                <td>{{$row.fdOriginNum-$row.fdNum}}</td>
+                <td name="tagrate">{{if $total.l1 gt '0'}}{{$row.fdOriginNum/$total.l1*100|string_format:"%.2f"}}%{{elseif $total.l0 gt '0'}}{{$row.fdRate/$total.l0*100|string_format:"%.2f"}}%{{/if}}</td>
+                <td>{{if $row.fdType eq '1'}}电子券{{else}}实物奖{{/if}}</td>
+                <td>{{if $row.fdDelivery eq '1'}}是{{else}}否{{/if}}</td>
+                <td>
+                    <a href="/lottery/rewards?do=edit&id={{$row.id}}&lotteryid={{$lotteryid}}&ye={{$ye}}"><i class="icon-pencil" title="编辑"></i></a>
+                    <a href="#myModal" role="button" data="{{$row.id}}" name="delbtn"><i class="icon-trash" title="删除"></i></a>
+                </td>
+            </tr>
+            {{/foreach}}
+            </tbody>
+        </table>
+        <a href="/lottery/rewards?do=add&lotteryid={{$lotteryid}}"><button class="btn btn-primary btn-add-prize" data-dismiss="modal">添加奖品</button></a>
+        <div class="clearfix"></div>
+        <div class="page" style="margin-top:50px;">
+            {{$sy}}
+        </div>
+        <footer>
+            <hr>
+            <p class="pull-right">© 2016 <a href="" target="_blank">广州涛略科技有限公司</a></p>
+        </footer>
+    </div>
+</div>
+{{/if}}
+
+{{if $do eq 'add' || $do eq 'edit'}}
+<div class="content">
+    <div class="header">
+        <h1 class="page-title">{{if $do eq 'add'}}添加奖品{{elseif $do eq 'edit'}}编辑奖品{{/if}}</h1>
+        <ul class="breadcrumb">
+            <li><a href="">抽奖管理</a> </li>
+            <li><a href="/lottery/index?ltype=1">抽奖列表</a></li>
+            <li><a href="/lottery/rewards?lotteryid={{$lotteryid}}">奖品管理</a></li>
+            <li class="active">{{if $do eq 'add'}}添加奖品{{elseif $do eq 'edit'}}编辑奖品{{/if}}</li>
+        </ul>
+    </div>
+    <div class="main-content">
+        <form name="f1" id="f1" method="post">
+            <div class="form-group">
+                <label class="form-label form-group-left" for="">奖项<span class="must"> *</span></label>
+                <input type="text" class="form-control form-group-right require" name="fdLevel" id="fdLevel" value="{{$row.fdLevel}}"  placeholder="例如：一等奖" onblur="validatetext_ex(this,'sfdlevel','请填写奖项','input-error')" onfocus="clearme('sfdlevel','')"><div id="sfdlevel" ></div>
+            </div>
+            <div class="clearfix"></div>
+            <div class="form-group">
+                <label class="form-label form-group-left" for="form-title">奖品<span class="must"> *</span></label>
+                <input type="hidden" name="id" id="id" value="{{$row.id}}"/>
+                <input type="text" class="form-control form-group-right require" name="fdName" id="fdName" value="{{$row.fdName}}" onblur="validatetext_ex(this,'sfdname','请填写奖品','input-error')" onfocus="clearme('sfdname','')"><div id="sfdname"></div>
+            </div>
+            <div class="clearfix"></div>
+            <div class="form-group  form-group-select">
+                <label class="form-label form-group-left" for="">类别<span class="must"> *</span></label>
+                {{if $do eq 'edit'}}
+                    <label class="form-label">{{if $row.fdType eq '0'}}实物奖品{{elseif $row.fdType eq '1'}}电子券{{/if}}</label>
+                {{else}}
+                <select name="fdType" id="fdType" class="dropdown-toggle form-select-character form-group-right require" >
+                    <option value="0" {{if $row.fdType eq '0'}}selected='selected'{{/if}}>实物奖品</option>
+                    <option value="1" {{if $row.fdType eq '1'}}selected='selected'{{/if}}>电子券</option>
+                </select> <span>(一旦保存不能修改)</span>
+                {{/if}}
+
+            </div>
+            <div class=" {{if $row.fdType eq '0' || $row.fdType eq ''}}hidden{{/if}}" style='font-size:0.85em' id="ecoupon">
+                <div id="cnt" >
+                <input type="button" class="btn btn-primary btn-add-power {{if $row.fdType eq '0' || $row.fdType eq ''}}hidden{{/if}}" id="additem" value="添加电子券"/>
+                {{foreach from=$ar name=nar key=k item=iar}}
+                <div class="itembox form-group form-group-power"><label class="form-label form-group-left">SN:</label>{{if $iar.fdStatus eq '1'}}<span class="usedsn">{{$iar.fdSN}}</span>{{elseif $iar.fdStatus eq '0'}}<input type="text" name="item[{{$iar.id}}][fdSN]" style="width:80%" class="form-power-right form-control require" value="{{$iar.fdSN}}" />{{/if}} <button type="button" class="close delitm" data="{{$iar.id}}" aria-label="Close"><span aria-hidden="true">&times;</span></button><div class="clearfix"></div></div>
+                {{/foreach}}
+                </div>
+                <div style="clear:both"></div>
+                <a id="anchor" name="anchor"></a>
+            </div>
+            <div class="clearfix"></div>
+            {{if $row.fdType neq '1'}}
+            <div class="form-group">
+                <label class="form-label form-group-left" for="">数量<span class="must"> *</span></label>
+                {{if $do eq 'edit' && $row.fdLtype eq '1'}}
+                <label class="form-label">{{$row.fdOriginNum}}</label>
+                {{else}}
+                <input type="text" name="fdNum" id="fdNum" class="form-control form-group-right require checknumber"  value="{{$row.fdNum}}" onblur="validateNum_ex(this,'sfdnum','input-error')" onfocus="clearme('sfdnum','')"/><div id="sfdnum" class="input-error"></div> <span style="color:#f00">{{if $row.fdLtype neq '1'}}(填-1表示该项为不中奖){{/if}}</span>
+                {{/if}}
+            </div>
+            <div class="clearfix"></div>
+            {{/if}}
+            <div class="form-group">
+                <label class="form-label form-group-left">寄送奖品<span class="must"> *</span></label>
+                <div class="form-group-right">
+                    <label class="radio-inline">
+                        <input type="radio" name="fdDelivery" value="0" {{if $row.fdDelivery eq '0' || $row.fdDelivery eq ''}}checked='checked'{{/if}}> 否
+                    </label>
+                    <label class="radio-inline">
+                        <input type="radio" name="fdDelivery" value="1" {{if $row.fdDelivery eq '1'}}checked='checked'{{/if}}> 是
+                    </label>
+                </div>
+            </div>
+            <div class="clearfix"></div>
+            <div class="form-group">
+                <label class="form-label form-group-left">描述</label>
+                <textarea class="form-control form-group-right" name="fdDescription" id="fdDescription">{{$row.fdDescription}}</textarea>
+            </div>
+            <div class="clearfix"></div>
+            <div class="form-group">
+                <label class="form-label form-group-left" for="img">图片</label>
+                <div class="form-group-file">
+                    <div id="photo">
+                        {{if $row.fdLogo neq ''}}
+                        <img style="height:200px;max-height: 200px;position: absolute" src="../var/uploads/{{$row.fdLogo}}" alt="" />
+                        {{else}}
+                        <div class="photo-auto">
+                            <i class="icon-plus img-plus"></i>
+                            <div class="clearfix"></div>
+                            <span class="font-plus">添加图片</span>
+                        </div>
+                        {{/if}}
+                    </div>
+                    <a class="form-group-a" href="#">
+                        <input type='hidden' id="pic" name="pic[]" value="" />
+                        <input  type="file" class="form-control form-control-file"  name="fdLogo" id="fdLogo">
+                    </a>
+                </div>
+            </div>
+            
+            <div class="clearfix"></div>
+            <div class="form-group">
+                <label class="form-label form-group-left" for="">赞助商</label>
+                <input type="text" class="form-control form-group-right" name="fdSupport" id="fdSupport" value="{{$row.fdSupport}}">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label form-group-left" for="">奖品介绍</label>
+                <input type="text" class="form-control form-group-right" name="fdIntroduce" id="fdIntroduce" value="{{$row.fdIntroduce}}">
+            </div>
+            <div class="clearfix"></div>
+        </form>
+        <div class="clearfix"></div>
+        <div class="finish">
+            <button class="btn btn-success" id="stbtn">完成</button>
+            {{if $do eq 'edit'}}<input onclick="window.location.href = window.document.referrer;" type="button" class="btn-default btn" value="取消"/>{{/if}}
+        </div>
+        <footer>
+            <hr>
+            <p class="pull-right">© 2016 <a href="" target="_blank">广州涛略科技有限公司</a></p>
+        </footer>
+    </div>
+</div>
+{{include file="fade.html"}}
+{{/if}}
+
+<script>
+{{if $do eq 'manage'}}
+$(document).ready(function(){
+    $("#id_yes").click(function(){
+        obj=$(this);
+        var ar=new Array();
+        $.each($("input[type=checkbox]:checked"),function(k,v){
+            ar[k]=v.value
+        });
+        if(ar.length>0){
+            $.ajax({
+                type: "GET",
+                url: "/lottery/rewards?do=del&lotteryid={{$lotteryid}}",
+                data: "ids="+ar,
+                dataType:'json',
+                cache:false,
+                success: function(msg){
+                    if(msg.error_code==0){
+                        window.location.reload();
+                        //$(obj).parent().parent().remove();
+                    }else{
+                        //console.log(msg.error_msg)
+                    }
+                    
+                },
+                error:function(){alert('error')},
+                timeout:5000
+            });
+        }
+    });
+
+    $("#delall").click(function(){
+        f=false;
+        $.each($("input[type=checkbox][name=checkbox]:checked"),function(k,v){
+            f=true;
+        });
+        if(f){
+            showmodelbox('#myModal','您确认要删除这些奖品吗？<br>此操作无法撤销。',1);
+        }else{
+            showmodelbox('#myModal','请选择要删除的记录',2);
+        }
+    });
+
+    $("a[name=delbtn]").click(function(){
+        id=$(this).attr('data');
+        showmodelbox('#myModal','您确认要删除该奖品吗？<br>此操作无法撤销。',3);
+        $("#id_yes2").unbind('click').click(function(){
+                $.ajax({
+                    type: "GET",
+                    url: "/lottery/rewards?do=del&lotteryid={{$lotteryid}}",
+                    data: "ids="+id,
+                    dataType:'json',
+                    cache:false,
+                    success: function(msg){
+                        if(msg.error_code==0){
+                            window.location.reload();
+                        }
+                    },
+                    error:function(){},
+                    timeout:5000
+                });
+        });
+    });
+
+    $("a[name=userinfo]").click(function(){
+        rewardid=$(this).attr('data');
+        rate=$(this).parent().parent().find("[name=tagrate]:first").html();
+        $.ajax({
+            type: "GET",
+            url: "/lottery/rewards?do=ajax_getrewarddetail&id="+rewardid,
+            data: "",
+            dataType:'json',
+            cache:false,
+            success: function(msg){
+                if(msg.error_code=='0'){
+                    $("#rdname").html(msg.data.fdName);
+                    $("#rddes").html(msg.data.fdDescription);
+                    $("#rdlevel").html(msg.data.fdLevel);
+                    if(msg.data.fdType==1){
+                        $("#rdtype").html("电子券");
+                    }else if(msg.data.fdType==0){
+                        $("#rdtype").html("实物奖");
+                    }
+                    
+                    $("#rdnum").html(msg.data.fdOriginNum);
+                    $("#rdintro").html(msg.data.fdIntroduce);
+                    $("#rdsurport").html(msg.data.fdSupport);
+                    $("#rdrate").html(rate);
+                    use=parseInt(msg.data.fdOriginNum)-parseInt(msg.data.fdNum);
+                    $("#rduse").html(use);
+                    if(msg.data.fdDelivery==1){
+                        $("#rddelivery").html("是");
+                    }else if(msg.data.fdDelivery==0){
+                        $("#rddelivery").html("否");
+                    }
+                    $("#rdlogo").html('<a href="../var/uploads/'+msg.data.fdLogo+'" target="_blank">查看图片</a>');
+                    $('#detail').modal('toggle');
+                }
+                
+            },
+            error:function(){alert('error')},
+            timeout:5000
+        });
+    });
+});
+{{/if}}
+
+{{if $do eq 'add' || $do eq 'edit'}}
+tmpi=0;
+$("#additem").click(function(){
+    str='<div class="itembox form-group form-group-power"><label class="form-label form-group-left">SN:</label> <input type="text" name="item[a_'+tmpi+'][fdSN]" style="width:80%" class="form-power-right form-control require" /> <button type="button" class="close delitm" aria-label="Close"><span aria-hidden="true">&times;</span></button></div><div class="clearfix"></div>';
+    $("#additem").after(str);
+    tmpi++;
+    //location="#anchor";
+});
+
+$("#cnt").on('click','.delitm',function(){
+    obj=$(this);
+    if(obj.attr("data")!=undefined){//调用ajax
+        id=obj.attr("data");
+        var ret;
+        ret=confirm("确认要删除吗？");
+        if(ret!=false){
+            $.ajax({
+                type: "GET",
+                url: "/lottery/rewards?do=delitem",
+                data: "ids="+id+"&rewardid={{$row.id}}",
+                dataType:'json',
+                cache:false,
+                success: function(msg){
+                    if(msg.error_code==0){
+                        obj.parent().remove();
+                    }else{
+                        alert(msg.error_msg)
+                    }
+                    
+                },
+                error:function(){alert('error')},
+                timeout:5000
+            })
+        }
+    }else{
+        obj.parent().remove();
+    }
+});
+
+$("#stbtn").click(function(){
+    validatetext_ex($("#fdLevel"),'sfdlevel','请填写奖项','input-error');
+    validatetext_ex($("#fdName"),'sfdname','请填写奖品','input-error');
+    formchecker.check("#f1");
+    if(!formchecker.flag){
+        //$(".msg_font").html("请填写正确的内容");
+        //showmsgbox("msgbox");
+        return false;
+    }
+    $("#f1").submit();
+});
+
+$("#f1").on('focus','.error',function(){
+    $(this).removeClass("error");
+});
+
+$("#fdType").change(function(){
+    v=$(this).val();
+    if(v==1){//电子券
+        $("#additem").removeClass("hidden");
+        $("#shownum").hide();
+        $("#fdNum").removeClass("require");
+        $("#fdNum").removeClass("checknumber");
+        $("#ecoupon").removeClass("hidden");
+    }else{//奖品池
+        $("#additem").addClass("hidden");
+        $("#cnt .itembox").remove();
+        $("#fdNum").addClass("require");
+        $("#fdNum").addClass("checknumber");
+        $("#shownum").show();
+        $("#ecoupon").addClass("hidden");
+    }
+});
+
+    
+    $("#cnt").on('blur',"input[name^=item]",function(){
+        obj=$(this);
+        $("input[name^=item]").each(function(k,v){
+            if(obj.attr('name')!=$(v).attr('name') && obj.val()==$(v).val() && obj.val()!=""){
+                obj.val('');
+                obj.focus();
+                $(".msg_font").html("该SN已经存在");
+                showmsgbox("msgbox");
+            }
+        });
+    });
+
+$('#fdLogo').change(function() {
+    var file = this.files[0];
+    var r = new FileReader();
+    r.readAsDataURL(file);
+    $(r).load(function() {
+        $('#photo').html('<img style="height: 200px;max-height: 200px;position: absolute" src="' + this.result + '" alt="" />');
+        $("#pic").val(this.result);
+    })
+});
+function validateNum_ex(obj,htmlname,htmlclass){
+    num=$(obj).val();
+    if(parseInt(num)<=0){
+        $(obj).addClass("error");
+        $("#"+htmlname).addClass('input-error').html('请填写一个大于0的整数');
+    }
+    ret= validateNum($(obj).val(),htmlname,htmlclass);
+    if(!ret){
+        $(obj).addClass("error");
+    }
+}
+
+function validatetext_ex(obj,target,txt,cls){
+    ret=validateText($(obj).val(),target,txt,cls);
+    if(!ret){
+        $(obj).addClass("error");
+    }
+}
+{{/if}}
+
+</script>

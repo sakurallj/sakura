@@ -1,0 +1,325 @@
+<link rel="stylesheet" type="text/css" href="./{{$user_dir_theme}}/js/bootstrap-submenu-2.0.4/css/bootstrap-submenu.css">
+<link rel="stylesheet" type="text/css" href="./{{$user_dir_theme}}/css/bootstrap-treeview.css">
+<!--正文-->
+<div class="content">
+    <div class="header">
+        <h1 class="page-title">类别列表</h1>
+        <ul class="breadcrumb">
+            <li><a href="/event/index">类别管理</a></li>
+            <li class="active">类别列表</li>
+        </ul>
+    </div>
+    <div class="main-content">
+        <div class="btn-toolbar list-toolbar pull-left">
+            <button class="btn btn-success start" data-type="top_btn">启用</button>
+            <button class="btn btn-default stop" data-type="top_btn">停用</button>
+            <button class="btn btn-danger del" data-dismiss="modal" data-type="top_btn">删除</button>
+            <div class="dropdown pull-left" id="columns_menu">
+                <button class="btn btn-default dropdown-toggle bs_down_bt" type="button" data-toggle="dropdown" data-submenu="" aria-expanded="false">
+                    <span id="bs_down_bt_text">类型查看</span> <span class="caret pull-right"></span>
+                </button>
+            </div>
+            <div class=" search form-group-select">
+                <button class="btn btn-info" id="search_btn">搜索</button>
+                <!--{{if $smarty.session.partnerid == 1}}-->
+                <!--<div class="dropdown form-group-right">-->
+                    <!--<select class="dropdown-toggle form-select-character" id="search_partner">-->
+                        <!--<option value="">选择电台</option>-->
+                        <!--{{foreach from=$partners name=nar item=partner}}-->
+                        <!--<option value="{{$partner.id}}" {{if $partnerid==$partner.id}}selected{{/if}}>-->
+                            <!--{{$partner.fdName}}-->
+                        <!--</option>-->
+                        <!--{{/foreach}}-->
+                    <!--</select>-->
+                <!--</div>-->
+                <!--{{/if}}-->
+                <div class="dropdown form-group-right">
+                    <select class="dropdown-toggle form-select-character" id="search_hierarchy">
+                        <option value="">选择类别层级</option>
+                        <option value="0"  {{if "0"==$hierarchy}}selected{{/if}}>所有层级</option>
+                        {{foreach from=$allHierarchy name=allHierarchy item=hier}}
+                        <option value="{{$hier}}" {{if $hier==$hierarchy}}selected{{/if}}>
+                            {{$hier}}级
+                        </option>
+                        {{/foreach}}
+                    </select>
+                </div>
+
+                <input class="form-control" value="{{$name}}" type="text" placeholder="输入类别或子类别名称" id="search_name">
+            </div>
+        </div>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th class="table-checkbox"><input type="checkbox" value="-1"></th>
+                    <th class="table-title">类别名称</th>
+                    <!--{{if $smarty.session.partnerid == 1}}-->
+                    <!--<th>所属电台</th>-->
+                    <!--{{/if}}-->
+                    <th>类别层级</th>
+                    <th>添加时间</th>
+                    <th>状态</th>
+                    <th style="width: 3.5em;">操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{foreach from=$ar name=nar item=row}}
+                <tr>
+                    <td><input type="checkbox" value="{{$row.id}}"></td>
+                    <td>
+                        <a data-toggle="modal" class="col_tree" data-id="{{$row.id}}"
+                           data-target="#result" href="javascritp:;" >
+                        {{$row.fdName}}</a>
+                    </td>
+                    {{if $smarty.session.partnerid == 1}}
+                    <!--<td>{{$row.partnerName}}</td>-->
+                    {{/if}}
+                    <td>{{$row.fdHierarchy}}</td>
+                    <td>{{$row.fdCreated|date_format:'%Y-%m-%d %H:%M:%S'}}</td>
+                    <td>
+                        {{if $row.fdStatus=="stop"}}
+                        <span class="status-stop">停用</span>
+                        {{else}}
+                        <span class="status-work">启用</span>
+                        {{/if}}
+                    </td>
+                    <td>
+                        <a href="/product/columns?do=edit&id={{$row.id}}" data-id="{{$row.id}}" title="编辑"><i class="icon-pencil"></i></a>
+                        <a  href="javascript:;" data-id="{{$row.id}}" class="del" title="删除">
+                            <i class="icon-trash"></i>
+                        </a>
+                    </td>
+                </tr>
+                <tr class="bt-td-tree" style="display: none;">
+                    <!--<td></td>-->
+                    <td colspan="6"  style="border-top:0">
+                        <div id="tree_{{$row.id}}"  >
+
+                        </div>
+                    </td>
+                </tr>
+                {{/foreach}}
+            </tbody>
+        </table>
+        <div class="clearfix"></div>
+        <div class="page" style="text-align:center">
+            {{$sy}}
+        </div>
+        <footer>
+            <hr>
+            <p class="pull-right">© 2016 <a href="" target="_blank">广州涛略科技有限公司</a></p>
+        </footer>
+    </div>
+</div>
+<script type="text/javascript" src="./{{$user_dir_theme}}/js/bootstrap-submenu-2.0.4/js/bootstrap-submenu.min.js"></script>
+<script type="text/javascript" src="./{{$user_dir_theme}}/js/bootstrap-treeview.js"></script>
+<script>
+    (function($){
+        $(".col_tree").bind("click",function(){
+            var a = $(this);
+            var tr = a.parent().parent().next();
+            var display = tr.css("display");
+            if(display!="none"){
+                tr.toggle("normal");
+                return;
+            }
+            var id = a.data("id");
+            $(".bt-td-tree").hide();
+            if(id){
+                $.ajax({
+                    type: "GET",
+                    url: "/product/columns?do=getcolumnsjson",
+                    data: {
+                        id:id
+                    },
+                    cache:false
+                }).done(function(msg){
+                    var t = $("#tree_"+id);
+                    t.treeview({
+                        levels: 1,
+                        data: msg,
+                        selectedBackColor:"#F5F5F5",
+                        selectedColor:"#000"
+                    });
+                    t.parent().parent().toggle("normal",function(){
+//                        t.slideToggle("slow");
+                    });
+                });
+            }
+        });
+        var columnsJsonStr = '{{$columnsJson}}';
+        var menu = '';
+        if(columnsJsonStr){
+            var columnsJson = JSON.parse(columnsJsonStr);
+            menu +='<ul class="dropdown-menu  bs_down_menu">';
+            menu += '<li>';
+            menu += '<a tabindex="0" class="bs_menu_a"  href="javascript:;" >选择类型</a>';
+            for(var column in columnsJson){
+                menu+=getColumnsMenu(columnsJson[column]);
+            }
+            menu+='</ul>';
+            $("#columns_menu").append(menu);
+        }
+        $("#columns_menu").submenupicker();
+        function getColumnsMenu(columnJson){
+            var menu = '';
+            if(columnJson.nodes&&columnJson.nodes.vm){
+                delete columnJson.nodes.vm;//删除虚拟节点
+            }
+            if(columnJson.nodes&&!isEmptyNode(columnJson.nodes)){
+                menu = '<li class="dropdown-submenu">';
+                menu += '<a tabindex="0" class="bs_menu_a" href="javascript:;"  data-uid="'+columnJson.uid+'" >'+columnJson.text+'</a>';
+                menu+='<ul class="dropdown-menu">';
+                for(var column in columnJson.nodes){
+                    menu+=getColumnsMenu(columnJson.nodes[column]);
+                }
+                menu+='</ul>';
+            }
+            else{
+                menu = '<li>';
+                menu += '<a tabindex="0" class="bs_menu_a"  href="javascript:;" data-uid="'+columnJson.uid+'">'+columnJson.text+'</a>';
+            }
+            menu+="</li>";
+            return menu;
+        }
+        function isEmptyNode(nodes){
+            for(var node in nodes){
+                if(node != "vm"){
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        $(".del").click(function(){
+            var ar=new Array();
+            var type = $(this).data("type");
+            if(type=="top_btn"){
+                $.each($("input[type=checkbox]:checked"),function(k,v){
+                    ar[k]=v.value;
+                });
+            }
+            else{
+                if(ar.length==0){
+                    ar[0]=$(this).data("id");
+                }
+            }
+            if(ar.length>0){
+                modalmsg.confirm("确定删除吗？",function(){
+                    $.ajax({
+                        type: "GET",
+                        url: "/product/columns?do=del",
+                        data: {
+                            ids:ar
+                        },
+                        cache:false
+                    }).done(function(msg){
+                        var msgJson = JSON.parse(msg);
+                        if(msgJson[0]==0){
+                            window.location.reload();
+                        }else{
+                            modalmsg.alert({
+                                ctrls : {
+                                    ok: {
+                                        callback: function(){window.location.reload();}
+                                    }
+                                },
+                                msg:msgJson[1]
+                            });
+                        }
+                    });
+                });
+
+            }
+            else{
+                modalmsg.alert("请选择要删除的类别");
+            }
+        });
+        $(".stop").bind("click",function(){
+            var ar=new Array();
+            var type = $(this).data("type");
+            if(type=="top_btn"){
+                $.each($("input[type=checkbox]:checked"),function(k,v){
+                    ar[k]=v.value;
+                });
+            }
+            else{
+                if(ar.length==0){
+                    ar[0]=$(this).data("id");
+                }
+            }
+            if(ar.length>0){
+                modalmsg.confirm("确定停用吗？",function(){
+                    $.ajax({
+                        type: "GET",
+                        url: "/product/columns?do=stop",
+                        data: {
+                            ids:ar
+                        },
+                        cache:false
+                    }).done(function(msg){
+                        var msgJson = JSON.parse(msg);
+                        if(msgJson[0]==0){
+                            window.location.reload();
+                        }else{
+                            modalmsg.alert({
+                                ctrls : {
+                                    ok: {
+                                        callback: function(){window.location.reload();}
+                                    }
+                                },
+                                msg:msgJson[1]
+                            });
+                        }
+                    });
+                });
+            }
+            else{
+                modalmsg.alert("请选择要停用的类别");
+            }
+        });
+        $(".start").bind("click",function(){
+            var ar=new Array();
+            var type = $(this).data("type");
+            if(type=="top_btn"){
+                $.each($("input[type=checkbox]:checked"),function(k,v){
+                    ar[k]=v.value;
+                });
+            }
+            else{
+                if(ar.length==0){
+                    ar[0]=$(this).data("id");
+                }
+            }
+
+            if(ar.length>0){
+                modalmsg.confirm("确定启用吗？",function(){
+                    $.ajax({
+                        type: "GET",
+                        url: "/product/columns?do=start",
+                        data: {
+                            ids:ar
+                        },
+                        cache:false
+                    }).done(function(msg){
+                        var msgJson = JSON.parse(msg);
+                        if(msgJson[0]==0){
+                            window.location.reload();
+                        }else{
+                            modalmsg.alert(msgJson[1])
+                        }
+                    });
+                });
+            }
+            else{
+                modalmsg.alert("请选择要启用的类别");
+            }
+
+        });
+        $("#search_btn").bind("click",function(){
+            var name = $("#search_name").val();
+            var hierarchy = $("#search_hierarchy").val();
+            window.location.href='/product/columns?name='+name+'&hierarchy='+hierarchy;
+        });
+    })(window.jQuery);
+</script>

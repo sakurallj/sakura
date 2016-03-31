@@ -1,0 +1,567 @@
+{{if $do eq 'manage'}}
+<div class="modal fade"  id="result" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">用户信息</h4>
+            </div>
+            <div class="modal-body">
+                <div class="modal-group">
+                    <span class="modal-group-left">用户名:</span>
+                    <span class="modal-group-right" id="login"></span>
+                </div>
+                <div class="clearfix"></div>
+                <div class="modal-group">
+                    <span class="modal-group-left">真实名称:</span>
+                    <span class="modal-group-right" id="realname"></span>
+                </div>
+                <div class="clearfix"></div>
+                <div class="modal-group">
+                    <span class="modal-group-left">联系电话:</span>
+                    <span class="modal-group-right" id="phone"></span>
+                </div>
+                <div class="clearfix"></div>
+                <div class="modal-group">
+                    <span class="modal-group-left">所属电台:</span>
+                    <span class="modal-group-right" id="partnername"></span>
+                </div>
+                <div class="clearfix"></div>
+                <div class="modal-group">
+                    <span class="modal-group-left">所属角色:</span>
+                    <span class="modal-group-right" id="rolename"></span>
+                </div>
+                <div class="clearfix"></div>
+                <div class="modal-group">
+                    <span class="modal-group-left">最后登录时间:</span>
+                    <span class="modal-group-right" id="lastlogin"></span>
+                </div>
+                <div class="clearfix"></div>
+                <div class="modal-group">
+                    <span class="modal-group-left">最后登录IP:</span>
+                    <span class="modal-group-right" id="ip"></span>
+                </div>
+                <div class="clearfix"></div>
+                <div class="modal-group">
+                    <span class="modal-group-left">添加时间:</span>
+                    <span class="modal-group-right" id="createtime"></span>
+                </div>
+                <div class="clearfix"></div>
+                <div class="modal-group">
+                    <span class="modal-group-left">状态:</span>
+                    <span class="modal-group-right" id="status"></span>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal">确定</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<!--删除确认-->
+{{include file="confirmbox.html"}}
+<div class="content">
+    <div class="header">
+        <h1 class="page-title">用户列表</h1>
+        <ul class="breadcrumb">
+            <li><a href="">用户管理</a> </li>
+            <li class="active">用户列表</li>
+        </ul>
+    </div>
+    <div class="main-content">
+        <div class="btn-toolbar list-toolbar pull-left">
+            <button class="btn btn-success" onclick="setuserstatus(0)">启用</button>
+            <button class="btn btn-default" onclick="setuserstatus(1)">停用</button>
+            <a class="btn btn-danger" href="#myModal" id="delall">删除</a>
+
+            <form method="get">
+            <div class="  search form-group-select">
+                <button class="btn btn-info">搜索</button>
+                <input type="hidden" value="1" name="ye">
+                {{if $smarty.session.partnerid eq '1'}}
+                <div class="dropdown form-group-right">
+                    <select class="dropdown-toggle form-select-character" name="keyword1">
+                        <option value="">选择电台</option>
+                        {{foreach from=$partners name=npartner item=ipartner}}
+                        <option value="{{$ipartner.id}}" {{if $search eq $ipartner.id}}selected='selected'{{/if}}>{{$ipartner.fdName}}</option>
+                        {{/foreach}}
+                    </select>  
+                </div>
+                {{/if}}
+                <input class="form-control" type="text" name="keyword2" value="{{$search2}}" placeholder="search">
+            </div>
+            </form>
+        </div>
+        <table class="table">
+            <thead>
+            <tr>
+                <th class="table-checkbox"><input type="checkbox"  /></th>
+                <th class="table-title">用户名称</th>
+                <th>角色</th>
+                <th>所属电台</th>
+                <th>最后登录时间</th>
+                <th>最后登录IP</th>
+                <th>添加时间</th>
+                <th class="table-status">状态</th>
+                <th style="width: 3.5em;">操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            {{foreach from=$ar name=nar item=row}}
+            <tr>
+                <td><input type="checkbox" name="checkbox" value="{{$row.id}}" /></td>
+                <td><a name="userinfo" data="{{$row.id}}" href="#result">{{$row.fdLogin}}</a></td>
+                <td>{{$row.rolename}}</td>
+                <td>{{$row.partnername}}</td>
+                <td>{{$row.fdLastlogin}}</td>
+                <td>{{$row.fdIP}}</td>
+                <td>{{$row.fdCreate}}</td>
+                <td>{{if $row.fdDisabled eq '0'}}<span class="status-work">正常</span>{{else}}<span class="status-stop">停用</span>{{/if}}</td>
+                <td>
+                    <a href="/admin/operator?do=edit&id={{$row.id}}&ye={{$ye}}&keyword2={{$search2}}{{if $smarty.session.partnerid eq '1'}}&keyword1={{$search}}{{/if}}"><i class="icon-pencil"></i></a>
+                    <a href="#myModal" role="button" data="{{$row.id}}" name="delbtn"><i class="icon-trash"></i></a>
+                </td>
+            </tr>
+            {{/foreach}}
+            </tbody>
+        </table>
+        <div class="clearfix"></div>
+        <div class="page">
+            {{$sy}}
+        </div>
+        <footer>
+            <hr>
+            <p class="pull-right">© 2016 <a href="" target="_blank">广州涛略科技有限公司</a></p>
+        </footer>
+    </div>
+</div>
+{{include file="fade.html"}}
+{{/if}}
+
+{{if $do eq 'add' || $do eq 'edit'}}
+{{include file="confirmbox.html"}}
+<div class="content">
+    <div class="header">
+        <h1 class="page-title">{{if $do eq 'add'}}新建用户{{elseif $do eq 'edit'}}编辑用户{{/if}}</h1>
+        <ul class="breadcrumb">
+            <li><a href="">用户管理</a> </li>
+            <li class="active">{{if $do eq 'add'}}新建用户{{elseif $do eq 'edit'}}编辑用户{{/if}}</li>
+        </ul>
+    </div>
+    <div class="main-content">
+        <form name="f1" id="f1"  method="post">
+            <div class="form-group">
+                <label class="form-label form-group-left" for="form-title">用户名<strong class="must"> *</strong></label>
+                {{if $do eq 'edit'}}
+                <input type="hidden" name="id" id="id" value="{{$row.id}}"/>
+                <label class="form-label">{{$row.fdLogin}}</label>
+                {{elseif $do eq 'add'}}
+                <input type="text" class="form-control form-group-right require" name="fdLogin" id="fdLogin" placeholder="由字母、数字或下划线组成，且长度为6~16个字符" onBlur="validateUser_ex(this,'slogin','input-error','fdLogin=')"><div id="slogin" class="input-error"></div>
+                {{/if}}
+            </div>
+            <div class="clearfix"></div>
+
+            {{if $do eq 'edit'}}
+            <div class="form-group">
+                <label class="form-label form-group-left" for="">密码</label>
+                <input type="password" class="form-control form-group-right require" onblur="validatep1()" onfocus="clearme('spwd','')" name="fdPassword" id="fdPassword" placeholder="6~16个字符，区分大小写"><div id="spwd" class="input-error"></div>
+            </div>
+            <div class="clearfix"></div>
+            <div class="form-group">
+                <label class="form-label form-group-left" for="">确认密码</label>
+                <input type="password" class="form-control form-group-right require" onblur="validatep2()" onfocus="clearme('spwd2','')" name="fdPassword2" id="fdPassword2" placeholder=""><div id="spwd2" class="input-error"></div>
+            </div>
+            <div class="clearfix"></div>
+            {{else}}
+            <div class="form-group">
+                <label class="form-label form-group-left" for="">密码<strong class="must"> *</strong></label>
+                <input type="password" class="form-control form-group-right require" onblur="validatep1()" onfocus="clearme('spwd','')" name="fdPassword" id="fdPassword" placeholder="6~16个字符，区分大小写"><div id="spwd" class="input-error"></div>
+            </div>
+            <div class="clearfix"></div>
+            <div class="form-group">
+                <label class="form-label form-group-left" for="">确认密码<strong class="must"> *</strong></label>
+                <input type="password" class="form-control form-group-right require" onblur="validatep2()" onfocus="clearme('spwd2','')" name="fdPassword2" id="fdPassword2" placeholder=""><div id="spwd2" class="input-error"></div>
+            </div>
+            <div class="clearfix"></div>
+            {{/if}}
+
+
+            <div class="form-group">
+                <label class="form-label form-group-left" for="">真实姓名</label>
+                <input type="text" class="form-control form-group-right" id="fdName" name="fdName" value="{{$row.fdName}}"><div class="input-error"></div>
+            </div>
+            <div class="clearfix"></div>
+            <div class="form-group">
+                <label class="form-label form-group-left" for="">联系电话</label>
+                <input type="text" class="form-control form-group-right" id="fdPhone" name="fdPhone" value="{{$row.fdPhone}}"><div  class="input-error"></div>
+            </div>
+            <div class="clearfix"></div>
+
+            {{if $smarty.session.partnerid eq '1'}}
+            <div class="form-group  form-group-select">
+                <label class="form-label form-group-left" for="">所属电台{{if $do eq 'add'}}<strong class="must"> *</strong>{{/if}}</label>
+                {{if $do eq 'edit'}}
+                {{foreach from=$partners name=npartner item=ipartner}}
+                    {{if $row.fdPartnerID eq $ipartner.id}}<label class="form-label form-group-right">{{$ipartner.fdName}}</label>{{/if}}
+                    {{/foreach}}
+                {{else}}
+                <select class="dropdown-toggle form-select-character form-group-right require" name="fdPartnerID" id="fdPartnerID" onblur="validatetext_ex(this,'spartnerid','请选择电台','input-error')">
+                    <option value="">请选择</option>
+                    {{foreach from=$partners name=npartner item=ipartner}}
+                    <option value="{{$ipartner.id}}" {{if $row.fdPartnerID eq $ipartner.id}}selected="selected"{{/if}}>{{$ipartner.fdName}}</option>
+                    {{/foreach}}
+                </select><div id="spartnerid" class="input-error"></div>
+                {{/if}}
+                
+            </div>
+            <div class="clearfix"></div>
+            {{/if}}
+
+            <div class="form-group  form-group-select">
+                <label class="form-label form-group-left" for="">所属角色<strong class="must"> *</strong></label>
+                <select name="fdRoleID" id="fdRoleID" class="dropdown-toggle form-select-character form-group-right require" onblur="validatetext_ex(this,'sroleid','请选择角色','input-error')">
+                        <option value="">请选择</option>
+                        {{foreach from=$role name=nrole item=irole}}
+                        <option value="{{$irole.id}}" {{if $irole.id eq $row.fdRoleID}}selected='selected'{{/if}}>{{$irole.fdName}}</option>
+                        {{/foreach}}
+                </select><div id="sroleid" class="input-error"></div>
+            </div>
+            <div class="clearfix"></div>
+        </form>
+        <div class="clearfix"></div>
+        <div class="finish">
+            <button class="btn btn-success" id="stbtn">完成</button>
+            {{if $do eq 'edit'}}<input onclick="window.location.href = window.document.referrer;" type="button" class="btn-default btn" value="取消"/>{{/if}}
+        </div>
+        <footer>
+            <hr>
+            <p class="pull-right">© 2016 <a href="" target="_blank">广州涛略科技有限公司</a></p>
+        </footer>
+    </div>
+</div>
+{{/if}}
+
+{{if $do eq 'defaultoperator'}}
+
+{{/if}}
+<script src="./{{$user_dir_theme}}/js/md5.js"></script>
+<script>
+{{if $do eq 'manage'}}
+$(document).ready(function(){
+    $("#id_yes").click(function(){
+        obj=$(this);
+        var ar=new Array();
+        $.each($("input[type=checkbox]:checked"),function(k,v){
+            ar[k]=v.value
+        });
+        if(ar.length>0){
+            $.ajax({
+                type: "GET",
+                url: "/admin/operator?do=del",
+                data: "ids="+ar,
+                dataType:'json',
+                cache:false,
+                success: function(msg){
+                    if(msg.error_code==0){
+                        window.location.reload();
+                        //$(obj).parent().parent().remove();
+                    }else{
+                        setTimeout("delayshow('"+msg.error_msg+"')",500);
+                    }
+                    
+                },
+                error:function(){alert('error')},
+                timeout:5000
+            });
+        }
+    });
+    $("a[name=delbtn]").click(function(){
+        id=$(this).attr('data');
+        showmodelbox('#myModal','您确认要删除该用户吗？<br>此操作无法撤销。',3);
+        $("#id_yes2").unbind('click').click(function(){
+                $.ajax({
+                    type: "GET",
+                    url: "/admin/operator?do=del",
+                    data: "ids="+id,
+                    dataType:'json',
+                    cache:false,
+                    success: function(msg){
+                        if(msg.error_code==0){
+                            window.location.reload();
+                        }else{
+                            setTimeout("delayshow('"+msg.error_msg+"')",500);
+                        }
+                        
+                    },
+                    error:function(){alert('error')},
+                    timeout:5000
+                });
+        });
+    });
+
+    $("#delall").click(function(){
+        f=false;
+        $.each($("input[type=checkbox][name=checkbox]:checked"),function(k,v){
+            f=true;
+        });
+        if(f){
+            showmodelbox('#myModal','您确认要删除这些用户吗？<br>此操作无法撤销。',1);
+        }else{
+            showmodelbox('#myModal','请选择要删除的记录',2);
+        }
+    });
+
+    $("a[name=userinfo]").click(function(){
+        userid=$(this).attr('data')
+        $.ajax({
+            type: "GET",
+            url: "/admin/operator?do=ajax_getoperator&id="+userid,
+            data: "",
+            dataType:'json',
+            cache:false,
+            success: function(msg){
+                $("#login").html(msg.fdLogin);
+                $("#realname").html(msg.fdName);
+                $("#phone").html(msg.fdPhone);
+                $("#partnername").html(msg.partnername);
+                $("#rolename").html(msg.rolename);
+                $("#lastlogin").html(msg.fdLastlogin);
+                $("#ip").html(msg.fdIP);
+                $("#createtime").html(msg.fdCreate);
+                if(msg.fdDisabled==0){
+                    $("#status").html('<span class="status-work">正常</span>');
+                }else{
+                    $("#status").html('<span class="status-stop">停用</span>');
+                }
+                $('#result').modal('toggle');
+            },
+            error:function(){alert('error')},
+            timeout:5000
+        });
+        
+    });
+});
+
+function delayshow(msg){
+        showmodelbox('#myModal',msg,2);
+}
+
+function setuserstatus(status){
+    var ar=new Array();
+    $.each($("input[type=checkbox][name=checkbox]:checked"),function(k,v){
+        ar[k]=v.value
+    });
+    if(ar.length>0){
+        if(status==0){
+            $("#id_yes3").html("启用");
+            showmodelbox('#myModal','您确认要启用这些用户吗？',4);
+        }else{
+            $("#id_yes3").html("停用");
+            showmodelbox('#myModal','您确认要停用这些用户吗？',4);
+        }
+    }else{
+        showmodelbox('#myModal','请选择要更改状态的记录',2);
+    }
+    $("#id_yes3").unbind('click').click(function(){
+        $.ajax({
+            type: "GET",
+            url: "/admin/operator?do=ajax_setoperatorstatus",
+            data: "ids="+ar+"&status="+status,
+            dataType:'json',
+            cache:false,
+            success: function(msg){
+                if(msg.error_code==0){
+                    window.location.reload();
+                }else{
+                    $(".msg_font").html(msg.error_msg);
+                    showmsgbox("msgbox");
+                    console.log(msg.error_msg)
+                }
+                
+            },
+            error:function(){alert('error')},
+            timeout:5000
+        });
+    });
+}
+{{/if}}
+
+{{if $do eq 'edit'}}
+$("#stbtn").click(function(){
+	pwd1=$("#fdPassword").val();
+	pwd2=$("#fdPassword2").val();
+	if(pwd1=='' && pwd2==''){
+        rt1=rt2=true;
+	}else{
+        rt1=validatePWD(pwd1,'spwd','input-error');
+        if(rt1==false){
+            $("#fdPassword").addClass("error");
+            return false;
+        }
+        rt2=validatePWD2(pwd1,pwd2,'spwd2','input-error');
+        if(rt2==false){
+            $("#fdPassword2").addClass("error");
+            return false;
+        } 
+    }
+    rt3=validateText($('#fdRoleID').val(),'sroleid','请选择角色','input-error');
+    if(rt3==false){
+        $("#fdRoleID").addClass("error");
+    }
+	if(rt1&&rt2&&rt3){
+        if(pwd1!="" && pwd2!=""){
+            pwd1=hex_md5(pwd1);
+            pwd2=hex_md5(pwd2);
+            $("#fdPassword").val(pwd1);
+            $("#fdPassword2").val(pwd2);
+        }
+		$("#f1").submit();
+        //$("#id_yes").html("确认");
+        //showmodelbox('#myModal','您确认要提交吗？',1);
+	}
+	//validateUser(val,htmlname,htmlclass,evalstr)
+	return false;
+})
+{{/if}}
+
+{{if $do eq 'add' || $do eq 'defaultoperator'}}
+a1=false;
+function aj(dat,shw){
+	var tmp;
+	tmp=$.ajax({
+	type: "POST",
+	url: "/admin/ckuser",
+	data: dat,
+	success: function(msg){
+		str=''
+		if(msg=='u'){msg='用户名已经存在';a1=false}else{a1=true;}
+			$("#"+shw).html(msg);
+	}//如果调用php成功 
+	});
+}
+$("#stbtn").click(function(){
+	login=$("#fdLogin").val();
+	pwd1=$("#fdPassword").val();
+	pwd2=$("#fdPassword2").val();
+	validateUser(login,'slogin','input-error','fdLogin=');
+    if($("#fdLogin").val()==""){
+        $("#fdLogin").addClass("error");
+        a1=false;
+    }
+	a2=validatePWD(pwd1,'spwd','input-error');
+	a3=validatePWD2(pwd1,pwd2,'spwd2','input-error');
+    if(a1==false){
+        $("#fdLogin").addClass("error");
+    }
+    if(a2==false){
+        $("#fdPassword").addClass("error");
+    }
+    if(a3==false){
+        $("#fdPassword2").addClass("error");
+    }
+    a4=validateText($('#fdRoleID').val(),'sroleid','请选择角色','input-error');
+    if(a4==false){
+        $("#fdRoleID").addClass("error");
+    }
+    if($("#fdPartnerID").length>0){//有partner选项
+        a5=validateText($('#fdPartnerID').val(),'spartnerid','请选择电台','input-error');
+        if(a5==false){
+            $("#fdPartnerID").addClass("error");
+            return false;
+        }
+    }
+	if(a1&&a2&&a3&&a4){
+        if(pwd1!="" && pwd2!=""){
+            pwd1=hex_md5(pwd1);
+            pwd2=hex_md5(pwd2);
+            $("#fdPassword").val(pwd1);
+            $("#fdPassword2").val(pwd2);
+        }
+		$("#f1").submit();
+        //$("#id_yes").html("确认");
+        //showmodelbox('#myModal','您确认要提交吗？',1);
+	}
+	return false;
+});
+{{/if}}
+
+{{if $do eq 'add' || $do eq 'edit'}}
+// $("#id_yes").click(function(){
+//     $("#f1").submit();
+// });
+function validateUser_ex(obj,tar,cls,str){
+   rt=validateUser(obj.value,tar,cls,str);
+   if(rt==false){
+        $(obj).addClass("error");
+   }
+}
+
+function validatep1(){
+    password1=$('#fdPassword').val();
+    {{if $do eq 'edit'}}
+        if(password1!=''){
+            rt=validatePWD(password1,'spwd','input-error');
+            if(!rt){
+                $('#fdPassword').addClass("error");
+            }
+        }
+    {{else}}
+        rt=validatePWD(password1,'spwd','input-error');
+        if(!rt){
+            $('#fdPassword').addClass("error");
+        }
+    {{/if}} 
+}
+function validatep2(){
+    password1=$('#fdPassword').val();
+    password2=$('#fdPassword2').val();
+    {{if $do eq 'edit'}}
+        if(password1!="" || password2!=""){
+            rt=validatePWD2(password1,password2,'spwd2','input-error');
+            if(!rt){
+                $('#fdPassword2').addClass("error");
+            }
+        }
+    {{else}}
+        rt=validatePWD2(password1,password2,'spwd2','input-error');
+        if(!rt){
+            $('#fdPassword2').addClass("error");
+        }
+    {{/if}}
+}
+
+$("#f1").on('focus','.error',function(){
+    $(this).removeClass("error");
+    $(this).next(".input-error").html('');
+});
+
+{{/if}}
+
+{{if  $smarty.session.partnerid eq '1' && ($do eq 'add' || $do eq 'edit')}}
+    $("#fdPartnerID").change(function(){
+        partnerid=$(this).val();
+        str="";
+        $.ajax({
+            type: "GET",
+            url: "/admin/operator?do=ajax_getrolelist",
+            data: "partnerid="+partnerid,
+            dataType:"json",
+            success: function(msg){
+                for(i in msg){
+                    str=str+'<option value="'+msg[i].id+'">'+msg[i].fdName+'</option>';
+                }
+                $("#fdRoleID").html(str);
+            },
+            error:function(){alert('error')},
+            timeout:5000
+        })
+    });
+{{/if}}
+
+function validatetext_ex(obj,target,txt,cls){
+    ret=validateText($(obj).val(),target,txt,cls);
+    if(!ret){
+        $(obj).addClass("error");
+    }
+}
+</script>

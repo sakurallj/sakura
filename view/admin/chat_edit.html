@@ -1,0 +1,198 @@
+﻿<!--正文-->
+<div class="content">
+	<div class="header">
+		<h1 class="page-title">
+			{{if $row.id eq ""}}
+			新建聊天室
+			{{else}}
+			编辑聊天室
+			{{/if}}
+		</h1>
+		<ul class="breadcrumb">
+			<li><a href="/chat/index">聊天室管理</a> </li>
+			<li class="active">
+				{{if $row.id eq ""}}
+				新建聊天室
+				{{else}}
+				编辑聊天室
+				{{/if}}
+			</li>
+		</ul>
+	</div>
+	<div class="main-content">
+		<form  name="f1" id="f1"   method="post" action="/chat/index?do=edited&id={{$row.id}}">
+			<div class="form-group">
+				<label class="form-label form-group-left" for="fdName">聊天室名称<strong class="must"> *</strong></label>
+				<input type="text" class="hidden" value="{{$row.fdNum}}" name="fdNum">
+				<input type="hidden" name="id" id="id" value="{{$row.id}}"/>
+				<input type="text" value="{{$row.fdName}}"  maxlength="35"
+					   class="form-control form-group-right" id="fdName" name="fdName"  placeholder="不超过35字" required>
+				<div id="fdName-error" class="input-error hidden" style="display: block;">不能为空</div>
+			</div>
+			<div class="clearfix"></div>
+			{{if $smarty.session.partnerid == 1}}
+			<div class="form-group  form-group-select">
+				<label class="form-label form-group-left" >所属电台<strong class="must"> *</strong></label>
+				<div class="dropdown form-group-right">
+					<select class="dropdown-toggle form-select-character" name="fdPartnerID" required>
+						<option value="">选择电台</option>
+						{{foreach from=$row.partners name=nar item=partner}}
+						<option value="{{$partner.id}}" {{if $row.fdPartnerID==$partner.id}}selected{{/if}}>
+							{{$partner.fdName}}
+						</option>
+						{{/foreach}}
+					</select>
+				</div>
+				<div id="fdPartnerID-error" class="input-error hidden" style="display: block;">不能为空</div>
+			</div>
+			{{/if}}
+			<div class="clearfix"></div>
+			<div class="form-group hidden">
+				<label class="form-label form-group-left">权限</label>
+				<div class="form-group-right checkbox-group">
+					<label class="checkbox-inline">
+						<input class="allow-lo" type="checkbox" placeholder=""> 需要登录才能发表内容
+					</label>
+				</div>
+			</div>
+			<!--<div class="form-group">-->
+				<!--<label class="form-label form-group-left"  ></label>-->
+				<!--<input type="button" class="btn-primary btn" id="additem" value="添加敏感词"/>-->
+			<!--</div>-->
+			<!--<div id="item-box" style="max-height:500px;overflow-y:auto;margin-top:15px ">-->
+				<!--{{foreach from=$row.filts name=nar key=k item=filt}}-->
+				<!--<div class="form-group"  >-->
+					<!--<label class="form-label form-group-left"  ></label>-->
+					<!--<div class="form-group-right">-->
+						<!--<label class="form-power-right form-label">条件:</label>-->
+						<!--<select class="form-power-right form-control" name="item[{{$k}}][fdCondition]" >-->
+							<!--<option value="include" {{if $filt.fdCondition == "include"}}selected{{/if}}>包含</option>-->
+							<!--<option value="unInclude" {{if $filt.fdCondition == "unInclude"}}selected{{/if}}>不包含</option>-->
+						<!--</select>-->
+						<!--<label class="form-power-right form-label">值：</label>-->
+						<!--<input type="text" name="item[{{$k}}][fdValue]"  class="form-power-right form-control" value="{{$filt.fdValue}}" maxlength="15" />-->
+						<!--<button type="button" class="close delitm" aria-label="Close" "><span aria-hidden="true">&times;</span></button>-->
+					<!--</div>-->
+				<!--</div>-->
+				<!--{{/foreach}}-->
+			<!--</div>-->
+			<!-- style="max-height:500px;overflow-y:auto;"-->
+			<div class="clearfix"></div>
+			<div class="finish">
+				<button class="btn btn-success" type="submit">完成</button>
+				{{if $row.id eq ""}}
+				{{else}}
+					<button class="btn btn-default" type="button"
+							onclick="window.location.href = window.document.referrer;"
+					>取消</button>
+				{{/if}}
+
+			</div>
+		</form>
+		<footer>
+			<hr>
+			<p class="pull-right">© 2016 <a href="" target="_blank">广州涛略科技有限公司</a></p>
+		</footer>
+	</div>
+</div>
+<!--模板 begin-->
+<div class="hidden" id="filt_temp">
+	<div class="form-group"  >
+		<label class="form-label form-group-left"></label>
+		<div class="form-group-right">
+			<label class="form-power-right form-label">条件:</label>
+			<select class="form-power-right form-control" name="{conditionName}" >
+				<option value="unInclude"  selected>不包含</option>
+				<option value="include" >包含</option>
+			</select>
+			<label class="form-power-right form-label">值：</label>
+			<input type="text" name="{valueName}"  class="form-power-right form-control"   maxlength="15" />
+			<button type="button" class="close delitm" aria-label="Close" ><span aria-hidden="true">&times;</span></button>
+		</div>
+	</div>
+</div>
+<!--模板 end-->
+<script>
+    (function($){
+		function getFiltTemp(opts){
+			return nano($("#filt_temp").html(),opts);
+		}
+		$("#stbtn").click(function(){
+			if(!trim($("#fdName").val())){
+			}
+			else{
+				$("#f1").submit();
+			}
+		});
+		var tmpi = 0;
+		$("#additem").click(function () {
+			str =getFiltTemp({
+				conditionName:'item[a_'+tmpi+'][fdCondition]' ,
+				valueName:'item[a_'+tmpi+'][fdValue]'
+			});
+			$("#item-box").prepend(str);
+			tmpi++;
+			bindDelItemClickEvent();
+		});
+		//绑定 删除 过滤条件
+		function bindDelItemClickEvent(){
+			$(".delitm").unbind("click").bind("click", function () {
+				var id = $(this).data("id");
+				if(id&&id!=0){
+				}
+				else{
+					$(this).parent().remove();
+				}
+			});
+		}
+		bindDelItemClickEvent();
+		$("#f1").validate({
+			onkeyup: true,
+			wrapper: "p",
+			onsubmit:true,
+			errorClass: "error",
+			errorElement:"div",
+			errorPlacement: function (error, element) {
+				$("#"+element.attr("name")+"-error").removeClass("hidden");
+			},
+			success:function(lable){
+				$("#"+lable.attr("id")).addClass("hidden");
+			},
+			submitHandler: function(form){
+				var name = trim($("input[name='fdName']").val());
+				if(name){
+					$("#f1").ajaxSubmit(function() {
+					{{if $row.id eq ""}}
+					window.location.href='/chat/index';
+					{{else}}
+						 window.location.href = window.document.referrer;
+					{{/if}}
+					});
+				}
+				else{
+					$("#fdName-error").removeClass("hidden");
+				}
+//				form.submit();
+			},
+			rules:{
+				fdName:{
+					required:true,
+					rangelength:[1,35]
+				}
+			},
+			messages:{
+				npwda:{
+					equalTo:"两次密码输入不一致"
+				},
+				applyETime:{
+					greaterThanDate:"必须大于当前时间"
+				},
+				sportBTime:{
+					greaterThanDate:"必须大于报名截止时间"
+				}
+			}
+
+		});
+
+    })(window.jQuery);
+</script>

@@ -1,0 +1,263 @@
+{{if $do eq 'manage'}}
+{{include file="confirmbox.html"}}
+<div class="content">
+    <div class="header">
+        <h1 class="page-title">角色列表</h1>
+        <ul class="breadcrumb">
+            <li><a href="">角色管理</a> </li>
+            <li class="active">角色列表</li>
+        </ul>
+    </div>
+    <div class="main-content">
+        <div class="btn-toolbar list-toolbar pull-left">
+            <a class="btn btn-danger" href="#myModal" id="delall">删除</a>
+            {{if $smarty.session.partnerid eq '1'}}
+            <form method="get" id="f2">
+            <div class=" search form-group-select">
+                <input type="hidden" value="1" name="ye">
+                <input type="submit" class="btn btn-info" value="搜索">
+                <div class="dropdown form-group-right">
+                    <select class="dropdown-toggle form-select-character" name="keyword">
+                        <option value="">所属电台</option>
+                        {{foreach from=$partners name=npartner item=ipartner}}
+                        <option value="{{$ipartner.id}}" {{if $ipartner.id eq $search}}selected='selected'{{/if}}>{{$ipartner.fdName}}</option>
+                        {{/foreach}}
+                    </select>
+                </div>
+            </div>
+            </form>
+            {{/if}}
+        </div>
+        <table class="table">
+            <thead>
+            <tr>
+                <th class="table-checkbox"><input type="checkbox"></th>
+                <th class="table-title">角色名称</th>
+                <th>描述</th>
+                <th>所属电台</th>
+                <th style="width: 3.5em;">操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            {{foreach from=$ar name=nar item=row}}
+            <tr>
+                <td><input type="checkbox" name="checkbox" value="{{$row.id}}" /></td>
+                <td>{{$row.fdName}}</td>
+                <td>{{$row.fdDescription}}</td>
+                <td>{{$row.partnername}}</td>
+                <td>
+                    <a href="/admin/role?roleid={{$row.id}}&do=edit&ye={{$ye}}{{if $smarty.session.partnerid eq '1'}}&keyword={{$search}}{{/if}}"><i class="icon-pencil"></i></a>
+                    <a href="#myModal" role="button" data="{{$row.id}}" name="delbtn"><i class="icon-trash"></i></a>
+                </td>
+            </tr>
+            {{/foreach}}
+            </tbody>
+        </table>
+        <div class="clearfix"></div>
+        <!--<div class="total-page-num">总共<span class="total-page">10</span>页，共<span class="total-num">6</span>条记录</div>-->
+        <ul class="page">
+            {{$sy}}
+        </ul>
+        <footer>
+            <hr>
+            <p class="pull-right">© 2016 <a href="" target="_blank">广州涛略科技有限公司</a></p>
+        </footer>
+    </div>
+</div>
+{{include file="fade.html"}}
+{{/if}}
+
+{{if $do eq 'add' || $do eq 'edit'}}
+<div class="content">
+    <div class="header">
+        <h1 class="page-title">{{if $do eq 'add'}}新建角色{{/if}}{{if $do eq 'edit'}}编辑角色{{/if}}</h1>
+        <ul class="breadcrumb">
+            <li><a href="">角色管理</a> </li>
+            <li class="active">{{if $do eq 'add'}}新建角色{{/if}}{{if $do eq 'edit'}}编辑角色{{/if}}</li>
+        </ul>
+    </div>
+    <div class="main-content">
+        <form method="post" name="f1" id="f1">
+            <div class="form-group">
+                <label class="form-label form-group-left" for="form-title">角色名称<strong class="must"> *</strong></label>
+                <input type="hidden" name="roleid" id="roleid" value="{{$row.id}}"/>
+                <input type="text" class="form-control form-group-right require" id="fdName" name="fdName" placeholder="不超过35字" value="{{$row.fdName}}" onblur="validatetext_ex(this,'sfdname','请填写名称','input-error');" onfocus="clearme('sfdname','')"><div id="sfdname"></div>
+            </div>
+            <div class="clearfix"></div>
+            <div class="form-group">
+                <label class="form-label form-group-left" for="form-description">描述</label>
+                <textarea class="form-control form-group-right" id="fdDescription" name="fdDescription" value="{{$row.fdDescription}}" placeholder="">{{$row.fdDescription}}</textarea>
+            </div>
+            <div class="clearfix"></div>
+            {{if $smarty.session.partnerid eq '1'}}
+            <div class="form-group  form-group-select">
+                <label class="form-label form-group-left" for="">所属电台<strong class="must"> *</strong></label>
+                {{if $do eq 'add'}}
+                <select class="dropdown-toggle form-select-character form-group-right required" name="fdPartnerID" id="fdPartnerID">
+                    {{foreach from=$partners name=npartner item=ipartner}}
+                        <option value="{{$ipartner.id}}" {{if $row.fdPartnerID eq $ipartner.id}}selected="selected"{{/if}}>{{$ipartner.fdName}}</option>
+                    {{/foreach}}
+                </select>
+                {{elseif $do eq 'edit'}}
+                    {{foreach from=$partners name=npartner item=ipartner}}
+                        {{if $row.fdPartnerID eq $ipartner.id}}
+                        <label class="form-label ">{{$ipartner.fdName}}</label>
+                        {{/if}}
+                    {{/foreach}}
+                {{/if}}
+            </div>
+            <div class="clearfix"></div>
+            {{/if}}
+
+            <div id="showprivs">
+            {{foreach from=$privs name=npriv item=ipriv}}
+            <div class="form-group">
+                <label class="form-label form-group-left">{{$ipriv.fdName}}</label>
+                <div class="form-group-right checkbox-group">
+                    {{foreach from=$myprivs name=nmypriv item=imypriv}}
+                        {{if $ipriv.id eq $imypriv.fdParentID}}
+                    <label class="checkbox-inline" style="margin-left:0">
+                        <input class="allow-lo" type="checkbox" {{foreach from=$grant name=ngrant item=igrant }}{{if $igrant.fdPrivilegeID eq $imypriv.fdPrivilegeID}}checked="checked"{{/if}}{{/foreach}} name="privids[]" value="{{$imypriv.fdPrivilegeID}}">{{$imypriv.fdName}}
+                    </label>
+                        {{/if}}
+                       
+                    {{/foreach}}
+                </div>
+            </div>
+            <div class="clearfix"></div>
+            {{/foreach}}
+            </div>
+
+            <div class="clearfix"></div>
+        <div class="clearfix"></div>
+        <div class="finish">
+            <button class="btn btn-success" id="stbtn">完成</button>
+            {{if $do eq 'edit'}}<input onclick="window.location.href = window.document.referrer;" type="button" class="btn-default btn" value="取消"/>{{/if}}
+        </div>
+        </form>
+        <footer>
+            <hr>
+            <p class="pull-right">© 2016 <a href="" target="_blank">广州涛略科技有限公司</a></p>
+        </footer>
+    </div>
+</div>
+{{/if}}
+
+<script>
+{{if $do eq 'manage'}}
+$(document).ready(function(){
+    $("#id_yes").click(function(){
+        obj=$(this);
+        var ar=new Array();
+        $.each($("input[type=checkbox]:checked"),function(k,v){
+            ar[k]=v.value
+        });
+        if(ar.length>0){
+            $.ajax({
+                type: "GET",
+                url: "/admin/role?do=del",
+                data: "ids="+ar,
+                dataType:'json',
+                cache:false,
+                success: function(msg){
+                    if(msg.error_code==0){
+                        window.location.reload();
+                        //$(obj).parent().parent().remove();
+                    }else{
+                        console.log(msg.error_msg)
+                    }
+                    
+                },
+                error:function(){alert('error')},
+                timeout:5000
+            });
+        }
+    });
+    $("a[name=delbtn]").click(function(){
+        //id=$(this).parent().parent().find("input:first").prop("checked");
+        id=$(this).attr('data');
+        showmodelbox('#myModal','您确认要删除该角色吗？<br>此操作无法撤销。',3);
+        $("#id_yes2").click(function(){
+                $.ajax({
+                    type: "GET",
+                    url: "/admin/role?do=del",
+                    data: "ids="+id,
+                    dataType:'json',
+                    cache:false,
+                    success: function(msg){
+                        if(msg.error_code==0){
+                            window.location.reload();
+                        }else{
+                            $(".msg_font").html(msg.error_msg);
+                            showmsgbox("msgbox");
+                        }
+                        
+                    },
+                    error:function(){alert('error')},
+                    timeout:5000
+                });
+        });
+    });
+    $("#delall").click(function(){
+        f=false;
+        $.each($("input[type=checkbox][name=checkbox]:checked"),function(k,v){
+            f=true;
+        });
+        if(f){
+            showmodelbox('#myModal','您确认要删除这些角色吗？<br>此操作无法撤销。',1);
+        }else{
+            showmodelbox('#myModal','请选择要删除的记录',2);
+        }
+    });
+});
+
+{{/if}}
+
+{{if $do eq 'add' || $do eq 'edit'}}
+    $("#stbtn").click(function(){
+        formchecker.check("#f1");
+        if(!formchecker.flag){
+            //$(".msg_font").html("请正确填写该字段内容");
+            //showmsgbox("msgbox");
+            //$("#skey").html("请正确填写该字段内容");
+            return false;
+        }
+    });
+    $("#f1").on('focus','.error',function(){
+        $(this).removeClass("error");
+        $(this).next(".input-error").html('');
+    });
+    function validatetext_ex(obj,target,txt,cls){
+        ret=validateText($(obj).val(),target,txt,cls);
+        if(!ret){
+            $(obj).addClass("error");
+        }
+    }
+{{/if}}
+
+{{if $smarty.session.partnerid eq '1' && ($do eq 'add' || $do eq 'edit')}}
+    $("#fdPartnerID").change(function(){
+        partnerid=$(this).val();
+        str="";
+        $.ajax({
+            type: "GET",
+            url: "/admin/role?do=ajax_getprivileges",
+            data: "partnerid="+partnerid,
+            dataType:"json",
+            success: function(msg){
+                for(i in msg){
+                    str=str+'<div class="form-group"><label class="form-label form-group-left">'+msg[i].title+'</label><div class="form-group-right checkbox-group">';
+                    for(j in msg[i].privs){
+                        str=str+'<label class="checkbox-inline"><input class="allow-lo" type="checkbox" name="privids[]" value="'+msg[i].privs[j].fdPrivilegeID+'">'+msg[i].privs[j].fdName+'</label>';
+                    }
+                    str=str+'</div></div>';
+                }
+                //console.log(str)
+                $("#showprivs").html(str);
+            },
+            error:function(){alert('error')},
+            timeout:5000
+        })
+    });
+{{/if}}
+</script>

@@ -1,0 +1,639 @@
+{{if $do eq 'manage'}}
+<div class="modal fade"  id="detail" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">详细信息</h4>
+            </div>
+            <div class="modal-body">
+                <table class="table modal-table table-striped">
+                    <tbody>
+                        <tr>
+                            <td>活动名称:</td>
+                            <td><div id="activename"></div></td>
+                        </tr>
+                        <tr>
+                            <td>活动介绍:</td>
+                            <td><div id="activedesc"></div></td>
+                        </tr>
+                        <tr>
+                            <td>所属电台:</td>
+                            <td><div id="radioname"></div></td>
+                        </tr>
+                        <tr>
+                            <td>活动范围:</td>
+                            <td><div id="area"></div></td>
+                        </tr>
+                        <tr>
+                            <td>活动进程：</td>
+                            <td><div id="proc"></div></td>
+                        </tr>
+                        <tr>
+                            <td>开始时间:</td>
+                            <td><div id="start"></div></td>
+                        </tr>
+                        <tr>
+                            <td>结束时间:</td>
+                            <td><div id="end"></div></td>
+                        </tr>
+                        <tr>
+                            <td>参与条件:</td>
+                            <td><div id="needlogin"></div></td>
+                        </tr>
+                        <tr>
+                            <td>奖券数:</td>
+                            <td><div id="total"></div></td>
+                        </tr>
+                        <tr>
+                            <td>每人抽奖次数:</td>
+                            <td><div id="pretotal"></div></td>
+                        </tr>
+                        <tr>
+                            <td>活动类型:</td>
+                            <td><div id="special"></div></td>
+                        </tr>
+                        <tr>
+                            <td>活动链接：</td>
+                            <td><div id="activeurl"></div></td>
+                        </tr>
+                        <tr>
+                            <td>添加时间:</td>
+                            <td><div id="create"></div></td>
+                        </tr>
+                        <tr>
+                            <td>状态:</td>
+                            <td><div id="status"></div></td>
+                        </tr>
+                        <tr>
+                            <td>测试状态：</td>
+                            <td><div id="istest"></div></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal">确定</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<!--删除确认-->
+{{include file="confirmbox.html"}}
+<div class="content">
+    <div class="header">
+        <h1 class="page-title">抽奖列表</h1>
+        <ul class="breadcrumb">
+            <li><a href="">抽奖管理</a> </li>
+            <li class="active">抽奖列表</li>
+        </ul>
+    </div>
+    <div class="main-content">
+        <div class="btn-toolbar list-toolbar pull-left">
+            <button class="btn btn-success" onclick="setstatus(0)">启用</button>
+            <button class="btn btn-default" onclick="setstatus(1)">停用</button>
+            <a class="btn btn-danger" href="#myModal" id="delall">删除</a>
+            <form method="get">
+            <div class=" search form-group-select">
+                <button class="btn btn-info">搜索</button>
+                <div class="dropdown form-group-right">
+                        <input type="hidden" value="1" name="ye">
+                        <select class="dropdown-toggle form-select-character" name="keyword3">
+                            <option value="">活动进程</option>
+                            <option value="1" {{if $search3 eq '1'}}selected='selected'{{/if}}>未开始</option>
+                            <option value="2" {{if $search3 eq '2'}}selected='selected'{{/if}}>进行中</option>
+                            <option value="3" {{if $search3 eq '3'}}selected='selected'{{/if}}>已结束</option>
+                        </select>
+                    </div>
+                {{if $smarty.session.partnerid eq '1'}}
+                <div class="dropdown form-group-right">
+                    <select class="dropdown-toggle form-select-character" name="keyword1">
+                        <option value="">选择电台</option>
+                        {{foreach from=$partners name=npartner item=ipartner}}
+                        <option value="{{$ipartner.id}}" {{if $search eq $ipartner.id}}selected='selected'{{/if}}>{{$ipartner.fdName}}</option>
+                        {{/foreach}}
+                    </select>
+                </div>
+                {{/if}}
+                <input class="form-control" type="text" name="keyword2" value="{{$search2}}" placeholder="search">
+            </div>
+            </form>
+
+        </div>
+        <table class="table">
+            <thead>
+            <tr>
+                <th class="table-checkbox"><input type="checkbox"></th>
+                <th class="table-title">活动名称</th>
+                <th>所属电台</th>
+                <th>活动范围</th>
+                <th>活动进程</th>
+                <th>奖券数</th>
+                <th>每人抽奖次数</th>
+                <th>活动类型</th>
+                <th>参与人数</th>
+                <th class="table-status">状态</th>
+                <th style="width: 5.5em;">操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            {{foreach from=$ar name=nar item=row}}
+            <tr>
+                <td><input type="checkbox" name="checkbox" value="{{$row.id}}" /></td>
+                <td><a name="userinfo" data="{{$row.id}}" href="#detail">{{$row.fdName}}</a></td>
+                <td>{{$row.partnername}}</td>
+                <td>{{$row.fdArea}}</td>
+                <td><span {{if $row.ing eq '进行中'}}class="process-work"{{elseif $row.ing eq '未开始'}}class="process-notStart"{{else}}class="status-stop"{{/if}}>{{$row.ing}}</span></td>
+                <td>{{$row.fdTotalTimes}}</td>
+                <td>{{$row.fdTimes}}</td>
+                <td>{{if $row.fdSpecial eq '1'}}摇现场{{else}}摇电台{{/if}}</td>
+                <td>{{$row.sellnum}}人</td>
+                <td>{{if $row.fdDisabled eq '0'}}<span class="status-work">正常</span>{{else}}<span class="status-stop">停止</span>{{/if}}</td>
+                <td>
+                    <a href="/lottery/index?do=edit&id={{$row.id}}&ye={{$ye}}{{if $smarty.session.partnerid eq '1'}}&keyword1={{$search}}{{/if}}&keyword2={{$search2}}&keyword3={{$search3}}"><i class="icon-pencil" title="编辑"></i></a>
+                    <a href="/lottery/rewards?lotteryid={{$row.id}}&ye={{$ye}}{{if $smarty.session.partnerid eq '1'}}&keyword1={{$search}}{{/if}}&keyword2={{$search2}}&keyword3={{$search3}}" role="button"><i class="icon-gift" title="奖品管理"></i></a>
+                    <a href="/lottery/winner?lotteryid={{$row.id}}" role="button"><i class="icon-trophy" title="中奖管理"></i></a>
+                    <a href="#myModal" role="button" data="{{$row.id}}" name="delbtn"><i class="icon-trash" title="删除"></i></a>
+                </td>
+            </tr>
+            {{/foreach}}
+            </tbody>
+        </table>
+        <div class="clearfix"></div>
+        <div class="page">
+            {{$sy}}
+        </div>
+        <footer>
+            <hr>
+            <p class="pull-right">© 2016 <a href="" target="_blank">广州涛略科技有限公司</a></p>
+        </footer>
+    </div>
+</div>
+{{/if}}
+{{if $do eq 'add' || $do eq 'edit'}}
+<link rel="stylesheet" type="text/css" href="./{{$user_dir_theme}}/css/lottery.css">
+<div class="content">
+    <div class="header">
+        <h1 class="page-title">{{if $do eq 'add'}}新建抽奖{{elseif $do eq 'edit'}}编辑抽奖{{/if}}</h1>
+        <ul class="breadcrumb">
+            <li><a href="">抽奖管理</a> </li>
+            <li class="active">{{if $do eq 'add'}}新建抽奖{{elseif $do eq 'edit'}}编辑抽奖{{/if}}</li>
+        </ul>
+    </div>
+    <div class="main-content">
+        <form name="f1" id="f1" method="post">
+            <div class="form-group">
+                <label class="form-label form-group-left" for="form-title">活动名称<strong class="must"> *</strong></label>
+                <input type="hidden" name="id" id="id" value="{{$row.id}}"/>
+                {{if $do eq 'add'}}<input type="hidden" name="fdLtype" id="id" value="{{$ltype}}"/>{{/if}}
+                <input type="text" class="form-control form-group-right require" name="fdName" id="fdName" value="{{$row.fdName}}" onblur="validatetext_ex(this,'sfdname','请填写名称','input-error')" onfocus="clearme('sfdname','')"><div id="sfdname" ></div>
+            </div>
+            <div class="clearfix"></div>
+            <div class="form-group">
+                <label class="form-label form-group-left" for="">活动类型</label>
+                <label class="radio-inline">摇电台<input type="radio" name="fdSpecial" value="0" {{if $row.fdSpecial eq '0' || $row.fdSpecial eq ''}}checked='checked'{{/if}}/></label>
+                <label class="radio-inline">摇现场<input type="radio" name="fdSpecial" value="1" {{if $row.fdSpecial eq '1'}}checked='checked'{{/if}}/></label>
+            </div>
+            <div class="clearfix"></div>
+            {{if $smarty.session.partnerid eq '1'}}
+            <div class="form-group  form-group-select">
+                <label class="form-label form-group-left" for="">活动电台</label>
+                <select class="dropdown-toggle form-select-character form-group-right require" name="fdPartnerID" id="fdPartnerID" onblur="validatetext_ex(this,'spartnerid','请选择电台','input-error')">
+                    <option value="">请选择</option>
+                    {{foreach from=$partners name=npartner item=ipartner}}
+                    <option value="{{$ipartner.id}}" {{if $row.fdPartnerID eq $ipartner.id}}selected="selected"{{/if}}>{{$ipartner.fdName}}</option>
+                    {{/foreach}}
+                </select><div id="spartnerid" class="input-error"></div>
+            </div>
+            <div class="clearfix"></div>
+            {{/if}}
+            <div class="form-group">
+                <label class="form-label form-group-left" for="">活动介绍</label>
+                <input type="text" class="form-control form-group-right" name="fdDescription" id="fdDescription" value="{{$row.fdDescription}}">
+            </div>
+            <div class="clearfix"></div>
+            <div class="form-group">
+                <label class="form-label form-group-left" for="">每人抽奖次数<strong class="must"> *</strong></label>
+                <input type="text" class="form-control form-group-right require number" name="fdTimes" id="fdTimes" value="{{$row.fdTimes}}" onblur="validateNum_ex(this,'sfdtimes','input-error')" onfocus="clearme('sfdtimes','')"><div id="sfdtimes" class="input-error"></div>
+            </div>
+            <div class="clearfix"></div>
+            <div class="form-group">
+                <label class="form-label form-group-left">参与条件</label>
+                <div class="form-group-right checkbox-group">
+                    <label class="checkbox-inline">
+                        <input class="allow-lo" type="checkbox" name="fdNeedlogin" {{if $row.fdNeedlogin eq '1'}}checked="checked"{{/if}} value="1"> 需要登录才能参与
+                    </label>
+                </div>
+            </div>
+            <div class="clearfix"></div>
+            <div class="form-group left50 dropdown">
+                <label class="form-label form-group-left">起始时间<strong class="must"> *</strong></label>
+                <input  type="text" class="form-control form-group-right dropdown-toggle require" name="fdStart" id="fdStart" value="{{$row.fdStart}}" >
+                <label class="form-label form-group-left">截止时间<strong class="must"> *</strong></label>
+                <div style="width:37%;float:left"><input  type="text" class="form-control form-group-right dropdown-toggle require" name="fdEnd" id="fdEnd" value="{{$row.fdEnd}}"><div id="sfdend" class="input-error" style="float:left"></div></div>
+            </div>
+            <div class="form-group">
+                <label class="form-label form-group-left" for="img">图片(640x220)</label>
+                <div class="form-group-banner">
+                    <div id="photo">
+                        {{if $row.fdLogo neq ''}}
+                        <img style="width: 640px;max-height: 220px;position: absolute" src="../var/uploads/{{$row.fdLogo}}" alt="" />
+                        {{else}}
+                        <div class="banner-auto">
+                            <i class="icon-plus img-plus"></i>
+                            <div class="clearfix"></div>
+                            <span class="font-plus">添加图片</span>
+                        </div>
+                        {{/if}}
+                    </div>
+                    <a class="form-group-a" href="#">
+                        <input type='hidden' id="pic" name="pic[]" value="" />
+                        <input  type="file" class="form-control form-control-banner"  name="fdLogo" id="fdLogo">
+                    </a>
+                </div>
+            </div>
+            <div class="clearfix"></div>
+            {{if $row.fdLtype eq '1' || $ltype eq '1'}}
+            <div class="form-group">
+                <label class="form-label form-group-left" for="">奖券总数<strong class="must"> *</strong></label>
+                <input type="text" class="form-control form-group-right require number" name="fdTotalTimes" id="fdTotalTimes" value="{{$row.fdTotalTimes}}" onblur="validateNum_ex(this,'sfdtotal','input-error')" onfocus="clearme('sfdtotal','')"><div id="sfdtotal" ></div>
+            </div>
+            <div class="clearfix"></div>
+            {{/if}}
+            <div class="form-group  form-group-select">
+                <label class="form-label form-group-left" for="">活动范围</label>
+                <input type="hidden" id="fdArea" name="fdArea" value="{{$row.fdArea}}" />
+                <select class="dropdown-toggle form-select-character form-group-right" name="province" id="province" onchange="changeregion($('#province').find('option:selected').attr('data'),2,this)">
+                    <option>请选择</option>
+                    {{foreach from=$prov name=nprovince item=iprovince}}
+                    <option {{if $loc[0] eq $iprovince.fdRegionName}}selected='selected'{{/if}} value="{{$iprovince.fdRegionName}}" data="{{$iprovince.fdRegionID}}">{{$iprovince.fdRegionName}}</option>
+                    {{/foreach}}
+                </select>
+                <select class="dropdown-toggle form-select-character form-group-right" name="city" id="city" onchange="selectchecker()">
+                    <option>请选择城市</option>
+                    {{foreach from=$cityar name=ncity item=icity}}
+                    <option {{if $loc[1] eq $icity.fdRegionName}}selected='selected'{{/if}} value="{{$icity.fdRegionName}}" data="{{$icity.fdRegionID}}" pid="{{$icity.fdParentID}}">{{$icity.fdRegionName}}</option>
+                    {{/foreach}}
+                </select>
+                <span>(不选表示全国)</span>
+            </div>
+            <div class="clearfix"></div>
+            <div class="form-group">
+                <label class="form-label form-group-left" for="">链接网址</label>
+                <input type="text" class="form-control form-group-right" name="fdURL" id="fdURL" value="{{$row.fdURL}}">
+            </div>
+            <div class="clearfix"></div>
+            <!-- <div class="form-group  form-group-select">
+                <label class="form-label form-group-left" for="">是否特殊活动</label>
+                <select class="dropdown-toggle form-select-character form-group-right" name="fdSpecial" id="fdSpecial">
+                    <option value="0" {{if $row.fdSpecial eq '0'}}selected='selected'{{/if}}>否</option>
+                    <option value="1" {{if $row.fdSpecial eq '1'}}selected='selected'{{/if}}>是</option>
+                </select>
+            </div>
+            <div class="clearfix"></div> -->
+            <div class="form-group  form-group-select">
+                <label class="form-label form-group-left" for="">测试状态</label>
+                <select class="dropdown-toggle form-select-character form-group-right" name="fdTest" id="fdTest">
+                    <option value="0" {{if $row.fdTest eq '0'}}selected='selected'{{/if}}>否</option>
+                    <option value="1" {{if $row.fdTest eq '1'}}selected='selected'{{/if}}>是</option>
+                </select>
+            </div>
+            <div class="clearfix"></div>
+        </form>
+        <div class="clearfix"></div>
+        <div class="finish">
+            <button class="btn btn-success" id="stbtn">完成</button>
+            {{if $do eq 'edit'}}<input onclick="window.location.href = window.document.referrer;" type="button" class="btn-default btn" value="取消"/>{{/if}}
+        </div>
+        <footer>
+            <hr>
+            <p class="pull-right">© 2016 <a href="" target="_blank">广州涛略科技有限公司</a></p>
+        </footer>
+    </div>
+</div>
+{{/if}}
+{{include file="fade.html"}}
+
+<script>
+{{if $do eq 'manage'}}
+$(document).ready(function(){
+    $("#id_yes").click(function(){
+        obj=$(this);
+        var ar=new Array();
+        $.each($("input[type=checkbox]:checked"),function(k,v){
+            ar[k]=v.value
+        });
+        if(ar.length>0){
+            $.ajax({
+                type: "GET",
+                url: "/lottery/index?do=del",
+                data: "ids="+ar,
+                dataType:'json',
+                cache:false,
+                success: function(msg){
+                    if(msg.error_code==0){
+                        window.location.reload();
+                        //$(obj).parent().parent().remove();
+                    }else{
+                        $(".msg_font").html(msg.error_msg);
+                        showmsgbox("msgbox");
+                    }
+                    
+                },
+                error:function(){alert('error')},
+                timeout:5000
+            });
+        }
+    });
+
+    $("a[name=delbtn]").click(function(){
+        id=$(this).attr('data');
+        showmodelbox('#myModal','您确认要删除该活动吗？<br>此操作无法撤销。',3);
+        $("#id_yes2").click(function(){
+                $.ajax({
+                    type: "GET",
+                    url: "/lottery/index?do=del",
+                    data: "ids="+id,
+                    dataType:'json',
+                    cache:false,
+                    success: function(msg){
+                        if(msg.error_code==0){
+                            window.location.reload();
+                        }else{
+                            $(".msg_font").html(msg.error_msg);
+                            showmsgbox("msgbox");
+                        }
+                        
+                    },
+                    error:function(){alert('error')},
+                    timeout:5000
+                });
+        });
+    });
+
+    $("#delall").click(function(){
+        f=false;
+        $.each($("input[type=checkbox][name=checkbox]:checked"),function(k,v){
+            f=true;
+        });
+        if(f){
+            showmodelbox('#myModal','您确认要删除这些活动吗？<br>此操作无法撤销。',1);
+        }else{
+            showmodelbox('#myModal','请选择要删除的记录',2);
+        }
+    });
+    $("a[name=userinfo]").click(function(){
+        lotteryid=$(this).attr('data');
+        $.ajax({
+            type: "GET",
+            url: "/lottery/index?do=ajax_getlottery&id="+lotteryid,
+            data: "",
+            dataType:'json',
+            cache:false,
+            success: function(msg){
+                if(msg.error_code=='0'){
+                    $("#activename").html(msg.data.fdName);
+                    $("#activedesc").html(msg.data.fdDescription);
+                    $("#radioname").html(msg.data.partnername);
+                    $("#area").html(msg.data.fdArea);
+                    if(msg.data.ing=='进行中'){
+                        $("#proc").html('<span class="status-work">进行中</span>');
+                    }else if(msg.data.ing=='未开始'){
+                        $("#proc").html('<span class="process-notStart">未开始</span>');
+                    }else{
+                        $("#proc").html('<span class="status-stop">'+msg.data.ing+'</span>');
+                    }
+                    $("#start").html(msg.data.fdStart);
+                    $("#end").html(msg.data.fdEnd);
+                    if(msg.data.fdNeedlogin==1){
+                        $("#needlogin").html("需登录");
+                    }else{
+                        $("#needlogin").html("不需登录");
+                    }
+                    $("#total").html(msg.data.fdTotalTimes);
+                    $("#pretotal").html(msg.data.fdTimes);
+                    if(msg.data.fdSpecial==1){
+                        $("#special").html("摇现场");
+                    }else{
+                        $("#special").html("摇电台");
+                    }
+
+                    $("#create").html(msg.data.fdCreate);
+                    if(msg.data.fdTest==1){
+                        $("#istest").html("是");
+                    }else{
+                        $("#istest").html("否");
+                    }
+                    $("#activeurl").html('<a href="'+msg.data.fdURL+'" target="_blank">'+msg.data.fdURL+'</a>');
+                    if(msg.data.fdDisabled==0){
+                        $("#status").html('<span class="status-work">正常</span>');
+                    }else{
+                        $("#status").html('<span class="status-stop">停用</span>');
+                    }
+                    $('#detail').modal('toggle');
+                }
+                
+            },
+            error:function(){alert('error')},
+            timeout:5000
+        });
+    });
+
+});
+
+function setstatus(status){
+    var ar=new Array();
+    $.each($("input[type=checkbox][name=checkbox]:checked"),function(k,v){
+        ar[k]=v.value
+    });
+    if(ar.length>0){
+        if(status==0){
+            $("#id_yes3").html("启用");
+            showmodelbox('#myModal','您确认要启用这些活动吗？',4);
+        }else{
+            $("#id_yes3").html("停用");
+            showmodelbox('#myModal','您确认要停用这些活动吗？',4);
+        }
+    }else{
+        showmodelbox('#myModal','请选择要更改状态的记录',2);
+    }
+    $("#id_yes3").unbind('click').click(function(){
+        $.ajax({
+            type: "GET",
+            url: "/lottery/index?do=ajax_setlotterystatus",
+            data: "ids="+ar+"&status="+status,
+            dataType:'json',
+            cache:false,
+            success: function(msg){
+                if(msg.error_code==0){
+                    window.location.reload();
+                }else{
+                    $(".msg_font").html(msg.error_msg);
+                    showmsgbox("msgbox");
+                    //console.log(msg.error_msg)
+                } 
+            },
+            error:function(){alert('error')},
+            timeout:5000
+        });
+    });
+}
+{{/if}}
+
+{{if $do eq 'add' || $do eq 'edit'}}
+$('#fdStart').datetimepicker({
+      lang:'ch',
+      format:"Y-m-d H:i",
+      timepicker:true,
+      minDate:'-1970/01/01',
+      yearStart:2015,
+      yearEnd:2050,
+      todayButton:false,
+    
+});
+$('#fdEnd').datetimepicker({
+      lang:'ch',
+      format:"Y-m-d H:i",
+      minDate:'-1970/01/01',
+      timepicker:true,
+      yearStart:2015,
+      yearEnd:2050,
+      todayButton:false,
+    
+});
+
+$("#stbtn").click(function(){
+    a1=validateText($("#fdName").val(),'sfdname','请填写抽奖活动名称','input-error');
+    a2=true;
+    a3=true;
+    a4=true;
+    $(".require").each(function(k,v){
+        if($(v).val()==""){
+            $(v).addClass("error");
+            a2=false;
+        }
+    });
+    $(".number").each(function(k2,v2){
+        if($(v2).val()!="" && parseInt($(v2).val())!=$(v2).val()){
+            $(v2).addClass("error");
+            a3=false;
+        }else if($(v2).attr('name')=='fdTimes' && $(v2).val()<=0){
+            $(v2).addClass("error");
+            a3=false;
+        }
+    });
+
+    if(a3){
+        ts=$("#fdTimes").val();//用户可抽奖数
+        tts=$("#fdTotalTimes").val();//奖券总数
+        if(parseInt(tts)<parseInt(ts)){
+            $("#fdTotalTimes").addClass("error");
+            $("#sfdtotal").addClass("input-error");
+            $("#sfdtotal").html("奖券总数不能少于用户可抽奖数");
+            a3=false;
+        }
+    }
+    
+
+    var beg=$("#fdStart").val();  
+    var end=$("#fdEnd").val();  
+    var date1 = new Date(Date.parse(beg));  
+    var date2 = new Date(Date.parse(end));  
+    if (date1.getTime() > date2.getTime()) {
+        $("#fdEnd").addClass("error");
+        $("#sfdend").html("结束时间不得小于开始时间");
+        a4=false;  
+    }
+
+    if(a1 && a2 && a3 && a4){
+        $("#f1").submit();
+    }
+});
+
+function selectchecker(){
+    pro=$("#province").val();
+    cit=$("#city").val();
+    if(pro!="请选择" && cit!="请选择" ){//&& loc!="请选择"
+        c=$('#city').find('option:selected').attr('pid');
+        //l=$("#local").find('option:selected').attr('pid');
+        fdlocal=$("#province").val()+' '+$("#city").val()+' '+c;//+' '+$("#local").val()+' '+c+' '+l;
+    }else{
+        fdlocal="";
+    }
+    $("#fdArea").val(fdlocal);
+}
+
+function changeregion(pid,type){
+    if(type==2){
+        $('#city').html("<option>请选择</option>");
+        $('#local').html("<option>请选择</option>");
+    }
+    if(type==3){
+        $('#local').html("<option>请选择</option>");
+    }
+    $.ajax({
+      type: "GET",
+      url: "/lottery/getregionajax",
+      data: {
+        pid:pid,
+        type:type
+      },
+      success: function(msg){
+        if(type==2){
+            $('#city').html(msg);
+        }
+        if(type==3){
+            $('#local').html(msg);
+        }
+      },
+      error:function(){},
+      timeout:5000
+    });
+}
+
+$('#fdLogo').change(function() {
+    var file = this.files[0];
+    var r = new FileReader();
+    r.readAsDataURL(file);
+    $(r).load(function() {
+        $('#photo').html('<img style="width: 640px;max-height: 220px;position: absolute" src="' + this.result + '" alt="" />');
+        $("#pic").val(this.result);
+    })
+});
+
+$("#f1").on('focus','.error',function(){
+    $(this).removeClass("error");
+    $(this).next(".input-error").html('');
+});
+
+function validatetext_ex(obj,target,txt,cls){
+    ret=validateText($(obj).val(),target,txt,cls);
+    if(!ret){
+        $(obj).addClass("error");
+    }
+}
+
+function validateNum_ex(obj,htmlname,htmlclass){
+    num=$(obj).val();
+    if(parseInt(num)<=0){
+        $(obj).addClass("error");
+        $("#"+htmlname).addClass('input-error').html('请填写一个大于0的整数');
+    }
+    ret= validateNum($(obj).val(),htmlname,htmlclass);
+    if(!ret){
+        $(obj).addClass("error");
+    }
+}
+
+function ajax_checkallow(){
+    type=$("#fdSpecial").val();
+    start=$("#fdStart").val();
+    end=$("#fdEnd").val();
+    area=$("#fdArea").val();
+    if(type==1){//
+
+    }
+}
+
+{{/if}}
+</script>

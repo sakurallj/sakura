@@ -1,0 +1,887 @@
+<div class="modal fade" id="modal-add-select" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">添加下拉选项</h4>
+            </div>
+            <div class="modal-body" id="modal-add-select-body">
+                <div id="modal-add-select-item" style="max-height: 250px;overflow-y:auto;">
+                </div>
+                <button type="button" class="btn btn-primary btn-add-modal-select">添加</button>
+            </div>
+            <div class="modal-footer">
+                <div class="clearfix"></div>
+                <hr>
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" id="model-added-item">确定</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<!--正文-->
+<div class="content">
+    <div class="header">
+        <h1 class="page-title">
+            {{if $row.id eq ""}}
+            新建报名
+            {{else}}
+            编辑报名
+            {{/if}}
+        </h1>
+        <ul class="breadcrumb">
+            <li><a href="/event/index">报名管理</a></li>
+            <li class="active">
+                {{if $row.id eq ""}}
+                新建报名
+                {{else}}
+                编辑报名
+                {{/if}}
+            </li>
+        </ul>
+    </div>
+    <div class="main-content">
+        <form name="f1" id="f1" method="post" action="/event/index?do=edited&id={{$row.id}}">
+
+
+            <div class="form-group">
+                <label class="form-label form-group-left" >活动名称<strong class="must"> *</strong></label>
+                <input type="text" maxlength="100" name="fdTitle" value="{{$row.fdTitle}}"
+                       class="form-control form-group-right "   placeholder="100个字符以内" required>
+                <div id="fdTitle-error" class="input-error hidden" style="display: block;">不能为空</div>
+            </div>
+            <div class="clearfix"></div>
+            <div class="form-group left50 dropdown">
+                <label class="form-label form-group-left">起始时间<strong class="must"> *</strong></label>
+                <input name="fdBTime" type="text" id="BTime"
+                       class="form-control form-group-right dropdown-toggle single-datetime" placeholder=""
+                       value="{{$row.fdBTime|date_format:'%Y-%m-%d'}}" required >
+                <label class="form-label form-group-left ">截止时间<strong class="must"> *</strong></label>
+                <input name="fdETime" type="text" id="ETime"
+                       class="form-control form-group-right dropdown-toggle single-datetime" placeholder=""
+                       value="{{$row.fdETime|date_format:'%Y-%m-%d'}}" required>
+                <!--<div id="fdBTime-error" class="input-error hidden" style="display: block;">起始时间需大于当前时间且小于截止时间</div>-->
+                <!--<div id="fdETime-error" class="input-error hidden" style="display: block;">截止时间不能为空且大于起始时间</div>-->
+                <!--<div class="clearfix"></div>-->
+                <div class="hidden input-error " id="time_error" >
+                    起始时间不能大于截止时间
+                </div>
+                <div class="hidden input-error " id="time_error_n"  >
+                    起始时间需大于当前时间
+                </div>
+                <div class="hidden input-error " id="time_error_b"  >
+                    起始时间不能为空
+                </div>
+
+                <div class="hidden input-error " id="time_error_e"  >
+                    截止时间不能为空
+                </div>
+            </div>
+            {{if $smarty.session.partnerid == 1}}
+            <div class="form-group form-group-select">
+                <label class="form-label form-group-left" >所属电台<strong class="must"> *</strong></label>
+                <select class="form-control form-group-right form-select-character " name="fdPartnerID" required>
+                    <option value="">选择电台</option>
+                    {{foreach from=$row.partners name=nar item=partner}}
+                    <option value="{{$partner.id}}" {{if $row.fdPartnerID==$partner.id}}selected{{/if}}>
+                        {{$partner.fdName}}
+                    </option>
+                    {{/foreach}}
+                </select>
+                <div id="fdPartnerID-error" class="input-error hidden" style="display: block;">不能为空</div>
+            </div>
+            {{/if}}
+            <div class="clearfix"></div>
+            <div class="form-group">
+                <label class="form-label form-group-left" for="form-title">选择字段</label>
+
+                <div class="form-group-right checkbox-group">
+                    <label class="checkbox-inline">
+                        <input class="allow-lo" type="checkbox" placeholder="" id="checkbox-name"> 姓名
+                    </label>
+                    <label class="checkbox-inline">
+                        <input class="allow-lo" type="checkbox" placeholder="" id="checkbox-mobile"> 手机
+                    </label>
+                    <label class="checkbox-inline">
+                        <input class="allow-lo" type="checkbox" placeholder="" id="checkbox-address"> 地址
+                    </label>
+                    <label class="checkbox-inline">
+                        <input class="allow-lo" type="checkbox" placeholder="" id="checkbox-email"> 邮箱
+                    </label>
+                    <label class="checkbox-inline">
+                        <input class="allow-lo" type="checkbox" placeholder="" id="checkbox-sex"> 性别
+                    </label>
+                    <label class="checkbox-inline">
+                        <input class="allow-lo" type="checkbox" placeholder="" id="checkbox-age"> 出生年份
+                    </label>
+                    <label class="checkbox-inline">
+                        <input class="allow-lo" type="checkbox" placeholder="" id="checkbox-receive"> 年收入
+                    </label>
+                    <label class="checkbox-inline">
+                        <input class="allow-lo" type="checkbox" placeholder="" id="checkbox-trade"> 行业
+                    </label>
+                    <label class="checkbox-inline">
+                        <input class="allow-lo" type="checkbox" placeholder="" id="checkbox-education"> 学历
+                    </label>
+                    <label class="checkbox-inline">
+                        <input class="allow-lo" type="checkbox" placeholder="" id="checkbox-marry"> 婚姻状况
+                    </label>
+                    <label class="checkbox-inline">
+                        <input class="allow-lo" type="checkbox" placeholder="" id="checkbox-born"> 生育状况
+                    </label>
+                </div>
+            </div>
+            <div class="clearfix"></div>
+            <div class="form-group left50">
+                <label class="form-label form-group-left" for="">增加字段</label>
+                <input type="text" class="form-control form-group-right" placeholder="15个字符以内" maxlength="15"  >
+                <div class="form-group form-group-select" id="btn-submit-edit-1">
+                    <label class="form-label form-group-left" for="">类型</label>
+                    <select class="dropdown-toggle form-select-character form-group-right form-select-signUp"
+                            id="form-select-signUp"  >
+                        <option value="" selected>请选择</option>
+                        <option value="text" >文本</option>
+                        <option value="number">数字</option>
+                        <option value="select">下拉框</option>
+                    </select>
+                    <button type="button" class="btn btn-info btn-add-power btn-submit-edit">完成</button>
+                </div>
+            </div>
+            <div class="clearfix"></div>
+
+            <div class="clearfix"></div>
+            <div class="panel-group" role="tablist" aria-multiselectable="true">
+                <div class="panel panel-default panel-signUp">
+                    <div class="panel-heading" role="tab" id="heading1">
+                        <h4 class="panel-title">
+                                <span>
+                                    预览
+                                </span>
+                            <a class="collapse-panel" role="button" data-toggle="collapse" href="#collapse1"
+                               aria-expanded="true" aria-controls="collapse1"><i class="icon-chevron-down"></i></a>
+                        </h4>
+                    </div>
+                    <div id="collapse1" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="heading1">
+                        <ul class="panel-body" id="items" style="padding-left: 15px">
+
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="finish">
+                <button class="btn btn-success" type="submit">完成</button>
+                {{if $row.id eq ""}}
+                {{else}}
+                    <button class="btn btn-default" type="button"
+                            onclick="window.location.href = window.document.referrer;"
+                    >取消</button>
+                {{/if}}
+
+            </div>
+            <input type="hidden" name="id" id="id" value="{{$row.id}}"/>
+        </form>
+        <footer>
+            <hr>
+            <p class="pull-right">© 2016 <a href="" target="_blank">广州涛略科技有限公司</a></p>
+        </footer>
+    </div>
+</div>
+<div class="hidden">
+    <div id="checkbox-name-temp">
+        <li class="form-group left50 form-group-select" tab="{tab}">
+            <label class="form-label form-group-left" for=""> 姓名</label>
+            <input type="text" class="form-control form-group-right" placeholder="">
+            <label class="form-label form-group-left" for=""> </label>
+
+            <div class="form-group-right checkbox-group">
+                <label class="checkbox-inline">
+                    <input class="hidden" name="items[{seq}][fdVarName]" value="姓名">
+                    <input class="hidden" name="items[{seq}][fdAttType]" value="defName">
+                    <input class="hidden" name="items[{seq}][fdType]" value="text">
+                    <input class="allow-lo" type="checkbox" placeholder="" name="items[{seq}][fdRequire]">
+                    必填
+                </label>
+                <button type="button" class="close" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+            </div>
+        </li>
+    </div>
+    <div id="checkbox-mobile-temp">
+        <li class="form-group left50 form-group-select" tab="{tab}">
+            <label class="form-label form-group-left" for=""> 手机</label>
+            <input type="text" class="form-control form-group-right" placeholder="">
+            <label class="form-label form-group-left" for=""> </label>
+
+            <div class="form-group-right checkbox-group">
+                <label class="checkbox-inline">
+                    <input class="hidden" name="items[{seq}][fdVarName]" value="手机">
+                    <input class="hidden" name="items[{seq}][fdAttType]" value="defMobile">
+                    <input class="hidden" name="items[{seq}][fdType]" value="text">
+                    <input class="allow-lo" type="checkbox" placeholder="" name="items[{seq}][fdRequire]">
+                    必填
+                </label>
+                <button type="button" class="close" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+            </div>
+        </li>
+    </div>
+    <div id="checkbox-address-temp">
+        <li class="form-group left50 form-group-select" tab="{tab}">
+            <label class="form-label form-group-left" for=""> 地址</label>
+            <input type="text" class="form-control form-group-right" id="" placeholder="">
+            <label class="form-label form-group-left" for=""> </label>
+
+            <div class="form-group-right checkbox-group">
+                <label class="checkbox-inline">
+                    <input class="hidden" name="items[{seq}][fdVarName]" value="地址">
+                    <input class="hidden" name="items[{seq}][fdAttType]" value="defAddress">
+                    <input class="hidden" name="items[{seq}][fdType]" value="text">
+                    <input class="allow-lo" type="checkbox" placeholder="" name="items[{seq}][fdRequire]">
+                    必填
+                </label>
+                <button type="button" class="close" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+            </div>
+        </li>
+    </div>
+    <div id="checkbox-email-temp">
+        <li class="form-group left50 form-group-select" tab="{tab}">
+            <label class="form-label form-group-left" for=""> 邮箱</label>
+            <input type="text" class="form-control form-group-right" placeholder="">
+            <label class="form-label form-group-left" for=""> </label>
+
+            <div class="form-group-right checkbox-group">
+                <label class="checkbox-inline">
+                    <input class="hidden" name="items[{seq}][fdVarName]" value="邮箱">
+                    <input class="hidden" name="items[{seq}][fdAttType]" value="defEmail">
+                    <input class="hidden" name="items[{seq}][fdType]" value="text">
+                    <input class="allow-lo" type="checkbox" placeholder="" name="items[{seq}][fdRequire]">
+                    必填
+                </label>
+                <button type="button" class="close" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+            </div>
+        </li>
+    </div>
+    <div id="checkbox-sex-temp">
+        <li class="form-group left50 form-group-select " tab="{tab}">
+            <label class="form-label form-group-left" for=""> 性别</label>
+            <select class="dropdown-toggle form-select-character form-group-right form-select-signUp">
+                <option value="">请选择</option>
+                <option value="1">男</option>
+                <option value="2">女</option>
+            </select>
+            <label class="form-label form-group-left" for=""> </label>
+
+            <div class="form-group-right checkbox-group">
+                <label class="checkbox-inline">
+                    <input class="hidden" name="items[{seq}][fdVarName]" value="性别">
+                    <input class="hidden" name="items[{seq}][fdAttType]" value="defSex">
+                    <input class="hidden" name="items[{seq}][fdType]" value="select">
+                    <input class="allow-lo" type="checkbox" placeholder="" name="items[{seq}][fdRequire]">
+                    必填
+                </label>
+                <button type="button" class="close" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+            </div>
+        </li>
+    </div>
+    <div id="checkbox-age-temp">
+        <li class="form-group left50 form-group-select" tab="{tab}">
+            <label class="form-label form-group-left" for=""> 出生年份</label>
+            <select class="dropdown-toggle form-select-character form-group-right form-select-signUp age_optiios" >
+                <option value="">请选择</option>
+            </select>
+            <label class="form-label form-group-left" for=""> </label>
+
+            <div class="form-group-right checkbox-group">
+                <label class="checkbox-inline">
+                    <input class="hidden" name="items[{seq}][fdVarName]" value="出生年份">
+                    <input class="hidden" name="items[{seq}][fdAttType]" value="defAge">
+                    <input class="hidden" name="items[{seq}][fdType]" value="select">
+                    <input class="allow-lo" type="checkbox" placeholder="" name="items[{seq}][fdRequire]">
+                    必填
+                </label>
+                <button type="button" class="close" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+            </div>
+        </li>
+    </div>
+    <div id="checkbox-receive-temp">
+        <li class="form-group left50 form-group-select" tab="{tab}">
+            <label class="form-label form-group-left" for=""> 年收入</label>
+            <select class="dropdown-toggle form-select-character form-group-right form-select-signUp">
+                <option value="">请选择</option>
+                <option value="">0-2万元</option>
+                <option value="">2万-4万元</option>
+                <option value="">4万-6万元</option>
+                <option value="">6万-8万元</option>
+                <option value="">8万-10万元</option>
+                <option value="">10万-15万元</option>
+                <option value="">15万-20万元</option>
+                <option value="">20万-30万元</option>
+                <option value="">30万-50万元</option>
+                <option value="">50万元以上</option>
+            </select>
+            <label class="form-label form-group-left" for=""> </label>
+
+            <div class="form-group-right checkbox-group">
+                <label class="checkbox-inline">
+                    <input class="hidden" name="items[{seq}][fdVarName]" value="年收入">
+                    <input class="hidden" name="items[{seq}][fdAttType]" value="defReceive">
+                    <input class="hidden" name="items[{seq}][fdType]" value="select">
+                    <input class="allow-lo" type="checkbox" placeholder="" name="items[{seq}][fdRequire]">
+                    必填
+                </label>
+                <button type="button" class="close" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+            </div>
+        </li>
+    </div>
+    <div id="checkbox-trade-temp">
+        <li class="form-group left50 form-group-select" tab="{tab}">
+            <label class="form-label form-group-left" for=""> 行业</label>
+            <select class="dropdown-toggle form-select-character form-group-right form-select-signUp">
+                <option value="">请选择</option>
+                <option value="">计算机/互联网</option>
+                <option value="">证券/投资</option>
+                <option value="">通讯/电信</option>
+                <option value="">银行/金融/保险</option>
+                <option value="">市场/公关/广告/咨询</option>
+                <option value="">文化/艺术/体育/娱乐/媒体</option>
+                <option value="">科研/教育</option>
+                <option value="">商业/贸易</option>
+                <option value="">房地产/租赁/建筑业</option>
+                <option value="">制造业</option>
+                <option value="">医疗/护理/卫生</option>
+                <option value="">餐饮/旅游业</option>
+                <option value="">自由职业/个人服务业</option>
+                <option value="">政府/非盈利性组织</option>
+                <option value="">在校学生</option>
+                <option value="">其他</option>
+            </select>
+            <label class="form-label form-group-left" for=""> </label>
+
+            <div class="form-group-right checkbox-group">
+                <label class="checkbox-inline">
+                    <input class="hidden" name="items[{seq}][fdVarName]" value="行业">
+                    <input class="hidden" name="items[{seq}][fdAttType]" value="defTrade">
+                    <input class="hidden" name="items[{seq}][fdType]" value="select">
+                    <input class="allow-lo" type="checkbox" placeholder="" name="items[{seq}][fdRequire]">
+                    必填
+                </label>
+                <button type="button" class="close" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+            </div>
+        </li>
+    </div>
+    <div id="checkbox-education-temp">
+        <li class="form-group left50 form-group-select " tab="{tab}">
+            <label class="form-label form-group-left" for=""> 学历</label>
+            <select class="dropdown-toggle form-select-character form-group-right form-select-signUp">
+                <option value="">请选择</option>
+                <option value="">小学</option>
+                <option value="">初中</option>
+                <option value="">高中/中专/中技</option>
+                <option value="">大专</option>
+                <option value="">本科/学士</option>
+                <option value="">硕士/研究生</option>
+                <option value="">博士及以上</option>
+            </select>
+            <label class="form-label form-group-left" for=""> </label>
+
+            <div class="form-group-right checkbox-group">
+                <label class="checkbox-inline">
+                    <input class="hidden" name="items[{seq}][fdVarName]" value="学历">
+                    <input class="hidden" name="items[{seq}][fdAttType]" value="defEducation">
+                    <input class="hidden" name="items[{seq}][fdType]" value="select">
+                    <input class="allow-lo" type="checkbox" placeholder="" name="items[{seq}][fdRequire]">
+                    必填
+                </label>
+                <button type="button" class="close" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+            </div>
+        </li>
+    </div>
+    <div id="checkbox-marry-temp">
+        <li class="form-group left50 form-group-select" tab="{tab}">
+            <label class="form-label form-group-left" for=""> 婚姻状况</label>
+            <select class="dropdown-toggle form-select-character form-group-right form-select-signUp">
+                <option value="">请选择</option>
+                <option value="">未婚</option>
+                <option value="">已婚</option>
+                <option value="">离异</option>
+                <option value="">再婚</option>
+                <option value="">丧偶</option>
+            </select>
+            <label class="form-label form-group-left" for=""> </label>
+
+            <div class="form-group-right checkbox-group">
+                <label class="checkbox-inline">
+                    <input class="hidden" name="items[{seq}][fdVarName]" value="婚姻状况">
+                    <input class="hidden" name="items[{seq}][fdAttType]" value="defMarry">
+                    <input class="hidden" name="items[{seq}][fdType]" value="select">
+                    <input class="allow-lo" type="checkbox" placeholder="" name="items[{seq}][fdRequire]">
+                    必填
+                </label>
+                <button type="button" class="close" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+            </div>
+        </li>
+    </div>
+    <div id="checkbox-born-temp">
+        <li class="form-group left50 form-group-select" tab="{tab}">
+            <label class="form-label form-group-left" for=""> 生育状况</label>
+            <select class="dropdown-toggle form-select-character form-group-right form-select-signUp">
+                <option value="">请选择</option>
+                <option value="">未育</option>
+                <option value="">已育</option>
+            </select>
+            <label class="form-label form-group-left" for=""> </label>
+
+            <div class="form-group-right checkbox-group">
+                <label class="checkbox-inline">
+                    <input class="hidden" name="items[{seq}][fdVarName]" value="生育状况">
+                    <input class="hidden" name="items[{seq}][fdAttType]" value="defBorn">
+                    <input class="hidden" name="items[{seq}][fdType]" value="select">
+                    <input class="allow-lo" type="checkbox" placeholder="" name="items[{seq}][fdRequire]">
+                    必填
+                </label>
+                <button type="button" class="close" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+            </div>
+        </li>
+    </div>
+    <div id="checkbox-person-temp">
+        <li class="form-group left50 form-group-select" tab="{tab}" id="person-{seq}">
+            <label class="form-label form-group-left" for="">{name}</label>
+            <input type="text" class="form-control form-group-right {showText}" placeholder="">
+            <select class="dropdown-toggle form-select-character form-group-right form-select-signUp {showSelect}"
+                    id="person-{seq}-select">
+                <option value="">请选择</option>
+            </select>
+
+            <div class="hidden" id="person-{seq}-option-input">
+
+            </div>
+            <label class="form-label form-group-left {showText}" for=""> </label>
+
+            <div class="form-group-right checkbox-group">
+                <button type="button" class="btn btn-primary btn-add-modal {showSelect}" data-seq="{seq}"
+                        data-toggle="modal" data-target="#modal-add-select">添加下拉选项
+                </button>
+                <label class="checkbox-inline">
+                    <input class="hidden" name="items[{seq}][fdVarName]" value="{name}">
+                    <input class="hidden" name="items[{seq}][fdAttType]" value="person">
+                    <input class="hidden" name="items[{seq}][fdType]" value="{type}">
+                    <input class="allow-lo" type="checkbox" placeholder="" name="items[{seq}][fdRequire]">
+                    必填
+                </label>
+                <button type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            </div>
+        </li>
+    </div>
+    <div id="model-person-select-option-temp">
+        <option value="{value}">{text}</option>
+    </div>
+    <div id="model-person-select-input-temp">
+        <input class="hidden" name="items[{seq}][options][{index}]" value="{value}">
+    </div>
+    <div id="model-select-model-temp">
+        <div class="form-group left50">
+            <label class="form-label form-group-left" for="">{name}</label>
+            <input type="text" class="form-control form-group-right" maxlength="15" placeholder="输入选项内容"
+                   value="{value}">
+            <label class="form-label form-group-left" for=""></label>
+
+            <div class="form-group-right">
+                <button type="button" class="close btn-close-modal-select" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(function () {
+        function compareBEDate(lowDate, bigDate) {
+            var lowDateTime = new Date(lowDate).getTime(),
+                    bigDateTime = new Date(bigDate).getTime();
+            if (lowDateTime <= bigDateTime) {
+                $("#time_error").addClass("hidden");
+                $("#time_error_b").addClass("hidden");
+                $("#time_error_e").addClass("hidden");
+                $("#time_error_n").addClass("hidden");
+                return true;
+            }
+            else {
+                $("#time_error").removeClass("hidden");
+                $("#time_error_b").addClass("hidden");
+                $("#time_error_e").addClass("hidden");
+                $("#time_error_n").addClass("hidden");
+                return false;
+            }
+        }
+
+        function initItems() {
+            var items = '{{$row.items}}', itemHtml, tempId;
+            if (!items) {
+                return;
+            }
+            items = JSON.parse(items);
+            for (var i = 0; i < items.length; i++) {
+                var item = items[i];
+                if (item["fdAttType"] != "person") {
+                    switch (item["fdAttType"]) {
+                        case "defBorn":
+                            tempId = "checkbox-born";
+                            break;
+                        case "defMarry":
+                            tempId = "checkbox-marry";
+                            break;
+                        case "defAge":
+                            tempId = "checkbox-age";
+                            break;
+                        case "defEducation":
+                            tempId = "checkbox-education";
+                            break;
+                        case "defTrade":
+                            tempId = "checkbox-trade";
+                            break;
+                        case "defReceive":
+                            tempId = "checkbox-receive";
+                            break;
+                        case "defSex":
+                            tempId = "checkbox-sex";
+                            break;
+                        case "defMobile":
+                            tempId = "checkbox-mobile";
+                            break;
+                        case "defEmail":
+                            tempId = "checkbox-email";
+                            break;
+                        case "defAddress":
+                            tempId = "checkbox-address";
+                            break;
+                        case "defName":
+                            tempId = "checkbox-name";
+                            break;
+                        default :
+                            tempId = "";
+                    }
+                    if (tempId) {
+                        $("#" + tempId).trigger("click");
+                        if (item["fdRequire"] == 1) {
+                            $("input[name='items[i_" + (itemNum - 1) + "][fdRequire]']").trigger("click");
+                        }
+                    }
+                }
+                else {
+                    var seq = "i_" + itemNum++;
+                    var newPower = $(getTemp("checkbox-person-temp", {
+                        tab: "person" + itemNum,
+                        seq: seq,
+                        name: item["fdVarName"],
+                        type: item["fdType"]
+                    }));
+                    var options = item["options"];
+
+                    var domOptions = newPower.find("#person-" + seq + "-select");
+                    var domInputs = newPower.find("#person-" + seq + "-option-input");
+                    domOptions.empty();
+                    domInputs.empty();
+                    if (options) {
+                        for (var j = 0; j < options.length; j++) {
+                            domOptions.append(getTemp("model-person-select-option-temp", {
+                                value: options[j]["fdValue"],
+                                text: options[j]["fdShowName"]
+                            }));
+                            domInputs.append(getTemp("model-person-select-input-temp", {
+                                value: options[j]["fdShowName"],
+                                index: options[j]["fdShowSeq"],
+                                seq: seq
+                            }));
+                        }
+                    }
+                    $('.panel-body').append(newPower);
+                    if (item["fdRequire"] == 1) {
+                        $("input[name='items[i_" + (itemNum - 1) + "][fdRequire]']").trigger("click");
+                    }
+                }
+            }
+            bindItemEvent();
+        }
+
+        function addItemToView(itemHtml) {
+            $("#items").append(itemHtml);
+        }
+
+        $('.single-datetime').datetimepicker({
+            lang: 'ch',
+            format: "Y-m-d",
+            timepicker: false,
+            yearStart: 2015,
+            yearEnd: 2050,
+            step: 30,
+            {{if $row.id eq ""}}
+            minDate:0,
+            {{/if}}
+            todayButton: false
+        });
+        $("#f1").validate({
+            onkeyup: true,
+            wrapper: "p",
+            onsubmit: true,
+            errorClass: "error",
+            errorElement:"div",
+            errorPlacement: function (error, element) {
+                $("#"+element.attr("name")+"-error").removeClass("hidden");
+            },
+            success:function(lable){
+                $("#"+lable.attr("id")).addClass("hidden");
+            },
+            submitHandler: function (form) {
+                var bTime = new Date($('#BTime').val()).getTime(),
+                    eTime = new Date($('#ETime').val()).getTime(),
+                    nDate = new Date();
+                var nTime = new Date(nDate.getFullYear()+"-"+(nDate.getMonth()+1)+"-"+nDate.getDate()).getTime();
+                if (!bTime) {
+                    $('#BTime').focus();
+                    $("#time_error_b").removeClass("hidden");
+                    $("#time_error_e").addClass("hidden");
+                    $("#time_error_n").addClass("hidden");
+                }
+                {{if $row.id eq ""}}
+                else if(bTime<nTime){
+                    $('#BTime').focus();
+                    $("#time_error_n").removeClass("hidden");
+                    $("#time_error_b").addClass("hidden");
+                    $("#time_error_e").addClass("hidden");
+                }
+                {{/if}}
+                else if (!eTime) {
+                    $('#ETime').focus();
+                    $("#time_error_e").removeClass("hidden");
+                    $("#time_error_b").addClass("hidden");
+                    $("#time_error_n").addClass("hidden");
+                }
+                else if (compareBEDate(bTime, eTime)) {
+                    var name = trim($("input[name='fdTitle']").val());
+                    if(name){
+                        $("#f1").ajaxSubmit(function() {
+                            {{if $row.id eq ""}}
+                            window.location.href='/event/index';
+                            {{else}}
+                             window.location.href = window.document.referrer;
+                            {{/if}}
+                        });
+                    }
+                    else{
+                            $("#fdTitle-error").removeClass("hidden");
+                    }
+
+
+
+//                    form.submit();
+                }
+                else {
+
+                }
+            },
+            rules: {
+                fdTitle: {
+                    required: true,
+                    rangelength: [1, 100]
+                }
+            },
+            messages: {}
+        });
+
+        var nowYear = new Date().getFullYear();
+        //出生年份选项添加
+        for (var i = 1900; i <= nowYear; i++) {
+            var age_option = document.createElement('option');
+            age_option.setAttribute("value", i);
+            age_option.text = i;
+            $(".age_optiios").append(age_option);
+        }
+        var itemNum = 0;//item系列 只增不减
+
+        //复选框字段点击事件
+        $('.checkbox-inline input').off().click(function () {
+            if ($(this).is(':checked')) {
+                var tmp = $($("#" + $(this).attr('id') + "-temp").html());
+                tmp.attr("tab", $(this).attr('id'));
+                addItemToView(getTemp($(this).attr('id') + "-temp", {
+                    tab: $(this).attr('id'),
+                    seq: "i_" + itemNum++
+                }));
+                bindItemEvent();
+                var el = document.getElementById('items');
+                new Sortable(el);
+            }
+            else {
+                $("li[tab=" + $(this).attr('id') + "]").remove();
+            }
+        });
+        initItems();
+        function getTemp(tempId, opts) {
+            var defaultOpts = {
+                tab: "",
+                seq: "",
+                name: "",
+                type: "",
+                index: "",
+                showText: opts.type == "text" || !opts.type || opts.type == 0||opts.type == "number" ? "show" : "hidden",
+                showSelect: opts.type == "select" ? "show" : "hidden"
+            };
+            $.extend(true, defaultOpts, opts);
+            return nano($("#" + tempId).html(), defaultOpts);
+        }
+        $("#form-select-signUp").bind("blur",function(){
+            var t = $(this);
+            if(t.val()){
+                t.removeClass("error");
+            }
+            else{
+                t.addClass("error");
+            }
+        });
+        $("#btn-submit-edit-1").bind("blur",function(){
+            var t = $(this);
+            if(t.val()){
+                t.removeClass("error");
+            }
+            else{
+                t.addClass("error");
+            }
+        });
+        //自定义字段完成添加事件
+        function submit_edit() {
+            $('.btn-submit-edit').off().click(function () {
+                var edit = $(this).parent().parent().find('input');
+                var select  = $("#form-select-signUp");
+                var edit_val = trim(edit.val());
+                var select_val = select.val();
+                if(!edit_val){
+                    edit.removeClass("error");
+                    edit.addClass("error");
+                }
+                else{
+                    edit.removeClass("error");
+                }
+                if(!select_val){
+                    select.removeClass("error");
+                    select.addClass("error");
+                }
+                else{
+                    select.removeClass("error");
+                }
+                if (edit_val&&select_val) {
+                    var newPower = getTemp("checkbox-person-temp", {
+                        tab: $(this).parent().attr('id'),
+                        seq: "i_" + itemNum++,
+                        name: edit_val,
+                        type: select_val
+                    });
+                    $('.panel-body').append(newPower);
+                    edit.val("");
+                    select.val("");
+                }
+                bindItemEvent();
+                var el = document.getElementById('items');
+                new Sortable(el);
+            });
+        }
+
+        submit_edit();
+        //        添加选项模态框事件
+        function modal_delete() {
+            $('.btn-close-modal-select').click(function () {
+                $(this).parent().parent().remove();
+            });
+        }
+
+        $('.btn-add-modal-select').off().click(function () {
+            var item = $('#modal-add-select-item');
+            item.append(getTemp("model-select-model-temp", {
+                name: "选项"
+            }));
+            item.get(0).scrollTop = item.get(0).scrollHeight;
+            modal_delete();
+        });
+        $('#model-added-item').bind("click", function () {
+            var seq = $(this).data("seq");
+            var select = $("#person-" + seq + "-select"), input = $("#person-" + seq + "-option-input");
+            select.empty();
+            input.empty();
+            //添加默认选项
+            select.append(getTemp("model-person-select-option-temp", {
+                value:"",
+                text: "请选择"
+            }));
+            input.append(getTemp("model-person-select-input-temp", {
+                value:"请选择",
+                index: 0,
+                seq: seq
+            }));
+            var valArr = new Array(),valI = 0;
+            $('#modal-add-select-item input').each(function (index) {
+                index +=1;
+                var val =  $(this).val(),isSame = false;
+                for(var k=0;k<valArr.length;k++){
+                    if(valArr[k]==val){
+                        isSame = true;
+                    }
+                }
+                if(!isSame){
+                    valArr[valI++] = $(this).val();
+                    select.append(getTemp("model-person-select-option-temp", {
+                        value: index,
+                        text: $(this).val()
+                    }));
+                    input.append(getTemp("model-person-select-input-temp", {
+                        value: $(this).val(),
+                        index: index,
+                        seq: seq
+                    }));
+                }
+            });
+        });
+        function bindItemEvent() {
+            //添加select 选项
+            $(".btn-add-modal").unbind("click").bind("click", function () {
+                var seq = $(this).data("seq");
+                $("#model-added-item").data("seq", seq);
+                var inputs = $("#person-" + seq + "-option-input input");
+                var selectItem = $('#modal-add-select-item');
+                selectItem.empty();
+                if (inputs.length > 0) {
+                    inputs.each(function (index) {
+                        if(index!=0){
+                            selectItem.append(getTemp("model-select-model-temp", {
+                                name: "选项",
+                                value: $(this).val()
+                            }));
+                        }
+
+                    });
+                }
+                else {
+                    selectItem.append(getTemp("model-select-model-temp", {
+                        name: "选项"
+                    }));
+                }
+                modal_delete();
+            });
+            //删除item
+            $('.panel-body .left50 .checkbox-group .close').click(function () {
+                var $checkbox_group = $(this).parent().parent();
+                $checkbox_group.remove();
+                $('#' + $checkbox_group.attr('tab')).attr("checked", false);
+            });
+        }
+    })
+</script>

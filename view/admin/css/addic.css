@@ -1,0 +1,14 @@
+.error{border-color:#843534;box-shadow: inset 0 1px 1px rgba(0,0,0,.075),0 0 6px #ce8483;background-color:rgba(255,0,0,.1);border-radius:4px;}
+.black_overlay{display: none;position: absolute;top: 0%;left: 0%;width: 100%;height: 100%;background-color: black;z-index:1001;-moz-opacity: 0.8;opacity:.80;filter:alpha(opacity=80);}
+.white_content {display: none;position: absolute;top: 40%;left: 0;width: 100%;height: 10%;border: 1 solid lightblue;z-index:1002;text-align:center;}
+.notgood{border:1px solid #f00;}
+.msg_font{font-size:14px;font-weight:bold;color:#666;width:45%;height:70%;line-height:70%;padding-top:20px;margin-right: auto;margin-left: auto;background-color:#fff}
+.default_item{height:100px;width:100px;}
+.cannotsee{opacity:0;}
+.page a {border:1px solid #428bca; padding:3px 8px; margin:0px 2px; line-height:24px; COLOR: #428bca}
+.page a:hover{border:1px solid #428bca; COLOR:#fff; background:#ccc; text-decoration:none;}
+.page span {border:1px solid #428bca;padding:3px 8px; margin:0px 4px; line-height:24px; COLOR:#fff; background:#428bca; text-decoration:none; font-weight:normal;font-weight:bold;}
+.sdiv{width:200px;height:200px;position:relative;float:left;}
+.sfile{width:100%;height:100%;border:0px;}
+.uploadf{width:200px;height:200px;position:absolute;z-index:5;left:0;opacity:0;float:left;top:0px;}
+.input-error{padding-left:23px;background:url(../images/gantan.png) no-repeat;background-position:10px center;background-size:10px 10px;}

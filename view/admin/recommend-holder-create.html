@@ -1,0 +1,301 @@
+<link rel="stylesheet" type="text/css" href="./{{$user_dir_theme}}/js/bootstrap-submenu-2.0.4/css/bootstrap-submenu.css">
+<div class="modal fade" id="modal-add-select" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">选择推荐产品</h4>
+            </div>
+            <div class="modal-body" style="padding-top: 0">
+                <div class="btn-toolbar list-toolbar pull-right">
+                    <div class=" search form-group-select">
+                        <button class="btn btn-info pull-right" id="search_btn">搜索</button>
+                        <input class="form-control pull-right" style="height: 20px" value="{{$name}}" type="text" placeholder="输入商品名称" id="search_name">
+                        <input class="form-control pull-right" style="height: 20px" value="{{$serial}}" type="text" placeholder="输入商品编号" id="search_serial">
+                        <div class="dropdown pull-right" id="columns_menu">
+                            <button class="btn btn-default dropdown-toggle bs_down_bt" type="button" data-toggle="dropdown" data-submenu="" aria-expanded="false">
+                                <span id="bs_down_bt_text">选择类型</span> <span class="caret pull-right"></span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div id="modal-product-list">
+                    {{include file="recommend-holder-product-list.html"}}
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="clearfix"></div>
+                <hr>
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" id="model-added-product">确定</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<!--正文-->
+<div class="content">
+    <div class="header">
+        <h1 class="page-title">
+            {{if $row.id eq ""}}
+            新建推荐位
+            {{else}}
+            编辑推荐位
+            {{/if}}
+        </h1>
+        <ul class="breadcrumb">
+            <li><a href="/recommend/holder">推荐位管理</a></li>
+            <li class="active">
+                {{if $row.id eq ""}}
+                新建推荐位
+                {{else}}
+                编辑推荐位
+                {{/if}}
+            </li>
+        </ul>
+    </div>
+    <div class="main-content">
+        <form name="f1" id="f1" method="post" action="/recommend/holder?do=edited&id={{$row.id}}">
+            <div class="form-group">
+                <label class="form-label form-group-left" >推荐位名称<strong class="must"> *</strong></label>
+                <input type="text" maxlength="30" name="fdName" value="{{$row.fdName}}"
+                       class="form-control form-group-right "   placeholder="30个字符以内" required>
+                <div id="fdName-error" class="input-error hidden" style="display: block;">不能为空</div>
+            </div>
+            <div class="clearfix"></div>
+            <div class="form-group left50">
+                <button type="button" class="btn btn-info btn-add-power" data-toggle="modal"
+                        data-target="#modal-add-select">选择推荐产品</button>
+            </div>
+            <div class="clearfix"></div>
+            <div class="form-group">
+                <label class="form-label form-group-left" ></label>
+                <div class="panel-group" role="tablist" aria-multiselectable="true">
+                    <div class="panel panel-default panel-signUp">
+                        <div class="panel-heading" role="tab" id="heading1">
+                            <h4 class="panel-title">
+                                <span>
+                                    推荐商品列表
+                                </span>
+                                <a class="collapse-panel" role="button" data-toggle="collapse" href="#collapse1"
+                                   aria-expanded="true" aria-controls="collapse1"><i class="icon-chevron-down"></i></a>
+                            </h4>
+                        </div>
+                        <div id="collapse1" class="panel-collapse collapse in table-panel" role="tabpanel" aria-labelledby="heading1">
+                            <table class="table product-table table-striped">
+                                <thead>
+                                <tr>
+                                    <th>产品编号</th>
+                                    <th>产品名称</th>
+                                    <th style="width: 3.5em">操作</th>
+                                </tr>
+                                </thead>
+                                <tbody id="product_items" role="tablist" aria-multiselectable="true">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="finish">
+                <button class="btn btn-success" type="submit">完成</button>
+                {{if $row.id eq ""}}
+                {{else}}
+                    <button class="btn btn-default" type="button"
+                            onclick="window.location.href = window.document.referrer;"
+                    >取消</button>
+                {{/if}}
+
+            </div>
+            <input type="hidden" name="id" id="id" value="{{$row.id}}"/>
+        </form>
+        <footer>
+            <hr>
+            <p class="pull-right">© 2016 <a href="" target="_blank">广州涛略科技有限公司</a></p>
+        </footer>
+    </div>
+</div>
+
+<script type="text/javascript" src="./{{$user_dir_theme}}/js/bootstrap-submenu-2.0.4/js/bootstrap-submenu.min.js"></script>
+<script>
+    $(function () {
+        $("#search_btn").bind("click",function(){
+            var name = $("#search_name").val();
+            var serial = $("#search_serial").val();
+            $.ajax({
+                type: "GET",
+                url: "/product/index?do=getprodlisttorecommend",
+                data: {
+                    name:name,
+                    serial:serial,
+                    uid:searchColumnUId
+                }
+            }).done(function(msg){
+                if(msg){
+                    $("#modal-product-list").empty().append(msg);
+                }else{
+                }
+            });
+        });
+        var searchColumnUId = "{{$uid}}";
+        var searchColumnName = "{{$products.searchColumnName}}";
+        var columnsJsonStr = '{{$products.columnsJson}}';
+        var menu = '';
+        if(columnsJsonStr){
+            var columnsJson = JSON.parse(columnsJsonStr);
+            menu +='<ul class="dropdown-menu bs_down_menu">';
+            menu += '<li>';
+            menu += '<a tabindex="0" class="bs_menu_a"  href="javascript:;" >选择类型</a>';
+            for(var column in columnsJson){
+                menu+=getColumnsMenu(columnsJson[column]);
+            }
+            menu+='</ul>';
+            $("#columns_menu").append(menu);
+        }
+        $("#columns_menu").submenupicker();
+        function getColumnsMenu(columnJson){
+            var menu = '';
+            if(columnJson.nodes&&columnJson.nodes.vm){
+                delete columnJson.nodes.vm;//删除虚拟节点
+            }
+            if(columnJson.nodes&&!isEmptyNode(columnJson.nodes)){
+                menu = '<li class="dropdown-submenu">';
+                menu += '<a tabindex="0" class="bs_menu_a" href="javascript:;"  data-uid="'+columnJson.uid+'" >'+columnJson.text+'</a>';
+                menu+='<ul class="dropdown-menu">';
+                for(var column in columnJson.nodes){
+                    menu+=getColumnsMenu(columnJson.nodes[column]);
+                }
+                menu+='</ul>';
+            }
+            else{
+                menu = '<li>';
+                menu += '<a tabindex="0" class="bs_menu_a"  href="javascript:;" data-uid="'+columnJson.uid+'">'+columnJson.text+'</a>';
+            }
+            menu+="</li>";
+            return menu;
+        }
+        function isEmptyNode(nodes){
+            for(var node in nodes){
+                if(node != "vm"){
+                    return false;
+                }
+            }
+            return true;
+        }
+        $(".bs_menu_a").bind("click",function(){
+            var a = $(this);
+            var uid = a.data("uid");
+            var text  = a.text();
+            searchColumnUId = uid?uid:"";
+            setBSMenuTitle(text);
+        });
+        /**
+         * 设置搜索菜单按钮上的文字
+         * @param text
+         */
+        function setBSMenuTitle(text){
+            $("#bs_down_bt_text").text(text);
+        }
+        var productsJson = '{{$row.productsJson}}';
+        var productTrTemp = '<tr>'
+        +'    <td>'
+        +'        <input type="hidden" value="{id}" name="productIds[]">'
+        +'        {serial}'
+        +'    </td>'
+        +'    <td>{name}</td>'
+        +'    <td>'
+        +'        <button type="button" class="close del_product_item" aria-label="Close">'
+        +'            <span aria-hidden="true">&times;</span>'
+        +'        </button>'
+        +'    </td>'
+        +'</tr>';
+        function initProducts(){
+            if(!productsJson){
+                return;
+            }
+            var products = JSON.parse(productsJson);
+            if(!products){
+                return;
+            }
+            for(var i=0;i<products.length;i++){
+                var product = products[i];
+                $("#product_items").prepend(nano(productTrTemp,{
+                    id:product["fdProductId"],
+                    serial:product["productSerial"],
+                    name:product["productName"]
+                }));
+            }
+            recommendProductEvent();
+        }
+        initProducts();
+        $("#model-added-product").bind("click",function(){
+            $.each($("#modal-product-list input[type=checkbox]:checked"),function(k,v){
+                var ch = $(v);
+                var serial = ch.data("serial");
+                var name = ch.data("name");
+                if(serial||name){
+                    $("#product_items").append(nano(productTrTemp,{
+                        id:ch.data("id"),
+                        serial:serial,
+                        name:name
+                    }));
+                }
+
+            });
+            recommendProductEvent();
+        });
+        function recommendProductEvent(){
+            $(".del_product_item").unbind("click").bind("click",function(){
+                $(this).parent().parent().remove();
+            });
+            var el = document.getElementById('product_items');
+            new Sortable(el);
+        }
+
+        $("#f1").validate({
+            onkeyup: true,
+            wrapper: "p",
+            onsubmit: true,
+            errorClass: "error",
+            errorElement: "div",
+            errorPlacement: function (error, element) {
+                $("#" + element.attr("name") + "-error").removeClass("hidden");
+            },
+            success: function (lable) {
+                $("#" + lable.attr("id")).addClass("hidden");
+            },
+            submitHandler: function (form) {
+                var name = trim($("input[name='fdName']").val());
+                if(!name){
+                    $("#fdName-error").removeClass("hidden");
+                }
+                if (name ) {
+                    $("#f1").ajaxSubmit(function () {
+                        {{if $row.id eq "" }}
+                        window.location.href = '/recommend/holder';
+                        {{else}}
+                        window.location.href = window.document.referrer;
+                        {{/if}}
+                        });
+                    }
+                }
+                ,
+                rules:{
+                    fdName:{
+                        required:true,
+                                rangelength
+                    :
+                        [1, 30]
+                    }
+                }
+                ,
+                messages:{
+
+                }
+            }
+        );
+    });
+</script>

@@ -1,0 +1,103 @@
+﻿<div class="modal-content">
+	<div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+		<h4 class="modal-title">评论详情</h4>
+	</div>
+	<div class="modal-body" >
+		<div class="media">
+			<div class="media-left">
+				<a href="#">
+					<img class="media-object" src="{{$main.fdHeaderImgUrl}}">
+				</a>
+			</div>
+			<div class="media-body">
+				<h4 class="media-heading">{{$main.userName}}</h4>
+				<span class="d-message">{{$main.fdMessage}} </span>
+				<img src="{{$main.fdImageBase64}}" alt="">
+				<div id="modal_child_msg">
+					{{foreach from=$child name=nar item=row}}
+					<div class="media">
+						<div class="media-left">
+							<a href="#">
+								<img class="media-object" src="{{$row.userHeader}}">
+							</a>
+						</div>
+						<div class="media-body">
+							<h4 class="media-heading">{{$row.userName}}</h4>
+							<span class="rp-message">{{$row.fdMessage}}</span>
+							<img src="{{$row.fdImageBase64}}" alt="">
+						</div>
+					</div>
+					{{/foreach}}
+				</div>
+
+
+			</div>
+		</div>
+	</div>
+	<div class="modal-footer">
+		{{if $main.fdParentUId eq ""||$main.fdParentUId eq "0"}}
+		<input type="text" class="form-control comment-input" id="model_input_msg"  maxlength="500" placeholder="输入回复内容">
+		<button type="button" class="btn btn-primary" id="model_send_msg" data-puid="{{$main.fdUId}}" >发送</button>
+		<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+		{{else}}
+		<button type="button" class="btn btn-primary" data-dismiss="modal" >确定</button>
+		{{/if}}
+	</div>
+</div>
+
+<script>
+	(function($){
+		$(function(){
+
+			$(".d-message").each(function(){
+				$(this).html(replace_em($(this).html()));
+			});
+			//表情转换
+			function replace_em(str) {
+				str = str.replace(/\</g, '&lt;');
+				str = str.replace(/\>/g, '&gt;');
+				str = str.replace(/\n/g, '<br/>');
+				str = str.replace(/\[em_([0-9]*)\]/g,
+						'<img src="./{{$user_dir_theme}}/../public/chatroom/images/arclist/$1.gif" border="0" />');
+				return str;
+			}
+			var childMsgDom = $("#modal_child_msg");
+			$("#model_send_msg").bind("click",function(){
+				var msg = $("#model_input_msg").val();
+				var puid = $(this).data("puid");
+				console.log(puid);
+				if(msg){
+					$.ajax({
+						type: "GET",
+						url: "/chat/message?do=addmsg",
+						data: {
+							fdMessage:msg,
+							fdType:"text",
+							fdParentUId:puid,
+							fdRoomNum:"{{$roomNum}}",
+							fdHeader:"./{{$user_dir_theme}}/images/default_header.jpg"
+						},
+						cache:false
+					}).done(function(res){
+						var msgJson = JSON.parse(res);
+						if(msgJson[0]=="0"){
+							childMsgDom.append(nano($("#message_templ").html(),{
+								header:"./{{$user_dir_theme}}/images/default_header.jpg",
+								name:"{{$smarty.session.uname}}",
+								message:msg
+							}));
+							$("#model_input_msg").val("");
+						}
+						else{
+							modalmsg.alert("发送失败，请稍后重试");
+						}
+					});
+				}
+				else{
+					modalmsg.alert("发送的内容为空");
+				}
+			});
+		});
+	})(window.jQuery);
+</script>

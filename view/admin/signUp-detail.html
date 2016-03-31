@@ -1,0 +1,70 @@
+<div class="modal-group">
+    <span class="modal-group-left">活动名称:</span>
+    <span class="modal-group-right">{{$event.fdTitle}}</span>
+</div>
+<div class="clearfix"></div>
+<div class="modal-group">
+    <span class="modal-group-left">报名字段:</span>
+    <span class="modal-group-right"  >
+        {{foreach from=$eventItems name=nar item=eventItem}}
+            {{$eventItem.fdVarName}}
+            {{if !$smarty.foreach.nar.last}}
+            、
+            {{/if}}
+        {{/foreach}}
+    </span>
+</div>
+<div class="clearfix"></div>
+<div class="modal-group">
+    <span class="modal-group-left">所属电台:</span>
+    <span class="modal-group-right">{{$event.partnerName}}</span>
+</div>
+<div class="clearfix"></div>
+<div class="modal-group">
+    <span class="modal-group-left">活动进程:</span>
+    <span class="modal-group-right">
+        {{if $event.fdProcessStatus=="stop"}}
+        <span class="process-end">已结束</span>
+        {{elseif $event.fdProcessStatus=="start"}}
+        <span class="process-work">进行中</span>
+        {{else}}
+        <span class="process-notStart">未开始</span>
+        {{/if}}
+    </span>
+</div>
+<div class="clearfix"></div>
+<div class="modal-group">
+    <span class="modal-group-left">开始日期:</span>
+    <span class="modal-group-right">{{$event.fdBTime|date_format:'%Y-%m-%d'}}</span>
+</div>
+<div class="clearfix"></div>
+<div class="modal-group">
+    <span class="modal-group-left">结束日期:</span>
+    <span class="modal-group-right">{{$event.fdETime|date_format:'%Y-%m-%d'}}</span>
+</div>
+<div class="clearfix"></div>
+<div class="modal-group">
+    <span class="modal-group-left">已报名人数:</span>
+    <span class="modal-group-right">{{$joinerTotal}}</span>
+</div>
+<div class="clearfix"></div>
+<div class="modal-group">
+    <span class="modal-group-left">添加时间:</span>
+    <span class="modal-group-right">{{$event.fdCreated|date_format:'%Y-%m-%d %H:%M:%S'}}</span>
+</div>
+<div class="clearfix"></div>
+<!--<div class="modal-group">-->
+    <!--<span class="modal-group-left">发布人:</span>-->
+    <!--<span class="modal-group-right">{{$event.createdByName}}</span>-->
+<!--</div>-->
+<div class="clearfix"></div>
+<div class="modal-group">
+    <span class="modal-group-left">状态:</span>
+    <span class="modal-group-right">
+        {{if $event.fdStatus=="stop"}}
+        <span class="status-stop">停用</span>
+        {{else}}
+        <span class="status-work">启用</span>
+        {{/if}}
+    </span>
+</div>

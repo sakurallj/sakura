@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>新建抽奖</title>
+    <link rel="stylesheet" href="css/bootstrap.css"/>
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="css/font-awesome.css">
+    <link rel="stylesheet" type="text/css" href="css/font.css">
+    <link rel="stylesheet" type="text/css" href="css/all-purpose.css">
+    <link rel="stylesheet" type="text/css" href="css/create.css">
+    <link rel="stylesheet" type="text/css" href="css/lottery.css">
+</head>
+<body>
+<!--顶部导航-->
+<div id="insert-top"></div>
+<!--侧边栏-->
+<div id="insert-side"></div>
+<!--正文-->
+<div class="content">
+    <div class="header">
+        <h1 class="page-title">新建抽奖</h1>
+        <ul class="breadcrumb">
+            <li><a href="">抽奖管理</a> </li>
+            <li class="active">新建抽奖</li>
+        </ul>
+    </div>
+    <div class="main-content">
+        <form>
+            <div class="form-group">
+                <label class="form-label form-group-left" for="form-title">活动名称</label>
+                <input type="text" class="form-control form-group-right required" id="form-title" placeholder="">
+            </div>
+            <div class="clearfix"></div>
+            <div class="form-group">
+                <label class="form-label form-group-left" for="">活动介绍</label>
+                <input type="text" class="form-control form-group-right" id="" placeholder="">
+            </div>
+            <div class="clearfix"></div>
+            <div class="form-group">
+                <label class="form-label form-group-left" for="">每人抽奖次数</label>
+                <input type="text" class="form-control form-group-right required" id="" placeholder="">
+            </div>
+            <div class="clearfix"></div>
+            <div class="form-group">
+                <label class="form-label form-group-left">参与条件</label>
+                <div class="form-group-right checkbox-group">
+                    <label class="checkbox-inline">
+                        <input class="allow-lo" type="checkbox" placeholder=""> 需要登录才能参与
+                    </label>
+                </div>
+            </div>
+            <div class="clearfix"></div>
+            <div class="form-group left50 dropdown">
+                <label class="form-label form-group-left">起始时间</label>
+                <input name="single-datetime" type="text" class="form-control form-group-right dropdown-toggle required" placeholder="" value="2016-03-01">
+                <label class="form-label form-group-left">截止时间</label>
+                <input name="single-datetime" type="text" class="form-control form-group-right dropdown-toggle required" placeholder="" value="2016-03-01">
+            </div>
+            <div class="form-group">
+                <label class="form-label form-group-left" for="img">图片(640x220)</label>
+                <div class="form-group-banner">
+                    <div id="photo">
+                        <div class="banner-auto">
+                            <i class="icon-plus img-plus"></i>
+                            <div class="clearfix"></div>
+                            <span class="font-plus">添加图片</span>
+                        </div>
+                    </div>
+                    <a class="form-group-a" href="">
+                        <input  type="file" class="form-control form-control-banner" id="img" placeholder="">
+                    </a>
+                </div>
+            </div>
+            <div class="clearfix"></div>
+            <div class="form-group">
+                <label class="form-label form-group-left" for="">奖券总数</label>
+                <input type="text" class="form-control form-group-right required" id="" placeholder="">
+            </div>
+            <div class="clearfix"></div>
+            <div class="form-group  form-group-select">
+                <label class="form-label form-group-left" for="">活动范围</label>
+                <select class="dropdown-toggle form-select-character form-group-right">
+                    <option value="">请选择省份</option>
+                    <option value="1">广东</option>
+                    <option value="2">广西</option>
+                </select>
+                <select class="dropdown-toggle form-select-character form-group-right">
+                    <option value="">请选择城市</option>
+                    <option value="1">广州市</option>
+                    <option value="2">深圳市</option>
+                </select>
+                <span>(不选表示全国)</span>
+            </div>
+            <div class="clearfix"></div>
+            <div class="form-group">
+                <label class="form-label form-group-left" for="">链接网址</label>
+                <input type="text" class="form-control form-group-right required" id="" placeholder="">
+            </div>
+            <div class="clearfix"></div>
+            <div class="form-group  form-group-select">
+                <label class="form-label form-group-left" for="">是否特殊活动</label>
+                <select class="dropdown-toggle form-select-character form-group-right required">
+                    <option value="">请选择</option>
+                    <option value="1">是</option>
+                    <option value="2">否</option>
+                </select>
+            </div>
+            <div class="clearfix"></div>
+            <div class="form-group  form-group-select">
+                <label class="form-label form-group-left" for="">测试状态</label>
+                <select class="dropdown-toggle form-select-character form-group-right required">
+                    <option value="">请选择</option>
+                    <option value="1">是</option>
+                    <option value="2">否</option>
+                </select>
+            </div>
+            <div class="clearfix"></div>
+        </form>
+        <div class="clearfix"></div>
+        <div class="finish">
+            <button class="btn btn-success">完成</button>
+            <button class="btn btn-default">取消</button>
+        </div>
+        <footer>
+            <hr>
+            <p class="pull-right">© 2016 <a href="" target="_blank">广州涛略科技有限公司</a></p>
+        </footer>
+    </div>
+</div>
+</body>
+<script type="text/javascript" src="js/jquery.min.js"></script>
+<script type="text/javascript" src="js/bootstrap.min.js"></script>
+<script type="text/javascript" src="js/all-purpose.js"></script>
+<script>
+    $(document).ready(function(){
+        $('.allow-ed').click(function(){
+            if($('.allow-ed:checked').length>0){
+                $('.time-of-od').css({'display':'block'});
+            }
+            else{
+                $('.time-of-od').css({'display':'none'});
+            }
+        });
+        $('#img').change(function() {
+            var file = this.files[0];
+            var r = new FileReader();
+            r.readAsDataURL(file);
+            $(r).load(function() {
+                $('#photo').html('<img style="width: 640px;max-height: 220px;position: absolute" src="' + this.result + '" alt="" />');
+            })
+        })
+    })
+</script>
+</html>

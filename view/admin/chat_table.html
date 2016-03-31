@@ -1,0 +1,122 @@
+﻿<table class="table">
+	<thead>
+	<tr>
+		<th  ><input type="checkbox" name="topCheckbox"/></th>
+		<th  >编号</th>
+		<th  >名称</th>
+		<th  >创建时间</th>
+		<th  >评论总数</th>
+		<th  >用户总数</th>
+		<th  >状态</th>
+		<th  ></th>
+	</tr>
+	</thead>
+	<tbody>
+		{{foreach from=$ar name=nar item=row}}
+		<tr >
+			<td ><input type="checkbox" name="checkbox" value="{{$row.id}}" /></td>
+			<td>{{$row.fdNum}}</td>
+			<td class="tdOverHidden">{{$row.fdName}}</td>
+			<td class="tdOverHidden">{{$row.fdCreated}}</td>
+			<td> {{$row.messageTotal}}</td>
+			<td>{{$row.userTotal}}</td>
+			<td >
+				{{if $row.fdStatus  eq "stop"}}
+					<span class="status-stop">停用</span>
+				{{else}}
+					<span class="status-work">启用</span>
+				{{/if}}
+			</td>
+			<td>
+				<a href="/chat/index?do=edit&id={{$row.id}}"><i class="icon-pencil"></i></a>
+				<a href="javascript:;" name="delbtn" class="delbtn"><i class="icon-trash"></i></a>
+				<a href="/chat/index?do=chatmanage&id={{$row.id}}"><i class="icon-folder-close"></i></a>
+				{{if $row.fdStatus eq "stop"}}
+					<a href=""><i class="icon-play start_room hidden"></i></a>
+				{{else}}
+					<a href=""><i class="icon-pause stop_room hidden"></i></a>
+				{{/if}}
+			</td>
+		</tr>
+		{{/foreach}}
+	</tbody>
+</table>
+<div class="page" style="text-align:center">
+	{{$sy}}
+</div>
+<script>
+    (function($){
+		$("a[name=delbtn]").click(function(){
+			obj=$(this);
+			var ar=new Array();
+			$.each($("input[type=checkbox]:checked"),function(k,v){
+				ar[k]=v.value
+			});
+			if(ar.length>0){
+				modalmsg.confirm("确定删除吗？",function(){
+					$.ajax({
+						type: "GET",
+						url: "/chat/index?do=del",
+						data: "ids="+ar,
+						dataType:'json',
+						cache:false,
+						success: function(msg){
+							if(msg[0]==0){
+								window.location.reload();
+							}else{
+								alert(msg[1])
+							}
+						},
+						error:function(){alert('error')},
+						timeout:5000
+					});
+				});
+
+			}
+		});
+		$(".stop_room").bind("click",function(){
+			var id = $(this).data("id");
+			modalmsg.confirm("确定停用吗？",function(){
+				if(id){
+					$.ajax({
+						type: "GET",
+						url: "/chat/index?do=stoproom",
+						data: {
+							id:id
+						},
+						dataType:'json',
+						cache:false
+					}).done(function(msg){
+						if(msg[0]==0){
+							window.location.reload();
+						}else{
+							alert(msg[1])
+						}
+					});
+				}
+			});
+		});
+		$(".start_room").bind("click",function(){
+			var id = $(this).data("id");
+			modalmsg.confirm("确定启用吗？",function(){
+				if(id){
+					$.ajax({
+						type: "GET",
+						url: "/chat/index?do=startroom",
+						data: {
+							id:id
+						},
+						dataType:'json',
+						cache:false
+					}).done(function(msg){
+						if(msg[0]==0){
+							window.location.reload();
+						}else{
+							alert(msg[1])
+						}
+					});
+				}
+			});
+		});
+    })(window.jQuery);
+</script>

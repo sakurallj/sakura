@@ -1,0 +1,192 @@
+<!--正文-->
+<div class="content">
+    <div class="header">
+        <h1 class="page-title">商品推荐列表</h1>
+        <ul class="breadcrumb">
+            <li><a href="/recommend/index">商品推荐管理</a></li>
+            <li class="active">商品推荐列表</li>
+        </ul>
+    </div>
+    <div class="main-content">
+        <div class="btn-toolbar list-toolbar pull-left">
+            <button class="btn btn-success start" data-type="top_btn">启用</button>
+            <button class="btn btn-default stop" data-type="top_btn">停用</button>
+            <button class="btn btn-danger del" data-dismiss="modal" data-type="top_btn">删除</button>
+            <div class=" search form-group-select">
+                <button class="btn btn-info" id="search_btn">搜索</button>
+                <input class="form-control" value="{{$holderName}}" type="text" placeholder="输入推荐位名称" id="search_holder_name">
+                <input class="form-control" value="{{$prodName}}" type="text" placeholder="输入商品名称" id="search_prod_name">
+                <input class="form-control" value="{{$prodSerial}}" type="text" placeholder="输入商品编号" id="search_prod_serial">
+            </div>
+        </div>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th class="table-checkbox"><input type="checkbox" value="-1"></th>
+                    <th>推荐位名称</th>
+                    <th>商品编号</th>
+                    <th>商品名称</th>
+                    <th>添加时间</th>
+                    <th>状态</th>
+                    <th style="width: 3.5em;">操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{foreach from=$ar name=nar item=row}}
+                <tr>
+                    <td><input type="checkbox" value="{{$row.id}}"></td>
+                    <td>{{$row.holderName}}</td>
+                    <td>{{$row.productSerial}}</td>
+                    <td>{{$row.productName}}</td>
+                    <td>{{$row.fdCreated|date_format:'%Y-%m-%d %H:%M:%S'}}</td>
+                    <td>
+                        {{if $row.fdStatus=="stop"}}
+                        <span class="status-stop">停用</span>
+                        {{else}}
+                        <span class="status-work">启用</span>
+                        {{/if}}
+                    </td>
+                    <td>
+                        <!--<a href="/recommend/index?do=edit&id={{$row.id}}" data-id="{{$row.id}}" title="编辑"><i class="icon-pencil"></i></a>-->
+                        <a  href="javascript:;" data-id="{{$row.id}}" class="del" title="删除">
+                            <i class="icon-trash"></i>
+                        </a>
+                    </td>
+                </tr>
+                {{/foreach}}
+            </tbody>
+        </table>
+        <div class="clearfix"></div>
+        <div class="page" style="text-align:center">
+            {{$sy}}
+        </div>
+        <footer>
+            <hr>
+            <p class="pull-right">© 2016 <a href="" target="_blank">广州涛略科技有限公司</a></p>
+        </footer>
+    </div>
+</div>
+<script>
+    (function($){
+        $(".del").click(function(){
+            var ar=new Array();
+            var type = $(this).data("type");
+            if(type=="top_btn"){
+                $.each($("input[type=checkbox]:checked"),function(k,v){
+                    ar[k]=v.value;
+                });
+            }
+            else{
+                if(ar.length==0){
+                    ar[0]=$(this).data("id");
+                }
+            }
+            if(ar.length>0){
+                modalmsg.confirm("确定删除吗？",function(){
+                    $.ajax({
+                        type: "GET",
+                        url: "/recommend/index?do=del",
+                        data: {
+                            ids:ar
+                        },
+                        cache:false
+                    }).done(function(msg){
+                        var msgJson = JSON.parse(msg);
+                        if(msgJson[0]==0){
+                            window.location.reload();
+                        }else{
+                            modalmsg.alert(msgJson[1])
+                        }
+                    });
+                });
+
+            }
+            else{
+                modalmsg.alert("请选择要删除的商品推荐");
+            }
+        });
+        $(".stop").bind("click",function(){
+            var ar=new Array();
+            var type = $(this).data("type");
+            if(type=="top_btn"){
+                $.each($("input[type=checkbox]:checked"),function(k,v){
+                    ar[k]=v.value;
+                });
+            }
+            else{
+                if(ar.length==0){
+                    ar[0]=$(this).data("id");
+                }
+            }
+            if(ar.length>0){
+                modalmsg.confirm("确定停用吗？",function(){
+                    $.ajax({
+                        type: "GET",
+                        url: "/recommend/index?do=stop",
+                        data: {
+                            ids:ar
+                        },
+                        cache:false
+                    }).done(function(msg){
+                        var msgJson = JSON.parse(msg);
+                        if(msgJson[0]==0){
+                            window.location.reload();
+                        }else{
+                            alert(msgJson[1])
+                        }
+                    });
+                });
+            }
+            else{
+                modalmsg.alert("请选择要停用的商品推荐");
+            }
+        });
+        $(".start").bind("click",function(){
+            var ar=new Array();
+            var type = $(this).data("type");
+            if(type=="top_btn"){
+                $.each($("input[type=checkbox]:checked"),function(k,v){
+                    ar[k]=v.value;
+                });
+            }
+            else{
+                if(ar.length==0){
+                    ar[0]=$(this).data("id");
+                }
+            }
+
+            if(ar.length>0){
+                modalmsg.confirm("确定启用吗？",function(){
+                    $.ajax({
+                        type: "GET",
+                        url: "/recommend/index?do=start",
+                        data: {
+                            ids:ar
+                        },
+                        cache:false
+                    }).done(function(msg){
+                        var msgJson = JSON.parse(msg);
+                        if(msgJson[0]==0){
+                            window.location.reload();
+                        }else{
+                            alert(msgJson[1])
+                        }
+                    });
+                });
+            }
+            else{
+                modalmsg.alert("请选择要启用的商品推荐");
+            }
+
+        });
+
+        $("#search_btn").bind("click",function(){
+            var holderName = $("#search_holder_name").val();
+            var prodName   = $("#search_prod_name").val();
+            var prodSerial = $("#search_prod_serial").val();
+            window.location.href='/recommend/index?'+'holderName='
+                    +holderName+"&prodName="
+                    +prodName+"&prodSerial="+prodSerial;
+        });
+    })(window.jQuery);
+</script>

@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>调查列表</title>
+    <link rel="stylesheet" href="css/bootstrap.css"/>
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="css/font-awesome.css">
+    <link rel="stylesheet" type="text/css" href="css/all-purpose.css">
+    <link rel="stylesheet" type="text/css" href="css/list.css">
+    <link rel="stylesheet" type="text/css" href="css/font.css">
+    <link rel="stylesheet" type="text/css" href="css/list-table.css">
+    <!--<link rel="stylesheet" type="text/css" href="css/layout.css">-->
+</head>
+<body>
+<div class="modal fade"  id="result" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">《标题》调查结果</h4>
+            </div>
+            <div class="modal-body">
+                <div class="result-list">
+                    <div class="result-item">
+                        <div class="item-head">
+                            <h4 class="item-title">第一问</h4>
+                        </div>
+                        <div class="item-body">
+                            <ul class="item-body-option-list">
+                                <li class="item-body-option-li">
+                                    <strong>选项一</strong>
+                                    <div class="item-body-option-meta">
+                                        <div class="item-meta-bg">
+                                            <em class="item-meta-leng" style="width: 50%"></em>
+                                        </div>
+                                        <span class="item-meta-num">1票</span>
+                                        <span class="item-meta-percent">50%</span>
+                                    </div>
+                                </li>
+                                <li class="item-body-option-li">
+                                    <strong>选项二</strong>
+                                    <div class="item-body-option-meta">
+                                        <div class="item-meta-bg">
+                                            <em class="item-meta-leng" style="width: 50%"></em>
+                                        </div>
+                                        <span class="item-meta-num">1票</span>
+                                        <span class="item-meta-percent">50%</span>
+                                    </div>
+                                </li>
+                                <li class="item-body-option-li">
+                                    <strong>选项三</strong>
+                                    <div class="item-body-option-meta">
+                                        <div class="item-meta-bg">
+                                            <em class="item-meta-leng" style="width: 0%"></em>
+                                        </div>
+                                        <span class="item-meta-num">0票</span>
+                                        <span class="item-meta-percent">0%</span>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="result-item">
+                        <div class="item-head">
+                            <h4 class="item-title">第二问</h4>
+                        </div>
+                        <div class="item-body">
+                            <ul class="item-body-option-list">
+                                <li class="item-body-option-li">
+                                    <strong>选项一</strong>
+                                    <div class="item-body-option-meta">
+                                        <div class="item-meta-bg">
+                                            <em class="item-meta-leng" style="width: 50%"></em>
+                                        </div>
+                                        <span class="item-meta-num">1票</span>
+                                        <span class="item-meta-percent">50%</span>
+                                    </div>
+                                </li>
+                                <li class="item-body-option-li">
+                                    <strong>选项二</strong>
+                                    <div class="item-body-option-meta">
+                                        <div class="item-meta-bg">
+                                            <em class="item-meta-leng" style="width: 50%"></em>
+                                        </div>
+                                        <span class="item-meta-num">1票</span>
+                                        <span class="item-meta-percent">50%</span>
+                                    </div>
+                                </li>
+                                <li class="item-body-option-li">
+                                    <strong>选项三</strong>
+                                    <div class="item-body-option-meta">
+                                        <div class="item-meta-bg">
+                                            <em class="item-meta-leng" style="width: 0%"></em>
+                                        </div>
+                                        <span class="item-meta-num">0票</span>
+                                        <span class="item-meta-percent">0%</span>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal">确认</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<!--删除确认-->
+<div class="modal small fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h3 id="myModalLabel">删除确认</h3>
+            </div>
+            <div class="modal-body">
+                <p class="error-text"><i class="icon-warning-sign modal-icon"></i>您确认要删除该调查吗？<br>此操作无法撤销。</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" data-dismiss="modal" aria-hidden="true">取消</button>
+                <button class="btn btn-danger" data-dismiss="modal">删除</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--顶部导航-->
+<div id="insert-top"></div>
+<!--侧边栏-->
+<div id="insert-side"></div>
+<!--正文-->
+<div class="content">
+    <div class="header">
+        <h1 class="page-title">调查列表</h1>
+        <ul class="breadcrumb">
+            <li><a href="">调查管理</a> </li>
+            <li class="active">调查列表</li>
+        </ul>
+    </div>
+    <div class="main-content">
+        <ul class="nav nav-tabs nav-justified">
+            <li role="presentation"><a href="#">用户管理</a></li>
+            <li role="presentation" class="active"><a href="#">评论管理</a></li>
+        </ul>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>用户名</th>
+                    <th>id</th>
+                    <th>联系方式</th>
+                    <th style="width: 3.5em">操作</th>
+                </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>科比</td>
+                <td>kobe</td>
+                <td>13813800000</td>
+                <td>
+                    <a href="user.html"><i class="icon-pencil"></i></a>
+                    <a href="#myModal" role="button" data-toggle="modal"><i class="icon-trash"></i></a>
+                </td>
+            </tr>
+            <tr>
+                <td>詹姆斯</td>
+                <td>james</td>
+                <td>13413400000</td>
+                <td>
+                    <a href="user.html"><i class="icon-pencil"></i></a>
+                    <a href="#myModal" role="button" data-toggle="modal"><i class="icon-trash"></i></a>
+                </td>
+            </tr>
+            <tr>
+                <td>韦德</td>
+                <td>wade</td>
+                <td>13713700000</td>
+                <td>
+                    <a href="user.html"><i class="icon-pencil"></i></a>
+                    <a href="#myModal" role="button" data-toggle="modal"><i class="icon-trash"></i></a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <div class="clearfix"></div>
+        <ul class="pagination">
+            <li><a href="#">«</a></li>
+            <li class="active"><a href="#">1</a></li>
+            <li><a href="#">2</a></li>
+            <li><a href="#">3</a></li>
+            <li><a href="#">4</a></li>
+            <li><a href="#">5</a></li>
+            <li><a href="#">»</a></li>
+        </ul>
+        <footer>
+            <hr>
+            <p class="pull-right">© 2016 <a href="" target="_blank">广州涛略科技有限公司</a></p>
+        </footer>
+    </div>
+</div>
+
+
+<script type="text/javascript" src="js/jquery.min.js"></script>
+<script type="text/javascript" src="js/bootstrap.min.js"></script>
+<script type="text/javascript" src="js/all-purpose.js"></script>
+</body>
+</html>

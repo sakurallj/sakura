@@ -1,0 +1,162 @@
+<div id="sidebar-nav">
+    <ul id="dashboard-menu">
+        <li id="sidebar-nav-home">
+            <a class="dropdown-toggle" href="#"><i class="icon-home"></i><span>主页</span></a>
+        </li>
+        {{foreach from=$sysmodule name=nusrprivs item=iprivs}}
+        {{if $iprivs.id eq '1'}}
+        <li id="sidebar-nav-character">
+            <a class="dropdown-toggle" href="#"><i class="icon-user"></i><span>角色管理</span><i
+                    class="icon-chevron-down"></i></a>
+            <ul class="submenu">
+                <li><a class="create" href="/admin/role?do=add">新建角色</a></li>
+                <li><a class="list" href="/admin/role">角色列表</a></li>
+            </ul>
+        </li>
+        {{/if}}
+        {{if $iprivs.id eq '2'}}
+        <li id="sidebar-nav-user">
+            <a class="dropdown-toggle" href="#"><i class="icon-group"></i><span>用户管理</span><i
+                    class="icon-chevron-down"></i></a>
+            <ul class="submenu">
+                <li><a class="create" href="/admin/operator?do=add">新建用户</a></li>
+                <li><a class="list" href="/admin/operator">用户列表</a></li>
+            </ul>
+        </li>
+        {{/if}}
+        {{if $iprivs.id eq '3'}}
+        <li id="sidebar-nav-FM">
+            <a class="dropdown-toggle" href="#"><i class="icon-headphones"></i><span>电台管理</span><i
+                    class="icon-chevron-down"></i></a>
+            <ul class="submenu">
+                <li><a class="create" href="/partner/index?do=add">新建电台</a></li>
+                <li><a class="list" href="/partner/index">电台列表</a></li>
+            </ul>
+        </li>
+        {{/if}}
+        {{if $iprivs.id eq '4'}}
+        <li id="sidebar-nav-comment">
+            <a class="dropdown-toggle" href="#"><i class="icon-comment"></i><span>聊天室管理</span><i
+                    class="icon-chevron-down"></i></a>
+            <ul class="submenu">
+                <li><a class="create" href="/chat/index?do=add">新建聊天室</a></li>
+                <li><a class="list" href="/chat/index">聊天室列表</a></li>
+                <li><a class="create" href="/chat/sensitivity?do=add">新建敏感词</a></li>
+                <li><a class="list" href="/chat/sensitivity">敏感词列表</a></li>
+            </ul>
+        </li>
+        {{/if}}
+        {{if $iprivs.id eq '5'}}
+        <li id="sidebar-nav-lottery">
+            <a class="dropdown-toggle" href="#"><i class="icon-gift"></i><span>抽奖管理</span><i class="icon-chevron-down"></i></a>
+            <ul class="submenu">
+                <li><a class="create" href="/lottery/index?do=add&ltype=1">新建抽奖</a></li>
+                <li><a class="list" href="/lottery/index?ltype=1">抽奖列表</a></li>
+            </ul>
+        </li>
+        {{/if}}
+        {{if $iprivs.id eq '6'}}
+        <li id="sidebar-nav-signUp"><a class="dropdown-toggle" href="#"><i class="icon-flag"></i><span>报名管理</span><i class="icon-chevron-down"></i></a>
+            <ul class="submenu">
+                <li><a class="create" href="/event/index?do=add">新建报名</a></li>
+                <li><a class="list" href="/event/index">报名列表</a></li>
+            </ul>
+        </li>
+        {{/if}}
+        {{if $iprivs.id eq '7'}}
+        <li id="sidebar-nav-survey"><a class="dropdown-toggle" href="#"><i class="icon-edit"></i><span>问卷管理</span><i class="icon-chevron-down"></i></a><ul class="submenu"><li><a class="create" href="/survey/index?do=add">新建问卷</a></li><li><a class="list" href="/survey/index">问卷列表</a></li></ul></li>
+        {{/if}}
+        {{if $iprivs.id eq '8'}}
+        <li id="sidebar-nav-vote">
+            <a class="dropdown-toggle" href="#"><i class="icon-bar-chart"></i><span>投票管理</span><i
+                    class="icon-chevron-down"></i></a>
+            <ul class="submenu">
+                <li><a class="create" href="/vote/index?do=add">新建投票</a></li>
+                <li><a class="list" href="/vote/index">投票列表</a></li>
+            </ul>
+        </li>
+        {{/if}}
+        {{if $iprivs.id eq '9'}}
+        <li id="sidebar-nav-mod">
+            <a class="dropdown-toggle" href="#"><i class="icon-th-large"></i><span>模块管理</span><i
+                    class="icon-chevron-down"></i></a>
+            <ul class="submenu">
+                <li><a class="create" href="/admin/sysmodule?do=add">新建模块</a></li>
+                <li><a class="list" href="/admin/sysmodule">模块列表</a></li>
+            </ul>
+        </li>
+        {{/if}}
+        {{if $iprivs.id eq '10'}}
+        <li id="sidebar-nav-product">
+            <a class="dropdown-toggle" href="#"><i class="icon-shopping-cart"></i><span>商城管理</span><i
+                    class="icon-chevron-down"></i></a>
+            <ul class="submenu">
+                <li><a class="create" href="/product/columns?do=add">新建分类</a></li>
+                <li><a class="list" href="/product/columns">分类列表</a></li>
+                <li><a class="list" href="/product/index?do=add">新建商品</a></li>
+                <li><a class="list" href="/product/index">商品列表</a></li>
+
+            </ul>
+        </li>
+        {{/if}}
+        {{if $iprivs.id eq '14'}}
+        <li id="sidebar-nav-order">
+            <a class="dropdown-toggle" href="#"><i class="icon-list-alt"></i><span>订单管理</span><i
+                    class="icon-chevron-down"></i></a>
+            <ul class="submenu">
+                <li><a class="list" href="/order/index">订单列表</a></li>
+            </ul>
+        </li>
+        {{/if}}
+        {{if $iprivs.id eq '15'}}
+        <li id="sidebar-nav-recommend">
+            <a class="dropdown-toggle" href="#"><i class="icon-thumbs-up"></i><span>推荐管理</span><i
+                    class="icon-chevron-down"></i></a>
+            <ul class="submenu">
+                <!--<li><a class="list" href="/recommend/index?do=add">新建推荐</a></li>-->
+                <li><a class="list" href="/recommend/index">商品推荐列表</a></li>
+                <li><a class="list" href="/recommend/holder?do=add">新建推荐位</a></li>
+                <li><a class="list" href="/recommend/holder">推荐列表位</a></li>
+            </ul>
+        </li>
+        {{/if}}
+        {{if $iprivs.id eq '11'}}
+        <li id="sidebar-nav-advertise">
+            <a class="dropdown-toggle" href="#"><i class="icon-picture"></i><span>广告管理</span><i
+                    class="icon-chevron-down"></i></a>
+            <ul class="submenu">
+                <li><a class="create" href="/adposition/index?do=add">新建广告位</a></li>
+                <li><a class="list" href="/adposition/index">广告位列表</a></li>
+                <li><a class="create" href="/advertise/index?do=add">新建广告</a></li>
+                <li><a class="list" href="/advertise/index">广告列表</a></li>
+            </ul>
+        </li>
+        {{/if}}
+        {{if $iprivs.id eq '12'}}
+        <li id="sidebar-nav-advertise">
+            <a class="dropdown-toggle" href="#"><i class="icon-picture"></i><span>会员管理</span><i
+                    class="icon-chevron-down"></i></a>
+            <ul class="submenu">
+                <li><a class="create" href="/member/index?do=add">新建会员</a></li>
+                <li><a class="list" href="/member/index">会员列表</a></li>
+                <li><a class="create" href="/member/pointsrule?do=add">新建积分规则</a></li>
+                <li><a class="list" href="/member/pointsrule">积分规则列表</a></li>
+            </ul>
+        </li>
+        {{/if}}
+
+        {{if $iprivs.id eq '13'}}
+        <li id="sidebar-nav-advertise">
+            <a class="dropdown-toggle" href="#"><i class="icon-truck"></i><span>车型管理</span><i
+                    class="icon-chevron-down"></i></a>
+            <ul class="submenu">
+                <li><a class="create" href="/carbrand/index?do=add">新建品牌</a></li>
+                <li><a class="list" href="/carbrand/index">品牌列表</a></li>
+                <!--<li><a class="create" href="/carmodel/index?do=add">新建车型</a></li>
+                <li><a class="list" href="/carmodel/index">车型列表</a></li>-->
+            </ul>
+        </li>
+        {{/if}}
+        {{/foreach}}
+    </ul>
+</div>

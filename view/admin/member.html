@@ -1,0 +1,408 @@
+{{if $do eq 'manage'}}
+<div class="content">
+    <div class="header">
+        <h1 class="page-title">会员列表</h1>
+        <ul class="breadcrumb">
+            <li><a href="">会员管理</a> </li>
+            <li class="active">会员列表</li>
+        </ul>
+    </div>
+    <div class="main-content">
+        <div class="btn-toolbar list-toolbar pull-left">
+            <button class="btn btn-success" onclick="setstatus(1)">启用</button>
+            <button class="btn btn-default" onclick="setstatus(0)">停用</button>
+            <a class="btn btn-danger" href="#myModal" name="delbtn" data-type="top_btn">删除</a>
+            <form method="get">
+            <div class="  search form-group-select">
+                <button class="btn btn-info">搜索</button>
+                <input type="hidden" value="1" name="ye">
+                <input class="form-control" type="text" name="keyword1" value="{{$search}}" placeholder="输入昵称、手机号">
+                <input class="form-control form-group-right" type="text" id="fdStart" name="keyword2" placeholder="注册开始时段" value="{{$search2}}"/> <input class="form-control form-group-right" type="text" id="fdEnd" name="keyword3" placeholder="注册结束时段" value="{{$search3}}" />
+            </div>
+            </form>
+        </div>
+        <table class="table">
+            <thead>
+            <tr>
+                <th class="table-checkbox"><input type="checkbox"></th>
+                <th class="table-title">昵称</th>
+                <th>登录名</th>
+                <th>注册日期</th>
+                <th>状态</th>
+                <th style="width: 3.5em;">操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            {{foreach from=$ar name=nar item=row}}
+            <tr>
+                <td><input type="checkbox" name="checkbox" value="{{$row.id}}"></td>
+                <td style="width:20%;">{{$row.fdName}}</td>
+                <td style="width:20%;">{{$row.fdLogin}}</td>
+                <td style="width:30%;">{{$row.fdCreate}}</td>
+                <td>{{if $row.fdStatus eq '1'}}<span class="status-work">正常</span>{{else}}<span class="status-stop">冻结</span>{{/if}}</td>
+                <td>
+                    <a href="/member/index?do=edit&id={{$row.id}}&ye={{$ye}}&keyword1={{$search}}&keyword2={{$search2}}&keyword3={{$search3}}"><i class="icon-pencil"></i></a>
+                    <a href="#myModal" role="button" data="{{$row.id}}" name="delbtn"><i class="icon-trash"></i></a>
+                </td>
+            </tr>
+            {{/foreach}}
+            </tbody>
+        </table>
+        <div class="clearfix"></div>
+        <div class="page">
+            {{$sy}}
+        </div>
+        <footer>
+            <hr>
+            <p class="pull-right">© 2016 <a href="" target="_blank">广州涛略科技有限公司</a></p>
+        </footer>
+    </div>
+</div>
+{{include file="confirmbox.html"}}
+{{include file="fade.html"}}
+<script>
+$(document).ready(function(){
+    $("a[name=delbtn]").click(function(){
+        var ar=new Array();
+        var type = $(this).data("type");
+        if(type=="top_btn"){
+            $.each($("input[type=checkbox][name=checkbox]:checked"),function(k,v){
+                ar[k]=v.value;
+            });
+        }
+        else{
+            if(ar.length==0){
+                ar[0]=$(this).attr("data");
+            }
+        }
+        if(ar.length>0){
+            modalmsg.confirm("您确认要删除该用户吗？<br>此操作无法撤销。",function(){
+                $.ajax({
+                    type: "GET",
+                    url: "/member/index?do=del",
+                    data: "ids="+ar,
+                    dataType:'json',
+                    cache:false
+                }).done(function(msg){
+                    if(msg.error_code==0){
+                        window.location.reload();
+                    }
+                });
+            });
+
+        }
+        else{
+            modalmsg.alert("请选择要删除的用户");
+        }
+    });
+
+});
+
+function setstatus(status){
+    var ar=new Array();
+    $.each($("input[type=checkbox][name=checkbox]:checked"),function(k,v){
+        ar[k]=v.value
+    });
+    if(ar.length>0){
+        if(status==0){
+            modalmsg.confirm("确定冻结吗？",function(){
+                $.ajax({
+                    type: "GET",
+                    url: "/member/index?do=ajax_setmemberstatus",
+                    data: "ids="+ar+"&status="+status,
+                    dataType:'json',
+                    cache:false
+                }).done(function(msg){
+                    if(msg.error_code==0){
+                        window.location.reload();
+                    }
+                });
+
+            });
+        }else{
+            modalmsg.confirm("确定启用吗？",function(){
+                $.ajax({
+                    type: "GET",
+                    url: "/member/index?do=ajax_setmemberstatus",
+                    data: "ids="+ar+"&status="+status,
+                    dataType:'json',
+                    cache:false
+                }).done(function(msg){
+                    if(msg.error_code==0){
+                        window.location.reload();
+                    }
+                });
+
+            });
+        }
+    }else{
+        modalmsg.alert("请选择要冻结的用户");
+    }
+}
+
+$('#fdStart').datetimepicker({
+      lang:'ch',
+      format:"Y-m-d",
+      timepicker:true,
+      yearStart:2015,
+      yearEnd:2050,
+      todayButton:false,
+    
+}).on('blur',function(){
+    var beg=$("#fdStart").val();  
+    var end=$("#fdEnd").val();  
+    var date1 = new Date(Date.parse(beg));  
+    var date2 = new Date(Date.parse(end));  
+    if (date1.getTime() > date2.getTime()) {
+         modalmsg.alert("结束日期不能小于开始日期");
+         $("#fdStart").val("");
+    }
+});
+$('#fdEnd').datetimepicker({
+      lang:'ch',
+      format:"Y-m-d",
+      timepicker:true,
+      yearStart:2015,
+      yearEnd:2050,
+      todayButton:false,
+    
+}).on('blur',function(){
+    var beg=$("#fdStart").val();  
+    var end=$("#fdEnd").val();  
+    var date1 = new Date(Date.parse(beg));  
+    var date2 = new Date(Date.parse(end));  
+    if (date1.getTime() > date2.getTime()) {
+         modalmsg.alert("结束日期不能小于开始日期");
+         $("#fdEnd").val("");
+    }
+});
+</script>
+{{/if}}
+
+{{if $do eq 'add' || $do eq 'edit'}}
+<div class="content">
+    <div class="header">
+        <h1 class="page-title">{{if $do eq 'add'}}新建会员{{elseif $do eq 'edit'}}编辑会员{{/if}}</h1>
+        <ul class="breadcrumb">
+            <li><a href="">会员管理</a> </li>
+            <li class="active">{{if $do eq 'add'}}新建会员{{elseif $do eq 'edit'}}编辑会员{{/if}}</li>
+        </ul>
+    </div>
+    <div class="main-content">
+        <form name="f1" id="f1" method="post">
+            <div class="form-group">
+                <label class="form-label form-group-left" for="form-title">登录名{{if $do eq 'add'}}<strong class="must"> *</strong>{{/if}}</label>
+                <input type="hidden" name="id" id="id" value="{{$row.id}}"/>
+                {{if $do eq 'add'}}
+                <input type="text" class="form-control form-group-right require" placeholder="不超过35字" name="fdLogin" id="fdLogin" value="{{$row.fdLogin}}" onblur="validateUser_ex(this,'slogin','input-error','fdLogin=')" onfocus="clearme('slogin','')"><div id="slogin" ></div>
+                {{else}}
+                <label class="form-label form-group-left">{{$row.fdLogin}}</label>
+                {{/if}}
+            </div>
+            <div class="clearfix"></div>
+
+            {{if $do eq 'edit'}}
+            <div class="form-group">
+                <label class="form-label form-group-left" for="">密码</label>
+                <input type="password" class="form-control form-group-right" onblur="validatep1()" onfocus="clearme('spwd','')" name="fdPassword" id="fdPassword" placeholder="6~16个字符，区分大小写"><div id="spwd" class="input-error"></div>
+            </div>
+            <div class="clearfix"></div>
+            <div class="form-group">
+                <label class="form-label form-group-left" for="">确认密码</label>
+                <input type="password" class="form-control form-group-right" onblur="validatep2()" onfocus="clearme('spwd2','')" name="fdPassword2" id="fdPassword2" placeholder=""><div id="spwd2" class="input-error"></div>
+            </div>
+            <div class="clearfix"></div>
+            {{else}}
+            <div class="form-group">
+                <label class="form-label form-group-left" for="">密码<strong class="must"> *</strong></label>
+                <input type="password" class="form-control form-group-right require" onblur="validatep1()" onfocus="clearme('spwd','')" name="fdPassword" id="fdPassword" placeholder="6~16个字符，区分大小写"><div id="spwd" class="input-error"></div>
+            </div>
+            <div class="clearfix"></div>
+            <div class="form-group">
+                <label class="form-label form-group-left" for="">确认密码<strong class="must"> *</strong></label>
+                <input type="password" class="form-control form-group-right require" onblur="validatep2()" onfocus="clearme('spwd2','')" name="fdPassword2" id="fdPassword2" placeholder=""><div id="spwd2" class="input-error"></div>
+            </div>
+            <div class="clearfix"></div>
+            {{/if}}
+
+            <div class="form-group">
+                <label class="form-label form-group-left" for="">昵称<strong class="must"> *</strong></label>
+                <input class="form-control form-group-right require" placeholder="" name="fdName" id="fdName" value="{{$row.fdName}}" onblur="validatatext_ex(this,'sfdname','请填写昵称','input-error');" onfocus="clearme('sfdname','')"><div id="sfdname" ></div>
+            </div>
+            <div class="clearfix"></div>
+            <!--<div class="form-group">
+                <label class="form-label form-group-left" for="form-description">功能描述</label>
+                <textarea class="form-control form-group-right" id="form-description" placeholder="" name="fdDescription">{{$row.fdDescription}}</textarea>
+            </div>-->
+            <div class="form-group">
+                <label class="form-label form-group-left" for="form-description">获得积分数<strong class="must"> *</strong></label>
+                <input class="form-control form-group-right require" placeholder="" onblur="validateNum_ex(this,'spoints','input-error')" onfocus="clearme('spoints','')" name="fdPoints" id="fdPoints" {{if $do eq 'add'}}value="0"{{else}}value="{{$row.fdPoints}}"{{/if}} ><div id="spoints"></div>
+            </div>
+            <div class="clearfix"></div>
+
+            <div class="form-group">
+                <label class="form-label form-group-left" for="form-description">电话</label>
+                <input class="form-control form-group-right" placeholder=""  name="fdPhone" id="fdPhone" value="{{$row.fdPhone}}" ><div id="sphone"></div>
+            </div>
+            <div class="clearfix"></div>
+
+            <div class="form-group">
+                <label class="form-label form-group-left" for="form-description">注册日期</label>
+                <input class="form-control form-group-right" name="fdCreate" id="fdCreate" value="{{$row.fdCreate}}" disabled />
+            </div>
+            <div class="clearfix"></div>
+            
+        </form>
+        <div class="clearfix"></div>
+        <div class="finish">
+            <button class="btn btn-success" id="stbtn">完成</button>
+            {{if $do eq 'edit'}}<input type="button" class="btn btn-default" onclick="window.location.href = window.document.referrer;" value="取消"/>{{/if}}
+        </div>
+        {{include file="fade.html"}}
+        <footer>
+            <hr>
+            <p class="pull-right">© 2016 <a href="" target="_blank">广州涛略科技有限公司</a></p>
+        </footer>
+    </div>
+</div>
+{{include file="confirmbox.html"}}
+<div style="display:none">
+<script src="./{{$user_dir_theme}}/js/md5.js"></script>
+<script>
+//$("#fdKey").focus();
+$(document).ready(function(){
+
+    $("#f1").on('focus','.error',function(){
+        $(this).removeClass("error");
+    });
+
+});
+
+$("#stbtn").click(function(){
+    login=$("#fdLogin").val();
+    pwd1=$("#fdPassword").val();
+    pwd2=$("#fdPassword2").val();
+    {{if $do eq 'add'}}
+    validateUser(login,'slogin','input-error','fdLogin=');
+    if($("#fdLogin").val()==""){
+        $("#fdLogin").addClass("error");
+        a1=false;
+    }
+    a2=validatePWD(pwd1,'spwd','input-error');
+    a3=validatePWD2(pwd1,pwd2,'spwd2','input-error');
+    if(a1==false){
+        $("#fdLogin").addClass("error");
+    }
+    if(a2==false){
+        $("#fdPassword").addClass("error");
+    }
+    if(a3==false){
+        $("#fdPassword2").addClass("error");
+    }
+    {{else if $do eq 'edit'}}
+        if(pwd1!="" || pwd2!=""){
+            a2=validatePWD(pwd1,'spwd','input-error');
+            a3=validatePWD2(pwd1,pwd2,'spwd2','input-error');
+            if(a2==false){
+                $("#fdPassword").addClass("error");
+            }
+            if(a3==false){
+                $("#fdPassword2").addClass("error");
+            }
+        }
+    {{/if}}
+
+    validatatext_ex("#fdName",'sfdname','请填写昵称','input-error');
+    validateNum_ex("#fdPoints",'spoints','input-error');
+
+    if(pwd1!="" && pwd2!=""){
+        pwd1=hex_md5(pwd1);
+        pwd2=hex_md5(pwd2);
+        $("#fdPassword").val(pwd1);
+        $("#fdPassword2").val(pwd2);
+    }
+
+    formchecker.check("#f1");
+    if(!formchecker.flag){
+        return false;
+    }
+    $("#f1").submit();
+});
+
+a1=false;
+function aj(dat,shw){
+    var tmp;
+    tmp=$.ajax({
+        type: "GET",
+        url: "/member/index?do=ajax_checkmenber",
+        data: dat,
+        dataType:'json',
+        success: function(msg){
+            if(msg.error_code!='0'){a1=false}else{a1=true;}
+            $("#"+shw).html(msg.error_msg);
+        }//如果调用php成功 
+    });
+}
+
+function validateUser_ex(obj,tar,cls,str){
+   rt=validateUser(obj.value,tar,cls,str);
+   if(rt==false){
+        $(obj).addClass("error");
+   }
+}
+
+function validatatext_ex(obj,target,txt,cls){
+    ret=validateText($(obj).val(),target,txt,cls);
+    if(!ret){
+        $(obj).addClass("error");
+    }
+}
+
+function validateNum_ex(obj,htmlname,htmlclass){
+    num=$(obj).val();
+    if(parseInt(num)<0){
+        $(obj).addClass("error");
+        $("#"+htmlname).addClass('input-error').html('请填写一个大于等于0的整数');
+    }
+    ret= validateNum($(obj).val(),htmlname,htmlclass);
+    if(!ret){
+        $(obj).addClass("error");
+    }
+}
+
+function validatep1(){
+    password1=$('#fdPassword').val();
+    {{if $do eq 'edit'}}
+        if(password1!=''){
+            rt=validatePWD(password1,'spwd','input-error');
+            if(!rt){
+                $('#fdPassword').addClass("error");
+            }
+        }
+    {{else}}
+        rt=validatePWD(password1,'spwd','input-error');
+        if(!rt){
+            $('#fdPassword').addClass("error");
+        }
+    {{/if}} 
+}
+function validatep2(){
+    password1=$('#fdPassword').val();
+    password2=$('#fdPassword2').val();
+    {{if $do eq 'edit'}}
+        if(password1!="" || password2!=""){
+            rt=validatePWD2(password1,password2,'spwd2','input-error');
+            if(!rt){
+                $('#fdPassword2').addClass("error");
+            }
+        }
+    {{else}}
+        rt=validatePWD2(password1,password2,'spwd2','input-error');
+        if(!rt){
+            $('#fdPassword2').addClass("error");
+        }
+    {{/if}}
+}
+</script>
+</div>
+{{/if}}

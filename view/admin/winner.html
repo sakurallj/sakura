@@ -1,0 +1,278 @@
+{{if $do eq 'manage'}}
+<link rel="stylesheet" type="text/css" href="css/list-table.css">
+{{include file="confirmbox.html"}}
+<div class="content">
+    <div class="header">
+        <h1 class="page-title">中奖管理</h1>
+        <ul class="breadcrumb">
+            <li><a href="/lottery/index?ltype=1">抽奖管理</a> </li>
+            <li><a href="/lottery/index?ltype=1">抽奖列表</a></li>
+            <li class="active">中奖管理</li>
+        </ul>
+    </div>
+    <div class="main-content">
+        
+        <div class="btn-toolbar list-toolbar pull-left">
+            <a class="btn btn-danger" href="#myModal" id="delall">删除</a>
+            <form method="get">
+            <div class="search form-group-select">
+                <button class="btn btn-info">搜索</button>
+                <input type="hidden" value="1" name="ye">
+                <input type="hidden" value="{{$lotteryid}}" name="lotteryid">
+                <div class="dropdown form-group-right">
+                    <select class="dropdown-toggle form-select-character" name="keyword1">
+                        <option value="">奖品类型</option>
+                        <option {{if $search eq '1'}}selected='selected'{{/if}} value="1">实物奖品</option>
+                        <option {{if $search eq '2'}}selected='selected'{{/if}} value="2">电子券</option>
+                    </select>
+                </div>
+                <div class="dropdown form-group-right">
+                    <select class="dropdown-toggle form-select-character" name="keyword2">
+                        <option value="">是否需寄送</option>
+                        <option {{if $search2 eq '1'}}selected='selected'{{/if}} value="1">是</option>
+                        <option {{if $search2 eq '2'}}selected='selected'{{/if}} value="2">否</option>
+                    </select>
+                </div>
+                <div class="dropdown form-group-right">
+                    <select class="dropdown-toggle form-select-character" name="keyword3">
+                        <option value="">领奖状态</option>
+                        <option {{if $search3 eq '1'}}selected='selected'{{/if}} value="1">未填写领奖信息</option>
+                        <option {{if $search3 eq '2'}}selected='selected'{{/if}} value="2">已填写领奖信息</option>
+                        <option {{if $search3 eq '3'}}selected='selected'{{/if}} value="3">已寄出/已领奖</option>
+                    </select>
+                </div>
+                <input class="form-control" type="text" placeholder="用户名" value="{{$search4}}" name="keyword4">
+            </div>
+            </form>
+        </div>
+        <table class="table">
+            <thead>
+            <tr>
+                <th class="table-checkbox"><input type="checkbox"></th>
+                <th>中奖者</th>
+                <th>奖项</th>
+                <th>奖品</th>
+                <th>奖品类型</th>
+                <th>需寄送</th>
+                
+                <th>中奖时间</th>
+                <th>领奖状态</th>
+                <th style="width: 3.5em;">操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            {{foreach from=$ar name=nar item=row}}
+            <tr>
+                <td><input type="checkbox" name="checkbox" value="{{$row.id}}" /></td>
+                <td>{{if $row.wxname neq ''}}{{$row.wxname}}{{elseif $row.xlname neq ''}}{{$row.xlname}}{{/if}}</td>
+                <td>{{$row.fdLevel}}</td>
+                <td>{{$row.fdName}}</td>
+                <td>{{if $row.fdType eq '0'}}实物奖品{{else}}电子券{{/if}}</td>
+                <td>{{if $row.fdDelivery eq '1'}}是{{else}}否{{/if}}</td>
+                <td>{{$row.fdCreate}}</td>
+                <td>
+                    {{if $row.fdStatus eq '1'}}
+                        <span class="process-end">已领奖</span>
+                    {{elseif $row.fdStatus eq '0'}}
+                        {{if $row.shipmentid eq '' && $row.fdDelivery eq '1'}}
+                        <span class="process-notStart">未填写领奖信息</span>
+                        {{else}}
+                        <span class="process-notStart">未领奖</span>
+                        {{/if}}
+                    {{elseif $row.fdStatus eq '2'}}
+                        <span class="process-work">已填写领奖信息</span>
+                    {{/if}}
+                    
+                </td>
+                <td>
+                    {{if $row.shipmentid gt '0'}}
+                    <a href="/lottery/winner?do=shipmentdetail&id={{$row.shipmentid}}&userid={{$row.fdUserID}}&lotteryid={{$row.fdLotteryID}}&ye={{$ye}}&keyword1={{$search}}&keyword2={{$search2}}&keyword3={{$search3}}&keyword4={{$search4}}" role="button"><i class="icon-truck" title="邮寄信息"></i></a>
+                    {{/if}}
+                    <a href="#myModal" role="button" data="{{$row.id}}" name="delbtn"><i class="icon-trash" title="删除"></i></a>
+                </td>
+            </tr>
+            {{/foreach}}
+            </tbody>
+        </table>
+        <div class="clearfix"></div>
+        <div class="page">
+            {{$sy}}
+        </div>
+        <footer>
+            <hr>
+            <p class="pull-right">© 2016 <a href="" target="_blank">广州涛略科技有限公司</a></p>
+        </footer>
+    </div>
+</div>
+{{/if}}
+{{if $do eq 'shipmentdetail'}}
+<link rel="stylesheet" type="text/css" href="./{{$user_dir_theme}}/css/lottery.css">
+<div class="content">
+    <div class="header">
+        <h1 class="page-title">邮寄信息</h1>
+        <ul class="breadcrumb">
+            <li><a href="/lottery/index?ltype=1">抽奖管理</a> </li>
+            <li><a href="/lottery/index?ltype=1">抽奖列表</a></li>
+            <li><a href="/lottery/winner?lotteryid={{$lotteryid}}">中奖管理</a></li>
+            <li class="active">邮寄信息</li>
+        </ul>
+    </div>
+    <div class="main-content">
+        <form name="f1" id="f1"  method="post">
+            <div class="form-group">
+                <label class="form-label form-group-left" for="form-title">姓名</label>
+                <input type="hidden" name="id" id="id" value="{{$row.id}}"/>
+                <input type="hidden" name="lotteryid"  value="{{$lotteryid}}"/>
+                <input type="text" class="form-control form-group-right" name="fdName" id="fdTitle" value="{{$row.fdName}}" disabled>
+            </div>
+            <div class="clearfix"></div>
+            <div class="form-group">
+                <label class="form-label form-group-left" for="">电话</label>
+                <input type="text" class="form-control form-group-right" name="fdPhone" id="fdPhone" value="{{$row.fdPhone}}" disabled>
+            </div>
+            <div class="clearfix"></div>
+            <div class="form-group">
+                <label class="form-label form-group-left" for="">地区</label>
+                <input type="text" class="form-control form-group-right" name="fdLocal" id="fdLocal" disabled placeholder="例：广东省广州市越秀区">
+            </div>
+            <div class="clearfix"></div>
+            <div class="form-group">
+                <label class="form-label form-group-left" for="">地址</label>
+                <input type="text" class="form-control form-group-right" name="fdAddress" id="fdAddress" value="{{$row.fdAddress}}" disabled>
+            </div>
+            <div class="clearfix"></div>
+            <div class="form-group">
+                <label class="form-label form-group-left" for="">邮编</label>
+                <input type="text" class="form-control form-group-right" disabled name="fdZipcode" id="fdZipcode" value="{{$row.fdZipcode}}">
+            </div>
+            <div style="display:none;">
+                奖品名：{{$rwinfo.fdName}}<br>
+                {{if $rwinfo.fdSN neq ''}}SN：{{$rwinfo.fdSN}}<br>{{/if}}
+                领奖码：{{$rwinfo.fdCode}}
+            </div>
+            <div class="clearfix"></div>
+            <div class="form-group">
+                <label class="form-label form-group-left">快递信息</label>
+                <textarea class="form-control form-group-right" name="fdExpressinfo" id="fdExpressinfo" placeholder="注：发货后请填写快递名称和单号方便查询">{{$row.fdExpressinfo}}</textarea>
+            </div>
+            <div class="clearfix"></div>
+        
+        <div class="clearfix"></div>
+        <div class="finish">
+            <input type="submit" id="stbtn" class="btn-success btn" value="完成"/>
+            <input onclick="window.location.href = window.document.referrer;" type="button" class="btn-default btn" value="取消"/>
+        </div>
+        </form>
+        <footer>
+            <hr>
+            <p class="pull-right">© 2016 <a href="" target="_blank">广州涛略科技有限公司</a></p>
+        </footer>
+    </div>
+</div>
+{{/if}}
+<script>
+{{if $do eq 'manage'}}
+$(document).ready(function(){
+   $("#id_yes").click(function(){
+        obj=$(this);
+        var ar=new Array();
+        $.each($("input[type=checkbox]:checked"),function(k,v){
+            ar[k]=v.value
+        });
+        if(ar.length>0){
+            $.ajax({
+                type: "GET",
+                url: "/lottery/winner?do=del",
+                data: "ids="+ar,
+                dataType:'json',
+                cache:false,
+                success: function(msg){
+                    if(msg.error_code==0){
+                        window.location.reload();
+                        //$(obj).parent().parent().remove();
+                    }else{
+                        console.log(msg.error_msg)
+                    }
+                    
+                },
+                error:function(){alert('error')},
+                timeout:5000
+            });
+        }
+    });
+
+   $("#delall").click(function(){
+        f=false;
+        $.each($("input[type=checkbox][name=checkbox]:checked"),function(k,v){
+            f=true;
+        });
+        if(f){
+            showmodelbox('#myModal','您确认要删除这些记录吗？<br>此操作无法撤销。',1);
+        }else{
+            showmodelbox('#myModal','请选择要删除的记录',2);
+        }
+    });
+
+    $("a[name=delbtn]").click(function(){
+        id=$(this).attr('data');
+        showmodelbox('#myModal','您确认要删除该记录吗？<br>此操作无法撤销。',3);
+        $("#id_yes2").click(function(){
+                $.ajax({
+                    type: "GET",
+                    url: "/lottery/winner?do=del",
+                    data: "ids="+id,
+                    dataType:'json',
+                    cache:false,
+                    success: function(msg){
+                        if(msg.error_code==0){
+                            window.location.reload();
+                        }else{
+                            $(".msg_font").html(msg.error_msg);
+                            showmsgbox("msgbox");
+                        }
+                        
+                    },
+                    error:function(){alert('error')},
+                    timeout:5000
+                });
+        });
+    });
+});
+{{/if}}
+
+{{if $do eq 'shipment_notusenow'}}
+$(document).ready(function(){
+    $("a[name=delbtn]").click(function(){
+        obj=$(this);
+        var ar=new Array();
+        $.each($("input[type=checkbox]:checked"),function(k,v){
+            ar[k]=v.value
+        })
+        if(ar.length>0){
+            var ret;
+            ret=confirm("确认要删除吗？");
+            if(ret!=false){
+                $.ajax({
+                    type: "GET",
+                    url: "/lottery/winner?do=delshipment",
+                    data: "ids="+ar,
+                    dataType:'json',
+                    cache:false,
+                    success: function(msg){
+                        if(msg.error_code==0){
+                            window.location.reload();
+                            //$(obj).parent().parent().remove();
+                        }else{
+                            alert(msg.error_msg)
+                        }
+                        
+                    },
+                    error:function(){alert('error')},
+                    timeout:5000
+                })
+            }
+        }
+    })
+})
+{{/if}}
+</script>

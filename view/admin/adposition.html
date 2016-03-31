@@ -1,0 +1,509 @@
+
+<!--正文-->
+<div class="content">
+    <div class="header">
+        {{if $do eq 'add'}}
+        <h1 class="page-title">新建广告位</h1>
+        {{elseif $do eq 'edit'}}
+        <h1 class="page-title">编辑广告位</h1>
+        {{elseif $do eq 'manage'}}
+        <h1 class="page-title">广告位列表</h1>
+        {{/if}}
+        <ul class="breadcrumb">
+            <li><a href="">广告位管理</a> </li>
+            {{if $do eq 'add'}}
+            <li class="active">新建广告位</li>
+            {{elseif $do eq 'edit'}}
+            <li class="active">编辑广告位</li>
+            {{elseif $do eq 'manage'}}
+            <li class="active">广告位列表</li>
+            {{/if}}
+        </ul>
+    </div>
+    {{if $do eq 'manage'}}
+    
+<!--停用确认-->
+<!--<div class="modal small fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">-->
+<div class="modal small fade" id="disModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modalmsg-dialog modal-dialog">
+        <div class="modal-content modal-modalmsg">
+            <div class="modalmsg-dialog modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h4 class="modal-title">操作确认</h3>
+            </div>
+            <div class="modal-body">
+                <p class="error-text" style="margin-top: 10px;font-size: 14px"><i class="icon-warning-sign modal-icon" style="margin-right: 20px"></i>您确认要停用这些广告位吗？
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" data-dismiss="modal" id="dis_no" aria-hidden="true">取消</button>
+                <button class="btn btn-primary" data-dismiss="modal" id="dis_yes">确定</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--启用确认-->
+<!--<div class="modal small fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">-->
+<div class="modal small fade" id="ableModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modalmsg-dialog modal-dialog">
+        <div class="modal-content modal-modalmsg">
+            <div class="modalmsg-dialog modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h4 class="modal-title">操作确认</h3>
+            </div>
+            <div class="modal-body">
+                <p class="error-text" style="margin-top: 10px;font-size: 14px"><i class="icon-warning-sign modal-icon" style="margin-right: 20px"></i>您确认要启用这些广告位吗？
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" data-dismiss="modal" id="able_no" aria-hidden="true">取消</button>
+                <button class="btn btn-primary" data-dismiss="modal" id="able_yes">确定</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+    <div class="main-content">
+        <div class="btn-toolbar list-toolbar pull-left">
+            <button class="btn btn-success" href="#ableModal" id="ableall">启用</button>
+            <button class="btn btn-default" href="#disModal" id="disall">停用</button>
+            <button class="btn btn-danger" href="#myModal" id="delall">删除</button>
+            <form name="f1" id="f1" class="form-horizontal" method="get">
+            <div class=" search form-group-select">
+                <button class="btn btn-info" type="submit">搜索</button> 
+                <input type="hidden" value="1" name="ye">
+                <input class="form-control" type="text" id="keyword" name="keyword" value="{{$search}}" placeholder="search">
+            </div>
+            </form>
+        </div>
+        <table class="table">
+            <thead>
+            <tr>
+                <th class="table-checkbox"><input type="checkbox" name="checkall" id="checkall"></th>
+                <th class="table-title">名称</th>
+                <th>广告类型</th>
+                <th>多个广告时</th>
+                <th class="table-status">状态</th>
+                <th style="width: 5em;">操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            {{foreach from=$ar name=nar item=row}}
+            <tr>
+                <td><input type="checkbox" name="checkbox" value="{{$row.id}}"></td>
+                <td>{{$row.fdTitle}}</td>
+                <td>{{if $row.fdAdType eq 1}}图文类型{{else}}文字类型{{/if}}</td>
+                
+                <td>{{if $row.fdDisplayType eq 1}}全部显示{{elseif $row.fdDisplayType eq 2}}随机显示一个{{else}}显示最新一个{{/if}}</td>
+                <td>{{if $row.fdDisable eq 0}}<span class="status-work">正常</span>{{else}}<span class="status-stop">停用</span>{{/if}}</td>
+                <td>
+                    <!--<a href="#result" role="button" data-toggle="modal" class="voteresult" data="{{$row.id}}" style="margin-right:4px;"><i class="icon-list" title="查看投票结果"></i></a>-->
+                    <a href="/adposition/index?do=edit&id={{$row.id}}&ye={{$ye}}&keyword={{$search}}"><i class="icon-pencil" title="编辑"></i></a>
+                    <a href="#myModal" role="button" name="delbtn" data="{{$row.id}}"><i class="icon-trash" title="删除"></i></a>
+                </td>
+            </tr>
+            {{/foreach}}
+            
+            </tbody>
+        </table>
+        <div class="clearfix"></div>
+        <!--<ul class="pagination">
+            <li><a href="#">«</a></li>
+            <li class="active"><a href="#">1</a></li>
+            <li><a href="#">2</a></li>
+            <li><a href="#">3</a></li>
+            <li><a href="#">4</a></li>
+            <li><a href="#">5</a></li>
+            <li><a href="#">»</a></li>
+        </ul>-->
+        <div class="page" style="text-align:center">
+        {{$sy}}
+        </div>
+       
+    </div>
+    {{/if}}
+    {{if $do eq 'add' || $do eq 'edit'}}
+    <!--提交确认-->
+<div class="modal small fade" id="finishModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h3 id="myModalLabel">提交确认</h3>
+            </div>
+            <div class="modal-body">
+                <p class="error-text"><i class="icon-warning-sign modal-icon"></i>您确认要提交吗？
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" data-dismiss="modal" id="finish_no" aria-hidden="true">取消</button>
+                <button class="btn btn-danger" data-dismiss="modal" id="finish_yes">提交</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <div class="main-content">
+        <form name="f1" id="f1" method="post">
+            
+            <div class="form-group">
+                <label class="form-label form-group-left" for="fdTitle">名称 <span class="must">*</span></label>
+                <input type="hidden" name="id" id="id" value="{{$row.id}}"/>
+                <input type="text" class="form-control form-group-right require" id="fdTitle" name="fdTitle" value="{{$row.fdTitle}}" placeholder=""onblur="validatatext_ex(this,'sfdtitle','请填写广告位名称','input-error');" onfocus="clearme('sfdtitle','')"><div id="sfdtitle" ></div>
+            </div>
+            <div class="form-group">
+                <label class="form-label form-group-left" for="fdDescription">介绍</label>
+                <textarea class="form-control form-group-right" id="fdDescription" name="fdDescription" placeholder="">{{$row.fdDescription}}</textarea>
+            </div>
+            <div class="form-group">
+                <label class="form-label form-group-left">广告类型 <span class="must">*</span></label>
+                <div class="form-group-right radio-group">
+                    <label class="radio-inline">
+                        <input name="fdAdType" class="single-select required" type="radio" {{if $do eq 'add' || $row.fdAdType eq 1}}checked="true"{{/if}} value="1">图文类型
+                    </label>
+                    <label class="radio-inline">
+                        <input name="fdAdType" class="single-select required"  type="radio" {{if $row.fdAdType eq 2}}checked="true"{{/if}} value="2"> 文字类型
+                    </label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label form-group-left">多个广告时 <span class="must">*</span></label>
+                <div class="form-group-right radio-group">
+                    <label class="radio-inline">
+                        <input name="fdDisplayType" class="single-select required" type="radio" {{if $do eq 'add' || $row.fdDisplayType eq 1}}checked="true"{{/if}} value="1">全部显示
+                    </label>
+                    <label class="radio-inline">
+                        <input name="fdDisplayType" class="single-select required"  type="radio" {{if $row.fdDisplayType eq 2}}checked="true"{{/if}} value="2"> 随机显示一个
+                    </label>
+                    <label class="radio-inline">
+                        <input name="fdDisplayType" class="single-select required"  type="radio" {{if $row.fdDisplayType eq 3}}checked="true"{{/if}} value="3"> 显示最新一个
+                    </label>
+                </div>
+            </div>
+            
+        </form>
+        <div class="clearfix"></div>
+        <div class="finish">
+            <button class="btn btn-success" id="stbtn">完成</button>
+            {{if $do eq 'edit'}}
+            <a href="/adposition/index?ye={{$ye}}&keyword={{$search}}"><button class="btn btn-default">取消</button></a>
+            {{/if}}
+        </div>
+        
+        {{/if}}
+        {{include file="confirmbox.html"}}
+        {{include file="fade.html"}}
+        <footer>
+            <hr>
+            <p class="pull-right">© 2016 <a href="" target="_blank">广州涛略科技有限公司</a></p>
+        </footer>
+    </div>
+</div>
+</body>
+
+<script>
+    {{if $do eq 'manage'}}
+
+    $("#id_yes").click(function(){
+        obj=$(this);
+        var ar=new Array();
+        $.each($("input[type=checkbox][name=checkbox]:checked"),function(k,v){
+            ar[k]=v.value
+        });
+        //alert(ar);return false;
+        if(ar.length>0){
+            $.ajax({
+                type: "GET",
+                url: "/adposition/index?do=del",
+                data: "ids="+ar,
+                dataType:'json',
+                cache:false,
+                success: function(msg){
+                    if(msg.error_code==0){
+                        window.location.reload();
+                        //$(obj).parent().parent().remove();
+                    }else{
+                        console.log(msg.error_msg)
+                    }
+                    
+                },
+                error:function(){alert('error')},
+                timeout:5000
+            });
+        }
+    });
+
+    $("a[name=delbtn]").click(function(){
+        obj=$(this);
+        positionid=obj.attr("data");
+        //alert(voteid);return false;
+        showmodelbox('#myModal','您确认要删除该广告位吗？<br>此操作无法撤销。',3);
+        $("#id_yes2").click(function(){
+            $.ajax({
+                type: "GET",
+                url: "/adposition/index?do=del",
+                data: "ids="+positionid,
+                dataType:'json',
+                cache:false,
+                success: function(msg){
+                    if(msg.error_code==0){
+                        window.location.reload();
+                        //$(obj).parent().parent().remove();
+                    }else{
+                        console.log(msg.error_msg)
+                    }
+                    
+                },
+                error:function(){alert('error')},
+                timeout:5000
+            });
+        });
+    });
+
+    $("#delall").click(function(){
+        f=false;
+        $.each($("input[type=checkbox][name=checkbox]:checked"),function(k,v){
+            f=true;
+        });
+        if(f){
+            showmodelbox('#myModal','您确认要删除这些广告位吗？<br>此操作无法撤销。',1);
+        }else{
+            modalmsg.alert("请选择要删除的广告位");
+        }
+    });
+
+    $("#dis_yes").click(function(){
+        obj=$(this);
+        var ar=new Array();
+        $.each($("input[type=checkbox][name=checkbox]:checked"),function(k,v){
+            ar[k]=v.value
+        });
+        //alert(ar);return false;
+        if(ar.length>0){
+            $.ajax({
+                type: "GET",
+                url: "/adposition/index?do=dis",
+                data: "ids="+ar,
+                dataType:'json',
+                cache:false,
+                success: function(msg){
+                    if(msg.error_code==0){
+                        window.location.reload();
+                        //$(obj).parent().parent().remove();
+                    }else{
+                        console.log(msg.error_msg)
+                    }
+                    
+                },
+                error:function(){alert('error')},
+                timeout:5000
+            });
+        }
+    });
+
+    $("#disall").click(function(){
+        f=false;
+        $.each($("input[type=checkbox][name=checkbox]:checked"),function(k,v){
+            f=true;
+        });
+        if(f){
+
+            //$('#disModal').modal('toggle'); 
+            showmodelbox('#disModal','您确认要停用这些广告位吗？',1);
+        }else{
+
+            modalmsg.alert("请选择要停用的广告位");
+        }
+    });
+
+    $("#able_yes").click(function(){
+        obj=$(this);
+        var ar=new Array();
+        $.each($("input[type=checkbox][name=checkbox]:checked"),function(k,v){
+            ar[k]=v.value
+        });
+        if(ar.length>0){
+            $.ajax({
+                type: "GET",
+                url: "/adposition/index?do=able",
+                data: "ids="+ar,
+                dataType:'json',
+                cache:false,
+                success: function(msg){
+                    if(msg.error_code==0){
+                        window.location.reload();
+                        //$(obj).parent().parent().remove();
+                    }else{
+                        console.log(msg.error_msg)
+                    }
+                    
+                },
+                error:function(){alert('error')},
+                timeout:5000
+            });
+        }
+    });
+
+    $("#ableall").click(function(){
+        f=false;
+        $.each($("input[type=checkbox][name=checkbox]:checked"),function(k,v){
+            f=true;
+        });
+        if(f){
+            //$('#ableModal').modal('toggle'); 
+            showmodelbox('#ableModal','您确认要启用这些广告位吗？',1);
+        }else{
+            //$(".msg_font").html('请选择要启用的记录');
+            //showmsgbox("msgbox");
+            modalmsg.alert("请选择要启用的广告位");
+        }
+    });
+    {{/if}}
+    {{if $do eq 'add' || $do eq 'edit'}}
+    $("#f1").on('focus','.error',function(){
+        $(this).removeClass("error");
+    });
+    $(document).ready(function(){
+        $('.allow-ed').click(function(){
+            if($('.allow-ed:checked').length>0){
+                $('.time-of-od').css({'display':'block'});
+            }
+            else{
+                $('.time-of-od').css({'display':'none'});
+            }
+        });
+        $('.radio-inline').click(function(){
+            if($('.multi-select:checked').length>0){
+                $('.time-of-ch').css({'display':'block'});
+            }
+            else{
+                $('.time-of-ch').css({'display':'none'});
+            }
+        });
+        tmpi=2;
+        $('.btn-add-power').click(function(){
+            var newPower = document.createElement('div');
+            newPower.setAttribute("class","form-group form-group-power");
+            newPower.innerHTML='<div class="form-group-right"><label class="form-label form-group-left">选项<strong class="must"> *</strong></label><input class="form-power-right form-control require" type="text" name="voteitem[a_'+tmpi+'][fdTitle]" onblur="validatatext_ex(this,\'sfditem[a_'+tmpi+']\',\'请填写选项\',\'input-error\');" onfocus="clearme(\'sfditem[a_'+tmpi+']\',\'\')"><button type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button><div id="sfditem[a_'+tmpi+']"></div></div>';
+            $('.main-content form').append(newPower);
+            tmpi++;
+            $('.form-group-power .form-group-right .close').click(function(){
+                var powerClose;
+                powerClose=$(this);
+                powerClose.css({'display':'none'});
+                powerClose.parent().parent().remove();
+            });
+            requeired();
+        });
+        $('.form-group-power .form-group-right .close').click(function(){
+            var powerClose;
+            powerClose=$(this);
+            //powerClose.css({'display':'none'});
+            //powerClose.parent().parent().remove();
+            if(powerClose.attr("data")!=undefined){//调用ajax
+            id=powerClose.attr("data");
+            var ret;
+
+                $.ajax({
+                    type: "GET",
+                    url: "/vote/index?do=delitem",
+                    data: "ids="+id,
+                    dataType:'json',
+                    cache:false,
+                    success: function(msg){
+                        if(msg.error_code==0){
+                            powerClose.parent().remove();
+                        }else{
+                            alert(msg.error_msg)
+                        }
+                        
+                    },
+                    error:function(){alert('error')},
+                    timeout:5000
+                })
+            }else{
+                powerClose.parent().remove();
+            }
+        });
+    })
+    $("#stbtn").click(function(){
+        formchecker.check("#f1");
+        if(!formchecker.flag){
+            //$(".msg_font").html("请正确填写该字段内容");
+            //showmsgbox("msgbox");
+            return false;
+        }
+        var fdTitle = $.trim($("#fdTitle").val());
+        if(!fdTitle){
+            modalmsg.alert("标题不能为空");
+            return false;
+        }
+        
+        //$('#finishModal').modal('toggle');
+        //$("#finish_yes").click(function(){
+            $("#f1").submit();
+        //})
+    });
+
+    function getNowDay(){
+       var mydate = new Date();
+       var str = "" + mydate.getFullYear() + "-";
+       var month = mydate.getMonth()+1;
+       if(month<10){
+        month = "0" + month;
+       }
+       var day = mydate.getDate();
+       if(day<10){
+        day = "0" + day;
+       }
+       str += month + "-" + day;
+       return str;
+    }
+    /*$("#cnt").on('click','.delitm',function(){
+        obj=$(this);
+        if(obj.attr("data")!=undefined){//调用ajax
+            id=obj.attr("data");
+            var ret;
+            ret=confirm("确认要删除吗？");
+            if(ret!=false){
+                $.ajax({
+                    type: "GET",
+                    url: "/vote/index?do=delitem",
+                    data: "ids="+id,
+                    dataType:'json',
+                    cache:false,
+                    success: function(msg){
+                        if(msg.error_code==0){
+                            obj.parent().remove();
+                        }else{
+                            alert(msg.error_msg)
+                        }
+                        
+                    },
+                    error:function(){alert('error')},
+                    timeout:5000
+                })
+            }
+        }else{
+            obj.parent().remove();
+        }
+    });*/
+    $('#fdStartTime').datetimepicker({
+        timepicker: false,
+        format: 'Y-m-d'
+    });
+    $('#fdEndTime').datetimepicker({
+        timepicker: false,
+        format: 'Y-m-d'
+    });
+
+    function validatatext_ex(obj,target,txt,cls){
+    ret=validateText($(obj).val(),target,txt,cls);
+    if(!ret){
+        $(obj).addClass("error");
+    }
+
+}
+    {{/if}}
+</script>
+</html>

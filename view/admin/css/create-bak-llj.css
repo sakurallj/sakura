@@ -1,0 +1,390 @@
+.form-group{
+    width: 100%;
+    box-sizing: border-box;
+    margin-bottom: auto;
+}
+.form-group textarea{
+    resize: vertical;
+}
+.form-label{
+    padding: 6px 12px;
+    font-size: 14px;
+}
+.form-control{
+    margin-bottom: 15px;
+}
+.form-group-left{
+    float: left;
+    width: 10%;
+    text-align: left;
+    word-break: break-all;
+}
+.form-group-right{
+    float: left;
+    width: 90%;
+    word-break: break-all;
+}
+.form-group-left1{
+    float: left;
+    width: 12%;
+    text-align: left;
+}
+.form-group-right1{
+    float: left;
+    width: 88%;
+}
+.form-group-select select{
+    width: 137px;
+    margin-left: 0px !important;
+    vertical-align: middle;
+    min-width: 100px;
+    height: 34px;
+    min-height: 25px !important;
+    position: relative;
+    overflow: hidden;
+    background: #ffffff;
+    background: url("../images/select-bg.png"), -moz-linear-gradient(top, #ffffff 0%, #f0f1f2 100%);
+    background: url("../images/select-bg.png"), -webkit-gradient(linear, left top, left bottom, color-stop(0%,#ffffff), color-stop(100%,#f0f1f2));
+    background: url("../images/select-bg.png"), -webkit-linear-gradient(top, #ffffff 0%,#f0f1f2 100%);
+    background: url("../images/select-bg.png"), -o-linear-gradient(top, #ffffff 0%,#f0f1f2 100%);
+    background: url("../images/select-bg.png"), -ms-linear-gradient(top, #ffffff 0%,#f0f1f2 100%);
+    background: url("../images/select-bg.png"), linear-gradient(to bottom, #ffffff 0%,#f0f1f2 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#f0f1f2',GradientType=0 );
+    display: inline-block;
+    border: 1px solid #cfdde8;
+    border-radius: 5px;
+    background-position: 94%;
+    background-repeat: no-repeat;
+    margin-bottom: 15px;
+}
+.form-select-character{
+    float: none;
+    line-height: inherit;
+    width: 135%;
+    font-family: "Open Sans", Arial;
+    font-size: 12px;
+    border: none;
+    padding: 0 30px 0 7px;
+    height: 33px;
+    -webkit-appearance: none;
+    color: #737f8d;
+    text-shadow: 1px 1px 1px #fff;
+    background: transparent;
+}
+.left50{
+    float: left;
+}
+.left50>.form-group-left{
+    width: 10%;
+}
+.left50>.form-group-right{
+    width: 40%;
+}
+.checkbox-group{
+    padding: 6px 0;
+    margin-bottom: 15px;
+}
+.checkbox-inline{
+    font-size: 14px;
+    margin-right: 15px;
+    float: left;
+}
+.input-time-label {
+    float: left;
+    font-size: 14px;
+    padding-right: 5px;
+}
+.input-time{
+    margin-top: -5px;
+}
+.dropdown-menu-right{
+    right: 50%;
+    width: 34%;
+    margin-top: -15px;
+}
+.time-of-od{
+    display: none;
+}
+.panel-body{
+    padding: 15px 0 0 0 ;
+}
+.panel-body>.form-group{
+    width: 50%;
+}
+.panel-body>.form-group>.form-group-left {
+    width: 18%;
+}
+.panel-body>.form-group>.form-group-right {
+    width: 72%;
+}
+.add-select{
+    margin-left: 9%;
+    margin-bottom: 15px;
+}
+.collapse-panel-delete{
+    margin-right: 10px;
+}
+.panel-body .input-error{
+    width: 82%;
+}
+.modal-dialog {
+    height: 500px;
+}
+.modal .modal-header h3 {
+     font-size: .95em;
+     padding: 0em;
+     margin: 0em;
+}
+.modal .modal-icon {
+    vertical-align: middle;
+    font-size: 3.5em;
+    float: left;
+    margin-right: .25em;
+}
+.modal.small .modal-dialog .modal-body {
+     padding: 1em;
+     margin-top: 1em;
+}
+.modal-body .error-text{
+    margin: 0;
+}
+.modal-footer{
+    padding: 9px;
+}
+#items{
+    margin-left: 0;
+    list-style: none;
+}
+@media (min-width: 380px){
+    .modal.small .modal-dialog {
+        width: 370px;
+        margin: 30px auto;
+    }
+}
+.radio-inline{
+    font-size: 14px;
+    margin-bottom: 15px;
+    float: left;
+    margin-right: 15px;
+}
+hr{
+    margin-top: 15px;
+    margin-bottom: 15px;
+}
+.q-footer-btn{
+    text-align: center;
+}
+footer .btn,.finish .btn{
+    margin: 0 10px;
+}
+a.collapse-panel{
+    float: right;
+    color: #0e90d2;
+}
+.div-add-que{
+    margin-top: 10px;
+    text-align: right;
+}
+.btn-add-que{
+    box-sizing: border-box;
+}
+.finish{
+    text-align: center;
+}
+.form-input-character{
+    width: 100%;
+}
+.dropdown-menu-character{
+    width: 100%;
+    margin-top: -15px;
+}
+.form-group-file{
+    float: left;
+    height: 200px;
+    width: 200px;
+    background: url("../images/file.png") no-repeat center;
+    background-size: 200%;
+    margin-bottom: 15px;
+    box-shadow: 0 1px 1px 1px #000;
+}
+.form-control-file{
+    opacity: 0;
+    position: absolute;
+    height: 200px;
+    width: 200px;
+}
+.photo-auto{
+    color: #dddddd;
+    position: absolute;
+    text-align: center;
+    width: 200px;
+    padding-top: 45px;
+}
+.img-plus{
+    font-size: 60px;
+}
+.font-plus{
+    font-size: 30px;
+}
+.form-power-right{
+    float: left;
+}
+.form-power-right.form-label{
+    text-align: right;
+}
+.form-power-right.form-control{
+    width: 25%;
+}
+.form-group .close{
+    font-size: 32px;
+    float: left;
+    margin-left: 5px;
+}
+.btn-add-power{
+    margin-bottom: 15px;
+    margin-left: 10%;
+    box-sizing: border-box;
+}
+.has-error .form-control{
+    background-color: rgba(255,0,0,.1);
+}
+.input-error{
+    float: right;
+    width: 91%;
+    margin-bottom: 7.5px;
+    margin-top: -7.5px;
+    color: #b94a48;
+}
+@media (max-width: 770px) {
+    .form-group-left{
+        float: inherit;
+        width: auto;
+        text-align: left;
+        padding-right: 20px;
+    }
+    .form-group-right{
+        float: inherit;
+        width: 100%;
+    }
+    .panel-body {
+        padding: 15px 30px;
+    }
+    .panel-body>.form-group>.form-group-left {
+        width: auto;
+    }
+    .panel-body>.form-group>.form-group-right {
+        width: 100%;
+    }
+    .left50{
+        float: inherit;
+    }
+    .left50>.form-group-left{
+        width: 100%;
+    }
+    .left50>.form-group-right{
+        width: 100%;
+    }
+    .radio-inline+.radio-inline, .checkbox-inline+.checkbox-inline {
+        margin-top: 0;
+        margin-left: 0;
+    }
+    .checkbox-inline{
+        float: inherit;
+    }
+    .panel-body>.form-group {
+         width: auto;
+    }
+    .div-add-que{
+        text-align: center;
+    }
+    .btn-add-que, .btn-delete-que {
+        float: inherit;
+    }
+    footer .btn,.finish .btn{
+        margin: 5px 10px;
+    }
+    .dropdown-menu-right{
+        right: inherit;
+        width: 100%;
+        margin-top: 0;
+    }
+    .form-group-file{
+        float: inherit;
+    }
+    .form-power-right{
+        float: inherit;
+    }
+    .btn-add-power{
+        margin-bottom: 15px;
+        margin-left: 0;
+    }
+    .close{
+        float: inherit;
+        margin-bottom: 15px;
+    }
+    .form-power-right.form-control{
+        width: 100%;
+    }
+    .input-error{
+        float: inherit;
+        width: 100%;
+        margin-bottom: 7.5px;
+        margin-top: -7.5px;
+        color: #b94a48;
+    }
+}
+.input-time-label {
+    font-weight: 500;
+}
+.time-of-ch{
+    float: left;
+    margin-right: 15px;
+    display: none;
+}
+.radio-group{
+    padding: 6px 0;
+    display: block;
+}
+label.radio-inline,.radio-inline+.radio-inline{
+    margin-top: 5px;
+}
+.form-group-banner{
+    float: left;
+    height: 220px;
+    width: 640px;
+    background: url("../images/file.png") no-repeat center;
+    background-size: 200%;
+    margin-bottom: 15px;
+    box-shadow: 0 1px 1px 1px #000;
+}
+.form-control-banner{
+    opacity: 0;
+    position: absolute;
+    height: 220px;
+    width: 640px;
+}
+.banner-auto{
+    color: #dddddd;
+    position: absolute;
+    text-align: center;
+    width: 640px;
+    padding-top: 55px;
+}
+.checkbox-inline{
+    margin-bottom: 15px;
+}
+.form-select-signUp{
+    float: left;
+}
+.panel-signUp>.panel-collapse>.panel-body>.form-group{
+    width: 100%;
+}
+.panel-body>.left50>.form-group-left{
+    width: 9%;
+}
+.panel-body>.left50>.form-group-right{
+    width: 41%;
+}
+.panel-body>.left50>.form-group-right>.close{
+    margin-top: -6px;
+}

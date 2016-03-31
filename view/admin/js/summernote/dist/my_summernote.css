@@ -1,0 +1,13 @@
+.note-editor.note-frame{
+    float: left;
+
+}
+
+.model-summernote  .close{
+    float: right;
+}
+
+.dropdown-fontname{
+    overflow-y: auto;
+    max-height: 200px;
+}

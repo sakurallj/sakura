@@ -1,0 +1,290 @@
+﻿<div class="col-md-12 graphs">
+	<div>
+		<!-- Nav tabs -->
+		<ul class="nav nav-tabs" role="tablist">
+			<li role="presentation" class="active"><a href="#tab_users" aria-controls="tab_users" role="tab" data-toggle="tab">用户管理</a></li>
+			<li role="presentation"><a href="#tab_messages" aria-controls="tab_messages" role="tab" data-toggle="tab">评论管理</a></li>
+		</ul>
+		<!-- Tab panes -->
+		<div class="tab-content">
+			<div role="tabpanel" class="tab-pane active" id="tab_users">
+				<div class="row">
+					<div class="form-inline col-md-12">
+						<div class="form-group">
+							<input type="text" class="form-control1" id="search_username" placeholder="输入用户名">
+						</div>
+						<button type="submit" class="btn btn-default" id="search_user">搜索</button>
+					</div>
+				</div>
+				<div class="row" style="margin-top: 15px">
+					<div  id="users_table" class="col-md-12">
+						{{include file="chat_manage_user.html" ar=$users.ar sy=$users.sy}}
+					</div>
+				</div>
+			</div>
+			<div role="tabpanel" class="tab-pane" id="tab_messages">
+				<div class="row">
+					<div class="form-inline col-md-12">
+						<div class="form-group">
+							<input type="text" class="form-control1" id="msg_username" placeholder="输入用户名">
+						</div>
+						<div class="form-group">
+							<input type="text" class="form-control1" id="msg_msg" placeholder="输入评论内容片段">
+						</div>
+						<button type="submit" class="btn btn-default" id="search_msg">搜索</button>
+					</div>
+				</div>
+				<div class="row" style="margin-top: 15px">
+					<div  id="messages_table" class="col-md-12">
+						{{include file="chat_manage_message.html" ar=$messages.ar sy=$messages.sy}}
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="copy_layout">
+		<p>Copyright &copy; 2015.Company name All rights reserved.</p>
+	</div>
+</div>
+<div  id="forbit_time_templ" class="hidden">
+	<div class="form-group">
+		<label class="col-sm-2 control-label">禁言时长</label>
+		<div class="col-sm-10">
+			<select class="form-control forbit_time_sel" id="">
+				<option value="0.5_h">0.5小时</option>
+				<option value="1_h">1小时</option>
+				<option value="2_h">2小时</option>
+				<option value="5_h">5小时</option>
+				<option value="12_h">12小时</option>
+				<option value="1_d">1天</option>
+				<option value="2_d">2天</option>
+				<option value="1_w">1周</option>
+				<option value="1_m">1个月</option>
+				<option value="1_y">1年</option>
+				<option value="1_f">永久</option>
+			</select>
+		</div>
+	</div>
+</div>
+<script>
+	(function($){
+		$("#search_user").bind("click",function(){
+			var searchName = $("#search_username").val();
+			$.ajax({
+				type: "GET",
+				url: "/chat/user?do=getroomusers&roomId={{$roomId}}",
+				data: {
+					searchName:searchName
+				}
+			}).done(function(msg){
+				if(msg){
+					$("#users_table").empty().append(msg);
+					bindUserPageClickEvent();
+					currentUserPageNum = 1;
+				}else{
+				}
+			});
+		});
+		$("#search_msg").bind("click",function(){
+			var searchUserName = $("#msg_username").val();
+			var msg = $("#msg_msg").val();
+			$.ajax({
+				type: "GET",
+				url: "/chat/message?do=getroommessages&roomId={{$roomId}}",
+				data: {
+					searchUserName:searchUserName,
+					searchMsg:msg
+				}
+			}).done(function(msg){
+				if(msg){
+					$("#messages_table").empty().append(msg);
+					bindMsgPageClickEvent();
+					currentMsgPageNum = 1;
+				}else{
+				}
+			});
+		});
+		var currentUserPageNum = 1;
+		//刷新user页面
+		function refreshUserPage(){
+			$("a[value="+currentUserPageNum+"]").trigger("click");
+		}
+		bindUserPageClickEvent();
+		function bindUserPageClickEvent(){
+			//分页
+			$("#user_page a").unbind("click").bind("click",function(){
+				var searchName = $("#search_username").val();
+				var href = $(this).attr("href");
+				$(this).attr("href","javascript:;");
+				var pageNum = $(this).attr("value");
+				currentUserPageNum = pageNum;
+				if(pageNum){
+					$.ajax({
+						type: "GET",
+						url: "/chat/user?do=getroomusers&roomId={{$roomId}}",
+						data: {
+							pageNum:pageNum,
+							searchName:searchName
+						}
+					}).done(function(msg){
+						if(msg){
+							$("#users_table").empty().append(msg);
+							bindUserPageClickEvent();
+						}else{
+						}
+					});
+				}
+				else{
+				}
+			});
+			//禁言
+			$(".forbit").unbind("click").bind("click",function(){
+				var userId = $(this).data("id");
+
+				modalmsg.popup("选择禁言时间",$("#forbit_time_templ").html(), function(){
+					var time   = $($(".forbit_time_sel")[1]).val();
+					$.ajax({
+						type: "GET",
+						url: "/chat/user?do=forbit",
+						data: {
+							id:userId,
+							value:time
+						}
+					}).done(function(msg){
+						var msgJson = JSON.parse(msg);
+						if(msgJson[0]=="0"){
+							refreshUserPage();
+						}
+					});
+				});
+			});
+			//取消禁言
+			$(".unforbit").unbind("click").bind("click",function(){
+				var userId = $(this).data("id");
+				if(userId){
+					modalmsg.confirm("确定取消禁言吗?", function () {
+						$.ajax({
+							url: "/chat/user?do=unforbit",
+							type: "get",
+							data: {
+								id: userId
+							}
+						}).done(function (msg) {
+							var msgJson = JSON.parse(msg);
+							if(msgJson[0]=="0"){
+								refreshUserPage();
+							}
+						});
+					});
+				}
+			});
+			//删除所有评论
+			$(".del_all_msg").unbind("click").bind("click",function(){
+				var userId = $(this).data("id");
+				if(userId){
+					modalmsg.confirm("确定删除该用户所有的评论吗?", function () {
+						$.ajax({
+							url: "/chat/user?do=delallmsg",
+							type: "get",
+							data: {
+								id: userId
+							}
+						}).done(function (msg) {
+							var msgJson = JSON.parse(msg);
+							if(msgJson[0]=="0"){
+								refreshUserPage();
+							}
+						});
+					});
+				}
+			});
+		}
+		var currentMsgPageNum = 1;
+		//刷新user页面
+		function refreshMsgPage(){
+			$("a[value="+currentMsgPageNum+"]").trigger("click");
+		}
+		bindMsgPageClickEvent();
+		function bindMsgPageClickEvent(){
+			//分页
+			$("#msg_page a").unbind("click").bind("click",function(){
+				$(this).attr("href","javascript:;");
+				var pageNum = $(this).attr("value");
+				currentMsgPageNum = pageNum;
+				var searchUserName = $("#msg_username").val();
+				var msg = $("#msg_msg").val();
+				if(pageNum){
+					$.ajax({
+						type: "GET",
+						url: "/chat/message?do=getroommessages&roomId={{$roomId}}",
+						data: {
+							pageNum:pageNum,
+							searchUserName:searchUserName,
+							searchMsg:msg
+						}
+					}).done(function(msg){
+						if(msg){
+							$("#messages_table").empty().append(msg);
+							bindMsgPageClickEvent();
+						}else{
+						}
+					});
+				}
+				else{
+				}
+			});
+			//删除 评论
+//			$(".del_msg").unbind("click").bind("click",function(){
+//				var msgId = $(this).data("id");
+//				if(msgId){
+//					modalmsg.confirm("确定删除评论吗?", function () {
+//						$.ajax({
+//							url: "/chat/message?do=delmsg",
+//							type: "get",
+//							data: {
+//								id: msgId
+//							}
+//						}).done(function (msg) {
+//							var msgJson = JSON.parse(msg);
+//							if(msgJson[0]=="0"){
+//								refreshMsgPage();
+//							}
+//						});
+//					});
+//				}
+//			});
+			$(".del_msg").click(function(){
+				obj=$(this);
+				var ar=new Array();
+				$.each($("input[type=checkbox]:checked"),function(k,v){
+					ar[k]=v.value
+				});
+				if(ar.length==0){
+					ar[0]=$(this).data("id");
+				}
+				if(ar.length>0){
+					modalmsg.confirm("确定删除评论吗？",function(){
+						$.ajax({
+							type: "GET",
+							url: "/chat/message?do=delmsg",
+							data: "ids="+ar,
+							dataType:'json',
+							cache:false,
+							success: function(msg){
+								if(msg[0]==0){
+									refreshMsgPage();
+								}else{
+									alert(msg[1])
+								}
+							},
+							error:function(){alert('error')},
+							timeout:5000
+						});
+					});
+
+				}
+			});
+		}
+	})(window.jQuery);
+</script>
+

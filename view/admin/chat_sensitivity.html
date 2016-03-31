@@ -1,0 +1,126 @@
+﻿<!--正文-->
+<div class="content">
+	<div class="header">
+		<h1 class="page-title">敏感词列表</h1>
+		<ul class="breadcrumb">
+			<li><a href="/chat/sensitivity">敏感词管理</a> </li>
+			<li class="active">敏感词列表</li>
+		</ul>
+
+	</div>
+	<div class="main-content">
+		<div class="btn-toolbar list-toolbar pull-left">
+			<!--<button class="btn btn-success start_room" data-type="top_btn">启用</button>-->
+			<!--<button class="btn btn-default stop_room"  data-type="top_btn">停用</button>-->
+			<button class="btn btn-danger del_sensitivity" data-type="top_btn">删除</button>
+			<div class="form-group search form-group-select">
+				<button class="btn btn-info" id="search_btn">搜索</button>
+				<!--<div class="dropdown form-group-right">-->
+					<!--<select class="dropdown-toggle form-select-character" id="search_roomid">-->
+						<!--<option value="">选择聊天室</option>-->
+						<!--<option value="0" {{if "0"==$searchRoomId}}selected{{/if}}>所有聊天室适用</option>-->
+						<!--{{foreach from=$rooms.ar name=nar item=room}}-->
+						<!--<option value="{{$room.id}}" {{if $room.id==$searchRoomId}}selected{{/if}}>-->
+							<!--{{$room.fdName}}-->
+						<!--</option>-->
+						<!--{{/foreach}}-->
+					<!--</select>-->
+				<!--</div>-->
+				<input class="form-control" id="search_word" value="{{$searchWord}}" type="text" placeholder="输入敏感词">
+			</div>
+
+		</div>
+		<table class="table">
+			<thead>
+			<tr>
+				<th  ><input type="checkbox" name="topCheckbox" value="-1"/></th>
+				<!--<th  >条件</th>-->
+				<th  >敏感词</th>
+				<!--<th  >所属聊天室</th>-->
+				<th>添加时间</th>
+				<th  >操作</th>
+			</tr>
+			</thead>
+			<tbody>
+			{{foreach from=$ar name=nar item=row}}
+			<tr >
+				<td ><input type="checkbox" name="checkbox" value="{{$row.id}}" /></td>
+				<!--<td>-->
+					<!--{{if $row.fdCondition eq "include"}}-->
+					<!--<span class="process-notStart">&nbsp;&nbsp;包含&nbsp;&nbsp;</span>-->
+					<!--{{else}}-->
+					<!--<span class="process-work">不包含</span>-->
+					<!--{{/if}}-->
+				<!--</td>-->
+				<td>{{$row.fdValue}}</td>
+				<!--<td>-->
+					<!--{{if $row.fdRoomId=="0"}}-->
+						<!--所有聊天室适用-->
+					<!--{{else}}-->
+						<!--{{$row.roomName}}-->
+					<!--{{/if}}-->
+				<!--</td>-->
+				<td>{{$row.fdCreated}}</td>
+				<td>
+					<a href="/chat/sensitivity?do=edit&id={{$row.id}}" title="编辑"><i class="icon-pencil"></i></a>
+					<a href="javascript:;"  class="del_sensitivity" data-id="{{$row.id}}" title="删除"><i class="icon-trash"></i></a>
+				</td>
+			</tr>
+			{{/foreach}}
+			</tbody>
+		</table>
+		<div class="page" style="text-align:center">
+			{{$sy}}
+		</div>
+		<footer>
+			<hr>
+			<p class="pull-right">© 2016 <a href="" target="_blank">广州涛略科技有限公司</a></p>
+		</footer>
+	</div>
+</div>
+<script>
+    (function($){
+		$(".del_sensitivity").click(function(){
+			var ar=new Array();
+			var type = $(this).data("type");
+			if(type=="top_btn"){
+				$.each($("input[type=checkbox]:checked"),function(k,v){
+					ar[k]=v.value;
+				});
+			}
+			else{
+				if(ar.length==0){
+					ar[0]=$(this).data("id");
+				}
+			}
+			if(ar.length>0){
+				modalmsg.confirm("确定删除吗？",function(){
+					$.ajax({
+						type: "GET",
+						url: "/chat/sensitivity?do=del",
+						data: {
+							ids:ar
+						},
+						cache:false
+					}).done(function(msg){
+						var msgJson = JSON.parse(msg);
+						if(msgJson[0]==0){
+							window.location.reload();
+						}else{
+							alert(msgJson[1])
+						}
+					});
+				});
+
+			}
+			else{
+				modalmsg.alert("请选择要删除的敏感词");
+			}
+		});
+		$("#search_btn").bind("click",function(){
+			var searchWord = $("#search_word").val();
+//			var searchRoomId = $("#search_roomid").val();
+			window.location.href='/chat/sensitivity?searchWord='+searchWord;
+		});
+    })(window.jQuery);
+</script>

@@ -1,0 +1,526 @@
+﻿<link rel="stylesheet" type="text/css" href="./{{$user_dir_theme}}/css/bootstrap-treeview.css">
+<link rel="stylesheet" type="text/css" href="./{{$user_dir_theme}}/js/summernote/dist/summernote.css">
+<link rel="stylesheet" type="text/css" href="./{{$user_dir_theme}}/js/summernote/dist/my_summernote.css">
+<!--正文-->
+<div class="content" ng-app="appProductEdit" ng-controller="productEditCtrl">
+    <div class="header">
+        <h1 class="page-title">
+            {{if $row.id eq ""}}
+            新建类别
+            {{else}}
+            编辑类别
+            {{/if}}
+        </h1>
+        <ul class="breadcrumb">
+            <li><a href="/product/columns">类别管理</a></li>
+            <li class="active">
+                {{if $row.id eq ""}}
+                新建类别
+                {{else}}
+                编辑类别
+                {{/if}}
+            </li>
+        </ul>
+    </div>
+    <div class="main-content">
+        <form name="f1" id="f1" method="post" action="/product/index?do=edited&id={{$row.id}}">
+            <input type="hidden" name="id" id="id" value="{{$row.id}}"/>
+            <input type="hidden" name="delPicIds" id="del_pic_ids" value="-1"/>
+            <input type="hidden" name="prodTypes" id="prod_types" value=""/>
+            <div class="form-group">
+                <label class="form-label form-group-left" for="fdName">商品名称<strong class="must"> *</strong></label>
+                <input type="text" value="{{$row.fdName}}" maxlength="15" ng-model="product.fdName"
+                       class="form-control form-group-right" id="fdName" name="fdName" placeholder="不超过15字" required>
+
+                <div id="fdName-error" class="input-error hidden" style="display: block;">不能为空</div>
+            </div>
+            <div class="form-group">
+                <label class="form-label form-group-left" for="fdNum">库存<strong class="must"> *</strong></label>
+                <input type="number" value="{{$row.fdNum}}" maxlength="15" ng-model="product.fdNum"
+                       class="form-control form-group-right" id="fdNum" name="fdNum" placeholder="不超过15字" required>
+
+                <div id="fdNum-error" class="input-error hidden" style="display: block;">不能为空</div>
+            </div>
+
+            <!--<div class="form-group">-->
+                <!--<label class="form-label form-group-left" for="fdMarketprice">市场价格<strong class="must"> *</strong></label>-->
+                <!--<input type="text" value="{{$row.fdMarketprice/100|default '0'}}" maxlength="15"-->
+                       <!--class="form-control form-group-right" id="fdMarketprice" name="fdMarketprice" placeholder="不超过15字" required>-->
+
+                <!--<div id="fdMarketprice-error" class="input-error hidden" style="display: block;">不能为空</div>-->
+            <!--</div>-->
+            <div class="form-group form-group-select">
+                <label class="form-label form-group-left" for="fdSellWay">购买方式<strong class="must"> *</strong></label>
+                <div class="dropdown form-group-right">
+                    <select class="dropdown-toggle form-select-character" name="fdSellWay"
+                            id="fdSellWay" required ng-model="sellWay">
+                        <option value="">请选择</option>
+                        <option value="1" {{if $row.fdSellWay=="1"}}selected{{/if}}>现金</option>
+                        <option value="2" {{if $row.fdSellWay=="2"}}selected{{/if}}>积分兑换</option>
+                        <option value="3" {{if $row.fdSellWay=="3"}}selected{{/if}}>现金+积分兑换</option>
+                    </select>
+                </div>
+                <div id="fdSellWay-error" class="input-error hidden" style="display: block;">不能为空</div>
+            </div>
+            <div class="form-group" ng-show="!sellWay">
+                <label class="form-label form-group-left">所需现金(元)<strong class="must">*</strong></label>
+                <input type="text"
+                       class="form-control form-group-right"   name="fdPrice" placeholder="请先选择购买方式" disabled="disabled" >
+
+            </div>
+            <div class="form-group left50 dropdown" ng-show="sellWay=='1'">
+                <label class="form-label form-group-left">所需现金(元)<strong class="must">*</strong></label>
+                <input type="text" value="{{$row.fdPrice }}" ng-disabled="sellWay!='1'" id="fdPrice"
+                       ng-model="product.fdPrice" ng-pattern="/^\d{0,11}(\.\d{0,2})?$/" maxlength="11"
+                       ng-class="{'error':!product.fdPrice&&product.fdPrice!=0}"
+                       class="form-control form-group-right"  name="fdPrice" placeholder="输入所需现金，单位：元" required>
+                <label class="form-label form-group-left">VIP所需现金<strong class="must">*</strong></label>
+                <input type="text" value="{{$row.fdVIPPrice }}" ng-disabled="sellWay!='1'" id="fdVIPPrice"
+                       ng-model="product.fdVIPPrice" maxlength="11"  ng-pattern="/^\d{0,11}(\.\d{0,2})?$/"
+                       ng-class="{'error':!product.fdVIPPrice&&product.fdVIPPrice!=0}"
+                       class="form-control form-group-right "
+                       name="fdVIPPrice" placeholder="输入所需现金，单位：元" required>
+                <div ng-show="(!product.fdPrice&&product.fdPrice!=0)||(!product.fdVIPPrice&&product.fdVIPPrice!=0)"
+                     class="input-error " style="display: block;">请输入正整数或0或保留两位的正小数</div>
+            </div>
+            <div class="form-group left50 dropdown" ng-show="sellWay=='2'">
+                <label class="form-label form-group-left"  >所需积分<strong class="must">*</strong></label>
+                <input type="number" value="{{$row.fdCredits|default:0 }}" ng-disabled="sellWay!='2'" id="fdCredits"
+                       ng-model="product.fdCredits"
+                       ng-class="{'error':!product.fdCredits&&product.fdCredits!=0}"
+                       class="form-control form-group-right"  name="fdCredits" placeholder="输入所需积分" required>
+                <label class="form-label form-group-left"  >VIP所需积分<strong class="must">*</strong></label>
+                <input type="number" value="{{$row.fdVIPCredits|default:0 }}" ng-disabled="sellWay!='2'" id="fdVIPCredits"
+                       ng-model="product.fdVIPCredits"
+                       ng-class="{'error':!product.fdVIPCredits&&product.fdVIPCredits!=0}"
+                       class="form-control form-group-right"  name="fdVIPCredits" placeholder="输入所需积分" required>
+                <div ng-show="(!product.fdCredits&&product.fdCredits!=0)||(!product.fdVIPCredits&&product.fdVIPCredits!=0)"
+                     class="input-error " style="display: block;">请输入正整数或0</div>
+            </div>
+            <div class="form-group left50 dropdown" ng-show="sellWay=='3'">
+                <label class="form-label form-group-left">所需现金(元)<strong class="must">*</strong></label>
+                <input name="fdPrice2" type="text" id="fdPrice2" ng-disabled="sellWay!='3'"
+                       class="form-control form-group-right dropdown-toggle "
+                       ng-model="product.fdPrice2"  ng-pattern="/^\d{0,11}(\.\d{0,2})?$/" maxlength="11"
+                       ng-class="{'error':!product.fdPrice2&&product.fdPrice2!=0}"
+                       value="{{$row.fdPrice}}" required placeholder="输入所需现金，单位：元">
+                <label class="form-label form-group-left">VIP所需现金<strong class="must">*</strong></label>
+                <input name="fdVIPPrice2" type="text" id="fdVIPPrice2" ng-disabled="sellWay!='3'"
+                       ng-model="product.fdVIPPrice2"
+                       ng-class="{'error':!product.fdVIPPrice2&&product.fdVIPPrice2!=0}"
+                       class="form-control form-group-right dropdown-toggle "
+                       ng-pattern="/^\d{0,11}(\.\d{0,2})?$/" maxlength="11"
+                       value="{{$row.fdVIPPrice}}" required placeholder="输入所需现金，单位：元">
+                <div ng-show="(!product.fdPrice2&&product.fdPrice2!=0)||(!product.fdVIPPrice2&&product.fdVIPPrice2!=0)"
+                     class="input-error " style="display: block;">请输入正整数或0或保留两位的正小数</div>
+            </div>
+            <div class="form-group left50 dropdown" ng-show="sellWay=='3'">
+                <label class="form-label form-group-left ">所需积分<strong class="must"> *</strong></label>
+                <input name="fdCredits2" type="number" id="fdCredits2" ng-disabled="sellWay!='3'"
+                       ng-model="product.fdCredits2"
+                       ng-class="{'error':!product.fdCredits2&&product.fdCredits2!=0}"
+                       class="form-control form-group-right dropdown-toggle "
+                       value="{{$row.fdCredits}}" required placeholder="输入所需积分" >
+                <label class="form-label form-group-left ">VIP所需积分<strong class="must"> *</strong></label>
+                <input name="fdVIPCredits2" type="number" id="fdVIPCredits2" ng-disabled="sellWay!='3'"
+                       class="form-control form-group-right dropdown-toggle "
+                       ng-model="product.fdVIPCredits2"
+                       ng-class="{'error':!product.fdVIPCredits2&&product.fdVIPCredits2!=0}"
+                       value="{{$row.fdVIPCredits}}" required placeholder="输入所需积分" >
+                <div ng-show="(!product.fdCredits2&&product.fdCredits2!=0)||(!product.fdVIPCredits2&&product.fdVIPCredits2!=0)"
+                     class="input-error " style="display: block;">请输入正整数或0</div>
+            </div>
+            <div class="clearfix"></div>
+            <div class="form-group">
+                <label class="form-label form-group-left" >商品图片</label>
+                <div class="form-group-right " id="photo_container">
+                    {{foreach from=$pics name=picn item=pic}}
+                    <div class="form-group-file">
+                        <div class="photo">
+                            <img style="width: 200px;max-height: 200px;position: absolute" src="../var/uploads/{{$pic.fdSrc}}" />
+                        </div>
+                        <a class="form-group-a" href="#">
+                            <input  type="file" class="form-control form-control-banner fdLogo"  name="pic[]" >
+                            <button type="button" class="close btn-close-form-file del_pic" aria-label="Close" data-id="{{$pic.id}}">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </a>
+                    </div>
+                    {{/foreach}}
+                </div>
+            </div>
+            <div class="clearfix"></div>
+            <div class="form-group">
+                <label class="form-label form-group-left"  >简介</label>
+                {{if $row.fdContent neq ''}}
+                    <textarea class="form-control form-group-right"  name="fdContent" >{{$row.fdContent}}</textarea>
+                {{else}}
+                    <textarea class="form-control form-group-right"  name="fdContent" ></textarea>
+                {{/if}}
+
+            </div>
+            <div class="form-group">
+                <label class="form-label form-group-left"  >兑换规则</label>
+                {{if $row.fdChangeRules neq ''}}
+                <textarea class="form-control form-group-right"  name="fdChangeRules" >{{$row.fdChangeRules}}</textarea>
+                {{else}}
+                <textarea class="form-control form-group-right"  name="fdChangeRules" ></textarea>
+                {{/if}}
+
+            </div>
+            <div class="form-group left50 dropdown">
+                <label class="form-label form-group-left">活动起始时间</label>
+                <input name="fdBTime" type="datetime" id="BTime" ng-model="product.fdBTime"
+                       class="form-control form-group-right dropdown-toggle " placeholder=""
+                       ng-change="startTime()"
+                       value="{{$row.fdBTime|date_format:'%Y-%m-%d'}}">
+                <a class="btn-data single-datetime-b" data-inputid="forBTime" href='javascript:void (0);'>
+                    <i class="icon-calendar"></i>
+                </a>
+                <label class="form-label form-group-left ">活动截止时间</label>
+                <input name="fdETime" type="datetime" id="ETime" ng-model="product.fdETime"
+                       class="form-control form-group-right dropdown-toggle " placeholder=""
+                       ng-change="endTime()"
+                       value="{{$row.fdETime|date_format:'%Y-%m-%d'}}">
+                <a class="btn-data single-datetime-e" data-inputid="forETime" href='javascript:void (0);'>
+                    <i class="icon-calendar"></i>
+                </a>
+                <div class="hidden input-error " id="time_error" >
+                    起始时间不能大于截止时间
+                </div>
+                <div class="hidden input-error " id="time_error_n">
+                    起始时间需大于当前时间
+                </div>
+                <div class="hidden input-error " id="time_error_b">
+                    起始时间不能为空
+                </div>
+
+                <div class="hidden input-error " id="time_error_e">
+                    截止时间不能为空
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label form-group-left"  >活动规则</label>
+                {{if $row.fdActivityRules neq ''}}
+                <textarea class="form-control form-group-right"  name="fdActivityRules">{{$row.fdActivityRules}}</textarea>
+                {{else}}
+                <textarea class="form-control form-group-right"  name="fdActivityRules"></textarea>
+                {{/if}}
+
+            </div>
+            <div class="clearfix"></div>
+            <div class="form-group">
+                <label class="form-label form-group-left" >所属类别</label>
+                <div id="sub_columns" class="form-group-right bootstrap-tree product-col-tree" >
+                </div>
+            </div>
+            <div class="clearfix"></div>
+
+            <div class="form-group">
+                <label class="form-label form-group-left" for="summernote">商品详情</label>
+                <textarea  class="form-control form-group-right" id="summernote" name="fdDetail">
+                    {{$row.fdDetail}}
+                </textarea>
+            </div>
+
+            <div class="clearfix"></div>
+            <div class="finish">
+                <button class="btn btn-success" type="submit">完成</button>
+                {{if $row.id eq ""}}
+                {{else}}
+                <button class="btn btn-default" type="button"
+                        onclick="window.location.href = window.document.referrer;"
+                        >取消
+                </button>
+                {{/if}}
+
+            </div>
+        </form>
+        <footer>
+            <hr>
+            <p class="pull-right">© 2016 <a href="" target="_blank">广州涛略科技有限公司</a></p>
+        </footer>
+    </div>
+</div>
+<!--模板 begin-->
+<div class="hidden">
+    <div id="photo_templ">
+        <div class="form-group-file">
+            <div class="photo">
+                <div class="photo-auto">
+                    <i class="icon-plus img-plus"></i>
+                    <div class="clearfix"></div>
+                    <span class="font-plus">添加图片</span>
+                </div>
+            </div>
+            <a class="form-group-a" href="#">
+                <input  type="file" class="form-control form-control-banner fdLogo"  name="pic[]" >
+                <button type="button" class="close btn-close-form-file hidden" aria-label="Close" >
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </a>
+        </div>
+    </div>
+</div>
+
+<!--模板 end-->
+<script type="text/javascript" src="./{{$user_dir_theme}}/js/bootstrap-treeview.js"></script>
+<script type="text/javascript" src="./{{$user_dir_theme}}/js/summernote/dist/summernote.js"></script>
+<script type="text/javascript" src="./{{$user_dir_theme}}/js/summernote/dist/lang/summernote-zh-CN.js"></script>
+<script>
+    (function ($) {
+        Date.prototype.Format = function (fmt) { //author: meizz
+            var o = {
+                "M+": this.getMonth() + 1, //月份
+                "d+": this.getDate(), //日
+                "h+": this.getHours(), //小时
+                "m+": this.getMinutes(), //分
+                "s+": this.getSeconds(), //秒
+                "q+": Math.floor((this.getMonth() + 3) / 3), //季度
+                "S": this.getMilliseconds() //毫秒
+            };
+            if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+            for (var k in o)
+                if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+            return fmt;
+        };
+        $(".select_date_a").bind("click",function(){
+            var inputId = $(this).data("inputid");
+            $("#"+inputId).focus();
+        });
+        $('.single-datetime-b').datetimepicker({
+            lang: 'ch',
+            format: "Y-m-d",
+            timepicker: true,
+            yearStart: 2015,
+            yearEnd: 2050,
+            step: 30,
+            onSelectDate:function(date){
+                $("#BTime").val(date.Format("yyyy-MM-dd hh:mm:ss"));
+            },
+            onSelectTime:function(date){
+                $("#BTime").val(date.Format("yyyy-MM-dd hh:mm:ss"));
+            },
+            {{if $row.id eq ""}}
+            minDate:0,
+            {{/if}}
+            todayButton: false
+         });
+        $('.single-datetime-e').datetimepicker({
+            lang: 'ch',
+            format: "Y-m-d",
+            timepicker: true,
+            yearStart: 2015,
+            yearEnd: 2050,
+            step: 30,
+            onSelectDate:function(date){
+                $("#ETime").val(date.Format("yyyy-MM-dd hh:mm:ss"));
+            },
+            onSelectTime:function(date){
+                $("#ETime").val(date.Format("yyyy-MM-dd hh:mm:ss"));
+            },
+            {{if $row.id eq ""}}
+            minDate:0,
+            {{/if}}
+            todayButton: false
+        });
+        {{if $prodTypesJson eq ""||$prodTypesJson eq "[]"}}
+            var prodTypes = {};
+        {{else}}
+            var prodTypes = JSON.parse('{{$prodTypesJson}}');
+        {{/if}}
+        $("#photo_container").append($("#photo_templ").html());
+        changePhotoEvent();
+        function changePhotoEvent(){
+            $('.fdLogo').change(function () {
+                var file = this.files[0];
+                var r = new FileReader();
+                r.readAsDataURL(file);
+                var groupFile = $(this).parent().parent();
+                var photo = groupFile.find("div.photo");
+                $(r).load(function () {
+                    console.log(groupFile.find("img").get(0));
+                    if(!groupFile.find("img").get(0)){
+                        groupFile.find("button").removeClass("hidden");
+                        $("#photo_container").append($("#photo_templ").html());
+                        changePhotoEvent();
+                    }
+                    photo.html('<img style="width: 200px;max-height: 200px;position: absolute" src="' + this.result + '" alt="" />');
+                })
+            });
+        }
+
+        /**
+         * 初始化类别
+         */
+        $('#sub_columns').treeview({
+            levels: 1,
+            data: '{{$columnsJson}}',
+            selectedBackColor:"#F5F5F5",
+            showCheckbox: true,
+            selectedColor:"#000",
+            checkUIds:'{{$prodTypesJson}}',
+            onNodeChecked: function (event, node) {
+                console.log(node);
+                if(node.uid){
+                    prodTypes[node.uid] = {
+                        hierarchy:node.hierarchy
+                    };
+                }
+            },
+            onNodeUnchecked: function (event, node) {
+                if(node.uid){
+                    delete prodTypes[node.uid];
+                }
+            }
+        });
+        $(".del_pic").click(function(){
+            var id = $(this).data("id");
+            if(id){
+                var input = $("#del_pic_ids");
+                input.val(input.val()+","+id);
+                $(this).parent().parent().remove();
+            }
+            else{
+                modalmsg.alert("删除失败，请重试");
+            }
+        });
+        $("#f1").validate({
+            onkeyup: true,
+            wrapper: "p",
+            onsubmit: true,
+            errorClass: "error",
+            errorElement: "div",
+            errorPlacement: function (error, element) {
+                $("#" + element.attr("name") + "-error").removeClass("hidden");
+            },
+            success: function (lable) {
+                $("#" + lable.attr("id")).addClass("hidden");
+            },
+            submitHandler: function (form) {
+
+                var name = trim($("input[name='fdName']").val());
+                if(!name){
+                    $("#fdName-error").removeClass("hidden");
+                }
+                if (name ) {
+                    if(prodTypes){
+                        var tmp = JSON.stringify(prodTypes);
+                        $("#prod_types").val(tmp);
+                    }
+                    $("#f1").ajaxSubmit(function () {
+                        {{if $row.id eq "" }}
+                                window.location.href = '/product/index';
+                        {{else}}
+                                window.location.href = window.document.referrer;
+                        {{/if}}
+                    });
+                }
+            }
+            ,
+            rules:{
+                fdName:{
+                    required:true,
+                            rangelength
+                :
+                    [1, 15]
+                }
+            }
+            ,
+            messages:{
+
+            }
+        });
+        angular.module("appProductEdit",[])
+                .config(['$interpolateProvider',
+                    function($interpolateProvider) {
+                        $interpolateProvider.startSymbol('{[{').endSymbol('}]}');
+                    }
+                ])
+                .controller("productEditCtrl",function($scope){
+                    $scope.sellWay = '{{$row.fdSellWay|default:""}}';
+                    $scope.changeTitle = function(){
+                        if($scope.sellWay==1){
+                            $scope.sellWayTitle = "所需现金(元)";
+                        }
+                        else if($scope.sellWay==2){
+                            $scope.sellWayTitle = "所需积分";
+                        }
+                        else if($scope.sellWay==3){
+                            $scope.sellWayTitle = "所需积分";
+                        }
+                        else{
+                            $scope.sellWayTitle = "所需现金(元)";
+                        }
+                    };
+                    $scope.changeTitle();
+                    $scope.$watch("sellWay",function(){
+                        $scope.changeTitle();
+                    });
+                    $scope.$watch("product.fdBTime",function(){
+                        console.log($scope.product.fdBTime);
+                    });
+                    //表单数据
+                    $scope.product = {
+                        fdName:'{{$row.fdName}}',
+                        fdNum:{{$row.fdNum|default:0}},
+
+                        fdPrice:{{$row.fdPrice|default:0}},
+                        fdVIPPrice:{{$row.fdVIPPrice|default:0}},
+                        fdCredits:{{$row.fdCredits|default:0}},
+                        fdVIPCredits:{{$row.fdVIPCredits|default:0}},
+
+                        fdPrice2:{{$row.fdPrice|default:0}},
+                        fdVIPPrice2:{{$row.fdVIPPrice|default:0}},
+                        fdCredits2:{{$row.fdCredits|default:0}},
+                        fdVIPCredits2:{{$row.fdVIPCredits|default:0}},
+
+                        fdBTime:"{{$row.fdBTime|date_format:'%Y-%m-%d'}}",
+                        fdETime:"{{$row.fdETime|date_format:'%Y-%m-%d'}}"
+                    };
+                    $scope.startTime = function(){
+
+                    };
+                    $scope.endTime = function(){
+
+                    };
+                });
+        $('#summernote').summernote(
+            {
+                lang: 'zh-CN',
+                height: 500,                 // set editor height
+                //minHeight: 300,             // set minimum height of editor
+                maxHeight: 1500,
+                callbacks: {
+                    onImageUpload: function(files) {
+                        var data = new FormData();
+                        data.append("NewFile", files[0]);
+                        $.ajax({
+                            data: data,
+                            type: "POST",
+                            url: "/product/index?do=uploadpic",
+                            cache: false,
+                            contentType: false,
+                            processData: false,
+                            success: function(res) {
+                                var resArr = JSON.parse(res);
+                                if(resArr[0]=="0"){
+                                    $('#summernote').summernote('insertImage', resArr[1], "");
+                                }
+                                else{
+                                    modalmsg.alert("上传图片失败，请重新上传");
+                                }
+                            }
+                        });
+                    }
+                }
+            }
+        );
+        $("input[name='fdPrice']").bind("blur",function(){
+            var val = $(this).val();
+            if(val){
+
+            }
+        });
+    })(window.jQuery);
+</script>

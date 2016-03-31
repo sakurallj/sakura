@@ -1,0 +1,246 @@
+﻿<link rel="stylesheet" type="text/css" href="./{{$user_dir_theme}}/css/bootstrap-treeview.css">
+<!--正文-->
+<div class="content">
+	<div class="header">
+		<h1 class="page-title">
+			{{if $row.id eq ""}}
+			新建类别
+			{{else}}
+			编辑类别
+			{{/if}}
+		</h1>
+		<ul class="breadcrumb">
+			<li><a href="/product/columns">类别管理</a> </li>
+			<li class="active">
+				{{if $row.id eq ""}}
+				新建类别
+				{{else}}
+				编辑类别
+				{{/if}}
+			</li>
+		</ul>
+	</div>
+	<div class="main-content">
+		<form  name="f1" id="f1"   method="post" action="/product/columns?do=edited&id={{$row.id}}">
+			<div class="form-group">
+				<label class="form-label form-group-left" for="fdName">类别名称<strong class="must"> *</strong></label>
+				<input type="text" value="{{$row.fdName}}"  maxlength="15"
+					   class="form-control form-group-right" id="fdName" name="fdName"  placeholder="不超过15字" required>
+				<input type="hidden" name="id" id="id" value="{{$row.id}}"/>
+				<input type="hidden" name="json" id="tree_json"  />
+				<input type="hidden" name="fdUId"   value="{{$row.fdUId}}" />
+				<input type="hidden" name="fdParentUId"   value="{{$row.fdParentUId}}" />
+				<input type="hidden" name="fdSort"   value="{{$row.fdSort}}" />
+				<input type="hidden" name="fdStatus"   value="{{$row.fdStatus}}" />
+				<input type="hidden" name="fdHierarchy"   value="{{$row.fdHierarchy}}" />
+				<div id="fdName-error" class="input-error hidden" style="display: block;">不能为空</div>
+			</div>
+			<div class="clearfix"></div>
+
+			<div class="form-group">
+				<label class="form-label form-group-left" >类别图片</label>
+
+				<div class="form-group-file">
+					<div id="photo">
+						{{if $row.fdSrc neq ''}}
+						<img style="width: 200px;max-height: 200px;position: absolute" src="../var/uploads/{{$row.fdSrc}}" />
+						<!--<input type='hidden'   name="fdPic" value="{{$row.fdSrc}}" />-->
+						{{else}}
+						<div class="photo-auto">
+							<i class="icon-plus img-plus"></i>
+							<div class="clearfix"></div>
+							<span class="font-plus">添加图片</span>
+						</div>
+						{{/if}}
+					</div>
+					<a class="form-group-a" href="#">
+						<!--<input type='hidden' id="pic" name="pic[]" value=""  disabled/>-->
+						<input  type="file" class="form-control form-control-banner"  name="fdSrc" id="fdLogo">
+					</a>
+				</div>
+
+			</div>
+			<div class="clearfix"></div>
+			{{if $row.id eq ""}}
+			<div class="form-group">
+				<label class="form-label form-group-left"  ></label>
+				<input type="button" class="btn-primary btn add_sub" data-domid="sub_columns"   value="添加子类别"/>
+			</div>
+			{{/if}}
+			<div class="form-group">
+				<label class="form-label form-group-left"  ></label>
+				<div id="sub_columns" style="max-height: 500px;overflow-y:auto;margin: 15px auto">
+				</div>
+			</div>
+			<div class="clearfix"></div>
+			<div class="finish">
+				<button class="btn btn-success" type="submit">完成</button>
+				{{if $row.id eq ""}}
+				{{else}}
+					<button class="btn btn-default" type="button"
+							onclick="window.location.href = window.document.referrer;"
+					>取消</button>
+				{{/if}}
+
+			</div>
+		</form>
+		<footer>
+			<hr>
+			<p class="pull-right">© 2016 <a href="" target="_blank">广州涛略科技有限公司</a></p>
+		</footer>
+	</div>
+</div>
+<!--模板 begin-->
+<div class="hidden">
+	<div id="sub_columns_templ">
+		<div style="margin: 15px 0;width: 300px">
+			<div class="input-group">
+				<input type="text" value="{value}"  maxlength="15"
+					   class="form-control form-group-right"
+					   name="sub[a_{seq}][fdName]"  placeholder="不超过15字" required>
+				<div class="input-group-addon">添加子类别</div>
+			</div>
+		</div>
+	</div>
+</div>
+<!--模板 end-->
+<script type="text/javascript" src="./{{$user_dir_theme}}/js/bootstrap-treeview.js"></script>
+<script>
+    (function($){
+		{{if $row.id eq ""}}
+		$(".add_sub").bind("click",function(){
+			var val = trim($("#fdName").val());
+			if(val){
+				$('#sub_columns').treeview({
+					levels: 1,
+					data: {
+						a:{
+							text:val,
+							nodes:{},
+							state:{
+								unDel:true,
+								top:true
+							}
+						}
+					},
+					showTools:true,
+					canEditNode:true,
+					selectedBackColor:"#F5F5F5",
+					selectedColor:"#000",
+					exeDeleteNode:exeDeleteNode,
+					onBuildTree:function(event, tree){
+						$("#tree_json").val(JSON.stringify(tree));
+					}
+				});
+				$(this).attr("disabled","disabled");
+				$("#fdName").attr("readonly","readonly");
+			}
+			else{
+				$("#fdName").addClass("error");
+				modalmsg.alert("请输入类别名称");
+			}
+
+		});
+		{{else}}
+		$("#fdName").attr("readonly","readonly");
+		$('#sub_columns').treeview({
+			levels: 1,
+			data: '{{$row.json}}',
+			showTools:true,
+			selectedBackColor:"#F5F5F5",
+			selectedColor:"#000",
+			canEditNode:true,
+			exeDeleteNode:exeDeleteNode,
+			onBuildTree:function(event, tree){
+				$("#tree_json").val(JSON.stringify(tree));
+			}
+		});
+		{{/if}}
+		function exeDeleteNode(target,li){
+			var t = this;
+			var uid = li.find(".bt_node_uid").val();
+			if(uid){
+				$.ajax({
+					type: "GET",
+					url: "/product/columns?do=candeletebyuid",
+					data: {
+						uid:uid
+					},
+					cache:false
+				}).done(function(msg){
+					var msgJson = JSON.parse(msg);
+					if(msgJson[0]==0){
+						var id = li.data("id");
+						t.deleteTreeNode(id);
+						t.$element.trigger('deleteNode', $.extend(true, {}, target));
+						li.remove();
+					}else{
+						modalmsg.alert({
+							ctrls : {
+								ok: {
+									callback: function(){return false;}
+								}
+							},
+							msg:"该类别下已挂有产品，不能删除"
+						});
+					}
+				});
+			}
+
+		}
+		function A(a,callback){
+			var b=callback;
+			alert(a+b);
+		}
+		function B(c){
+			return (-c);
+		}
+		$('#fdLogo').change(function() {
+			var file = this.files[0];
+			var r = new FileReader();
+			r.readAsDataURL(file);
+			$(r).load(function() {
+				$('#photo').html('<img style="width: 200px;max-height: 200px;position: absolute" src="' + this.result + '" alt="" />');
+			})
+		});
+		$("#f1").validate({
+			onkeyup: true,
+			wrapper: "p",
+			onsubmit:true,
+			errorClass: "error",
+			errorElement:"div",
+			errorPlacement: function (error, element) {
+				$("#"+element.attr("name")+"-error").removeClass("hidden");
+			},
+			success:function(lable){
+				$("#"+lable.attr("id")).addClass("hidden");
+			},
+			submitHandler: function(form){
+				var name = trim($("input[name='fdName']").val());
+				$($(".node-sub_columns")[0]).trigger("click");
+				if(name){
+					$("#f1").ajaxSubmit(function() {
+						{{if $row.id eq ""}}
+							window.location.href='/product/columns';
+						{{else}}
+							 window.location.href = window.document.referrer;
+						{{/if}}
+					});
+				}
+				else{
+					$("#fdName-error").removeClass("hidden");
+				}
+//				form.submit();
+			},
+			rules:{
+				fdName:{
+					required:true,
+					rangelength:[1,15]
+				}
+			},
+			messages:{
+
+			}
+		});
+	})(window.jQuery);
+</script>

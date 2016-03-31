@@ -1,0 +1,802 @@
+
+<!--正文-->
+<div class="content">
+    <div class="header">
+        {{if $do eq 'add'}}
+        <h1 class="page-title">新建投票</h1>
+        {{elseif $do eq 'edit'}}
+        <h1 class="page-title">编辑投票</h1>
+        {{elseif $do eq 'manage'}}
+        <h1 class="page-title">投票列表</h1>
+        {{/if}}
+        <ul class="breadcrumb">
+            <li><a href="">投票管理</a> </li>
+            {{if $do eq 'add'}}
+            <li class="active">新建投票</li>
+            {{elseif $do eq 'edit'}}
+            <li class="active">编辑投票</li>
+            {{elseif $do eq 'manage'}}
+            <li class="active">投票列表</li>
+            {{/if}}
+        </ul>
+    </div>
+    {{if $do eq 'manage'}}
+    <div class="modal fade"  id="detail" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">详情</h4>
+            </div>
+            <div class="modal-body">
+                <table class="table modal-table table-striped">
+                    <tbody>
+                        <tr>
+                            <td>标题:</td>
+                            <td id="fdTitle"></td>
+                        </tr>
+                        <tr>
+                            <td>描述:</td>
+                            <td id="fdDescription"></td>
+                        </tr>
+                        <tr>
+                            <td>开始时间:</td>
+                            <td id="fdStartTime"></td>
+                        </tr>
+                        <tr>
+                            <td>结束时间:</td>
+                            <td id="fdEndTime"></td>
+                        </tr>
+                        <tr>
+                            <td>投票类型:</td>
+                            <td id="fdOptionStatus"></td>
+                        </tr>
+                        <tr>
+                            <td>登录才能投票:</td>
+                            <td id="fdLoginFlag"></td>
+                        </tr>
+                        <tr>
+                            <td>允许每天投票:</td>
+                            <td id="fdVoteEveryDay"></td>
+                        </tr>
+                        <tr>
+                            <td>添加时间:</td>
+                            <td id="fdAddTime"></td>
+                        </tr>
+                        <tr>
+                            <td>状态:</td>
+                            <td id="fdDisable"></td>
+                        </tr>
+                        <tr>
+                            <td>选项:</td>
+                            <td id="fdItem">
+                            </td>
+                        </tr>
+                        
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal">确定</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<div class="modal fade"  id="result" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">投票结果</h4>
+            </div>
+            <div class="modal-body">
+                <div class="result-list">
+                    <div class="result-item">
+                        <div class="item-head">
+                            <h4 class="item-title" id="item-title"></h4>
+                        </div>
+                        <div class="item-body">
+                            <ul class="item-body-option-list" id="item-list">
+                                <!--<li class="item-body-option-li">
+                                    <strong>选项一</strong>
+                                    <div class="item-body-option-meta">
+                                        <div class="item-meta-bg">
+                                            <em class="item-meta-leng" style="width: 50%"></em>
+                                        </div>
+                                        <span class="item-meta-num">1票</span>
+                                        <span class="item-meta-percent">50%</span>
+                                    </div>
+                                </li>-->
+                                
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal">确认</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+
+<!--停用确认-->
+<!--<div class="modal small fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">-->
+<div class="modal small fade" id="disModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modalmsg-dialog modal-dialog">
+        <div class="modal-content modal-modalmsg">
+            <div class="modalmsg-dialog modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h4 class="modal-title">操作确认</h3>
+            </div>
+            <div class="modal-body">
+                <p class="error-text" style="margin-top: 10px;font-size: 14px"><i class="icon-warning-sign modal-icon" style="margin-right: 20px"></i>您确认要停用这些投票吗？
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" data-dismiss="modal" id="dis_no" aria-hidden="true">取消</button>
+                <button class="btn btn-primary" data-dismiss="modal" id="dis_yes">确定</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--启用确认-->
+<!--<div class="modal small fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">-->
+<div class="modal small fade" id="ableModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modalmsg-dialog modal-dialog">
+        <div class="modal-content modal-modalmsg">
+            <div class="modalmsg-dialog modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h4 class="modal-title">操作确认</h3>
+            </div>
+            <div class="modal-body">
+                <p class="error-text" style="margin-top: 10px;font-size: 14px"><i class="icon-warning-sign modal-icon" style="margin-right: 20px"></i>您确认要启用这些投票吗？
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" data-dismiss="modal" id="able_no" aria-hidden="true">取消</button>
+                <button class="btn btn-primary" data-dismiss="modal" id="able_yes">确定</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+    <div class="main-content">
+        <div class="btn-toolbar list-toolbar pull-left">
+            <button class="btn btn-success" href="#ableModal" id="ableall">启用</button>
+            <button class="btn btn-default" href="#disModal" id="disall">停用</button>
+            <button class="btn btn-danger" href="#myModal" id="delall">删除</button>
+            <form name="f1" id="f1" class="form-horizontal" method="get">
+            <div class=" search form-group-select">
+                <button class="btn btn-info" type="submit">搜索</button>
+                <div class="dropdown form-group-right">
+                    <select class="dropdown-toggle form-select-character" name="process">
+                        <option value="">投票进程</option>
+                        <option value="1" {{if $process eq '1'}}selected='selected'{{/if}}>未开始</option>
+                        <option value="2" {{if $process eq '2'}}selected='selected'{{/if}}>进行中</option>
+                        <option value="3" {{if $process eq '3'}}selected='selected'{{/if}}>已结束</option>
+                    </select>
+                </div>  
+                {{if $smarty.session.partnerid eq '1'}}
+                <div class="dropdown form-group-right">
+                    <select class="dropdown-toggle form-select-character" name="partner">
+                        <option value="">所属电台</option>
+                        {{foreach from=$partnerlist name=mar item=prow}}
+                        <option value="{{$prow.id}}" {{if $partner eq $prow.id}}selected{{/if}}>{{$prow.fdName}}</option>
+                        {{/foreach}}
+                    </select>
+                </div>
+                {{/if}}
+                <input type="hidden" value="1" name="ye">
+                <input class="form-control" type="text" id="keyword" name="keyword" value="{{$search}}" placeholder="search">
+            </div>
+            </form>
+        </div>
+        <table class="table">
+            <thead>
+            <tr>
+                <th class="table-checkbox"><input type="checkbox" name="checkall" id="checkall"></th>
+                <th class="table-title">标题</th>
+                <th>类型</th>
+                <!--<th>开始时间</th>
+                <th>结束时间</th>-->
+                <th>所属电台</th>
+                <th>投票进程</th>
+                <th>参与人数</th>
+                <th class="table-status">状态</th>
+                <th style="width: 5em;">操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            {{foreach from=$ar name=nar item=row}}
+            <tr>
+                <td><input type="checkbox" name="checkbox" value="{{$row.id}}"></td>
+                <td><a data-toggle="modal" data-target="#detail" href="" class="voteid" data="{{$row.id}}">{{$row.fdTitle}}</a></td>
+                <td>{{if $row.fdOptionStatus eq 1}}单选{{else}}多选({{if $row.fdAllowCount neq 0}}{{$row.fdAllowCount}}{{else}}不限制选择项{{/if}}){{/if}}</td>
+                <!--<td>{{$row.fdStartTime}}</td>-->
+                <td>{{$row.partnerName}}</td>
+                <td>{{if $row.status eq 1}}<span class="process-notStart">未开始</span>{{elseif $row.status eq 2}}<span class="status-work">进行中</span>{{else}}<span class="status-stop">已结束</span>{{/if}}</td>
+                <td>{{$row.userCount}}人</td>
+                <td>{{if $row.fdDisable eq 0}}<span class="status-work">正常</span>{{else}}<span class="status-stop">停用</span>{{/if}}</td>
+                <td>
+                    <a href="#result" role="button" data-toggle="modal" class="voteresult" data="{{$row.id}}" style="margin-right:4px;"><i class="icon-list" title="查看投票结果"></i></a>
+                    <a href="/vote/index?do=edit&id={{$row.id}}&ye={{$ye}}&partner={{$partner}}&keyword={{$search}}&process={{$process}}"><i class="icon-pencil" title="编辑"></i></a>
+                    <a href="#myModal" role="button" name="delbtn" data="{{$row.id}}"><i class="icon-trash" title="删除"></i></a>
+                </td>
+            </tr>
+            {{/foreach}}
+            
+            </tbody>
+        </table>
+        <div class="clearfix"></div>
+        <!--<ul class="pagination">
+            <li><a href="#">«</a></li>
+            <li class="active"><a href="#">1</a></li>
+            <li><a href="#">2</a></li>
+            <li><a href="#">3</a></li>
+            <li><a href="#">4</a></li>
+            <li><a href="#">5</a></li>
+            <li><a href="#">»</a></li>
+        </ul>-->
+        <div class="page" style="text-align:center">
+        {{$sy}}
+        </div>
+       
+    </div>
+    {{/if}}
+    {{if $do eq 'add' || $do eq 'edit'}}
+    <!--提交确认-->
+<div class="modal small fade" id="finishModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h3 id="myModalLabel">提交确认</h3>
+            </div>
+            <div class="modal-body">
+                <p class="error-text"><i class="icon-warning-sign modal-icon"></i>您确认要提交吗？
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" data-dismiss="modal" id="finish_no" aria-hidden="true">取消</button>
+                <button class="btn btn-danger" data-dismiss="modal" id="finish_yes">提交</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <div class="main-content">
+        <form name="f1" id="f1" method="post">
+            {{if $smarty.session.partnerid eq '1'}}
+            <div class="form-group form-group-select">
+                <label class="form-label form-group-left" for="fdPartnerID">所属电台 <span class="must">*</span></label>
+                <select class="dropdown-toggle form-select-character form-group-right require" name="fdPartnerID" id="fdPartnerID" onblur="validateText($('#fdPartnerID').val(),'spartnerid','请选择电台','input-error')" onfocus="clearme('spartnerid','')">
+                    <option value=""></option>
+                    {{foreach from=$partners name=npartner item=ipartner}}
+                    <option value="{{$ipartner.id}}" {{if $row.fdPartnerID eq $ipartner.id}}selected="selected"{{/if}}>{{$ipartner.fdName}}</option>
+                    {{/foreach}}
+                </select><div id="spartnerid" class="input-error"></div>
+            </div>
+            {{/if}}
+            <div class="form-group">
+                <label class="form-label form-group-left" for="fdTitle">标题 <span class="must">*</span></label>
+                <input type="hidden" name="id" id="id" value="{{$row.id}}"/>
+                <input type="text" class="form-control form-group-right require" id="fdTitle" name="fdTitle" value="{{$row.fdTitle}}" placeholder=""onblur="validatatext_ex(this,'sfdtitle','请填写标题','input-error');" onfocus="clearme('sfdtitle','')"><div id="sfdtitle" ></div>
+            </div>
+            <div class="form-group">
+                <label class="form-label form-group-left" for="fdDescription">描述</label>
+                <textarea class="form-control form-group-right" id="fdDescription" name="fdDescription" placeholder="">{{$row.fdDescription}}</textarea>
+            </div>
+            <div class="form-group left50 dropdown">
+                <label class="form-label form-group-left" >开始时间 <span class="must">*</span></label>
+                <input style="width:40%;" name="fdStartTime" id="fdStartTime" type="text" class="form-control form-group-right dropdown-toggle require" placeholder="" value="{{$row.fdStartTime}}" readonly>
+                <label class="form-label form-group-left"  >截止时间 <span class="must">*</span></label>
+                <input style="width:40%;" name="fdEndTime" id="fdEndTime" type="text" class="form-control form-group-right dropdown-toggle require" placeholder="" value="{{$row.fdEndTime}}" readonly>
+            </div>
+            <div class="form-group">
+                <label class="form-label form-group-left">投票类型 <span class="must">*</span></label>
+                <div class="form-group-right radio-group">
+                    <label class="radio-inline">
+                        <input name="fdOptionStatus" class="single-select required" type="radio" {{if $do eq 'add' || $row.fdOptionStatus eq 1}}checked="true"{{/if}} value="1"> 单选
+                    </label>
+                    <label class="radio-inline">
+                        <input name="fdOptionStatus" class="multi-select"  type="radio" {{if $row.fdOptionStatus eq 2}}checked="true"{{/if}} value="2"> 多选
+                    </label>
+                    <span class="time-of-ch" {{if $row.fdOptionStatus eq 2}}style="display:block;"{{/if}}>
+                        <label class="input-time-label">限制多选数量</label>
+                        <input type="text" class="form-control input-time dropdown-toggle" name="fdAllowCount" id="fdAllowCount" value="{{if $row.fdAllowCount neq 0}}{{$row.fdAllowCount}}{{/if}}" placeholder="留空表示不限制选择数">
+                    </span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label form-group-left">投票设置</label>
+                <div class="form-group-right checkbox-group">
+                    <label class="checkbox-inline">
+                        <input class="allow-lo" type="checkbox" name="fdLoginFlag" {{if $do eq 'add' || $row.fdLoginFlag eq 1}}checked="true"{{/if}} value="1"> 需登录才能投票
+                    </label>
+                    <label class="checkbox-inline">
+                        <input class="allow-ed" type="checkbox" name="fdVoteEveryDay" {{if $row.fdVoteEveryDay eq 1}}checked="true"{{/if}} value="1"> 允许每天投票
+                    </label>
+                    <span class="time-of-od" {{if $row.fdVoteEveryDay eq 1}}style="display:block;"{{/if}}>
+                        <label class="input-time-label">每天投票次数</label>
+                        <input class="form-control input-time dropdown-toggle" name="fdNumberOfVote" id="fdNumberOfVote" value="{{if $do eq 'add'}}1{{else}}{{$row.fdNumberOfVote}}{{/if}}">
+                    </span>
+                </div>
+            </div>
+            
+            <div id="cnt">
+            <button type="button" class="btn btn-primary btn-add-power">添加投票项</button>
+            <div class="form-group form-group-power">
+                {{if $do eq 'edit'}}
+                {{foreach from=$ar name=nar key=k item=iar}}
+                <div class="form-group-right">
+                    <label class="form-label form-group-left">选项<strong class="must"> *</strong></label>
+                    <input class="form-power-right form-control require" name="voteitem[{{$iar.id}}][fdTitle]" type="text" value="{{$iar.fdTitle}}"onblur="validatatext_ex(this,'sfditem{{$iar.id}}','请填写选项','input-error');" onfocus="clearme('sfditem{{$iar.id}}','')">
+                    <!--
+                    <label class="form-power-right form-label">水军投票数</label>
+                    <input class="form-power-right form-control">
+                    -->
+                    <button type="button" class="close" aria-label="Close" data="{{$iar.id}}"><span aria-hidden="true">&times;</span></button>
+                    <div id="sfditem{{$iar.id}}" ></div>
+                </div>
+                {{/foreach}}
+                {{else}}
+                <div class="form-group-right">
+                    <label class="form-label form-group-left">选项<strong class="must"> *</strong></label>
+                    <input class="form-power-right form-control require" name="voteitem[a_1][fdTitle]" type="text" onblur="validatatext_ex(this,'sfditem1','请填写选项','input-error');" onfocus="clearme('sfditem1','')">
+                    <!--
+                    <label class="form-power-right form-label">水军投票数</label>
+                    <input class="form-power-right form-control">
+                    -->
+                    <button type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <div id="sfditem1" ></div>
+                </div>
+                {{/if}}
+            </div>
+            </div>
+        </form>
+        <div class="clearfix"></div>
+        <div class="finish">
+            <button class="btn btn-success" id="stbtn">完成</button>
+            {{if $do eq 'edit'}}
+            <a href="/vote/index?ye={{$ye}}&partner={{$partner}}&keyword={{$search}}&process={{$process}}"><button class="btn btn-default">取消</button></a>
+            {{/if}}
+        </div>
+        
+        {{/if}}
+        {{include file="confirmbox.html"}}
+        {{include file="fade.html"}}
+        <footer>
+            <hr>
+            <p class="pull-right">© 2016 <a href="" target="_blank">广州涛略科技有限公司</a></p>
+        </footer>
+    </div>
+</div>
+</body>
+
+<script>
+    {{if $do eq 'manage'}}
+
+    $(".voteid").click(function(){
+        obj=$(this);
+        voteid=obj.attr("data");
+        $.ajax({
+            type: "GET",
+            dataType:'json',
+            url: "/vote/getOne?id="+voteid,
+            data: {},
+            success: function(data){
+                //console.log(data);return false;
+                $("#fdTitle").html(data.row.fdTitle);  
+                $("#fdDescription").html(data.row.fdDescription);  
+                $("#fdStartTime").html(data.row.fdStartTime); 
+                $("#fdEndTime").html(data.row.fdEndTime); 
+                if(data.row.fdOptionStatus==1){
+                    $("#fdOptionStatus").html("单选");
+                }else{
+                    if(data.row.fdAllowCount==0){
+                        $("#fdOptionStatus").html("多选，不限制选择项");
+                        
+                    }else{
+                        $("#fdOptionStatus").html("多选，允许选择"+data.row.fdAllowCount+"项");
+                    }
+                }
+                if(data.row.fdLoginFlag==1){
+                    $("#fdLoginFlag").html("是"); 
+                }else{
+                    $("#fdLoginFlag").html("否"); 
+                }   
+                if(data.row.fdVoteEveryDay==0){
+                    $("#fdVoteEveryDay").html("否");
+                }else{
+                    if(data.row.fdNumberOfVote!=0){
+                        $("#fdVoteEveryDay").html("是，每天允许投票"+data.row.fdNumberOfVote+"次");
+                    }else{
+                        $("#fdVoteEveryDay").html("是，不限制每天投票的次数");
+                    }
+                }
+                $("#fdAddTime").html(data.row.fdAddTime); 
+                if(data.row.fdDisable==0){
+                    $("#fdDisable").html("<span class='status-work'>正常</span>");
+                }else{
+                    $("#fdDisable").html("<span class='status-stop'>停用</span>");
+                }
+                var item='';
+                $.each(data.ar,function(k,v){
+                    k1=k+1;
+                    item=item+k1+"、"+v.fdTitle+"<br/>";
+                });
+                $("#fdItem").html(item);
+
+            }
+        });
+    });
+
+    $(".voteresult").click(function(){
+        obj=$(this);
+        voteid=obj.attr("data");
+        $.ajax({
+            type: "GET",
+            dataType:'json',
+            url: "/vote/getresult?id="+voteid,
+            data: {},
+            success: function(data){
+                //console.log(data);return false;
+                $("#item-title").html(data.title.fdTitle);  
+                var item='';
+                $.each(data.ar,function(k,v){
+                    item=item+"<li class='item-body-option-li'><strong>"+v.fdTitle+"</strong><div class='item-body-option-meta'><div class='item-meta-bg'><em class='item-meta-leng' style='width: "+Math.round(v.rate*100)+"%'></em></div><span class='item-meta-num'>"+v.num+"票</span><span class='item-meta-percent'>"+Math.round(v.rate*100)+"%</span></div></li>";
+                });
+                $("#item-list").html(item);
+
+            }
+        });
+    });
+
+    $("#id_yes").click(function(){
+        obj=$(this);
+        var ar=new Array();
+        $.each($("input[type=checkbox][name=checkbox]:checked"),function(k,v){
+            ar[k]=v.value
+        });
+        //alert(ar);return false;
+        if(ar.length>0){
+            $.ajax({
+                type: "GET",
+                url: "/vote/index?do=del",
+                data: "ids="+ar,
+                dataType:'json',
+                cache:false,
+                success: function(msg){
+                    if(msg.error_code==0){
+                        window.location.reload();
+                        //$(obj).parent().parent().remove();
+                    }else{
+                        console.log(msg.error_msg)
+                    }
+                    
+                },
+                error:function(){alert('error')},
+                timeout:5000
+            });
+        }
+    });
+
+    $("a[name=delbtn]").click(function(){
+        obj=$(this);
+        voteid=obj.attr("data");
+        //alert(voteid);return false;
+        showmodelbox('#myModal','您确认要删除该投票吗？<br>此操作无法撤销。',3);
+        $("#id_yes2").click(function(){
+            $.ajax({
+                type: "GET",
+                url: "/vote/index?do=del",
+                data: "ids="+voteid,
+                dataType:'json',
+                cache:false,
+                success: function(msg){
+                    if(msg.error_code==0){
+                        window.location.reload();
+                        //$(obj).parent().parent().remove();
+                    }else{
+                        console.log(msg.error_msg)
+                    }
+                    
+                },
+                error:function(){alert('error')},
+                timeout:5000
+            });
+        });
+    });
+
+    $("#delall").click(function(){
+        f=false;
+        $.each($("input[type=checkbox][name=checkbox]:checked"),function(k,v){
+            f=true;
+        });
+        if(f){
+            showmodelbox('#myModal','您确认要删除这些投票吗？<br>此操作无法撤销。',1);
+        }else{
+            modalmsg.alert("请选择要删除的投票");
+        }
+    });
+
+    $("#dis_yes").click(function(){
+        obj=$(this);
+        var ar=new Array();
+        $.each($("input[type=checkbox][name=checkbox]:checked"),function(k,v){
+            ar[k]=v.value
+        });
+        //alert(ar);return false;
+        if(ar.length>0){
+            $.ajax({
+                type: "GET",
+                url: "/vote/index?do=dis",
+                data: "ids="+ar,
+                dataType:'json',
+                cache:false,
+                success: function(msg){
+                    if(msg.error_code==0){
+                        window.location.reload();
+                        //$(obj).parent().parent().remove();
+                    }else{
+                        console.log(msg.error_msg)
+                    }
+                    
+                },
+                error:function(){alert('error')},
+                timeout:5000
+            });
+        }
+    });
+
+    $("#disall").click(function(){
+        f=false;
+        $.each($("input[type=checkbox][name=checkbox]:checked"),function(k,v){
+            f=true;
+        });
+        if(f){
+
+            //$('#disModal').modal('toggle'); 
+            showmodelbox('#disModal','您确认要停用这些投票吗？',1);
+        }else{
+
+            modalmsg.alert("请选择要停用的投票");
+        }
+    });
+
+    $("#able_yes").click(function(){
+        obj=$(this);
+        var ar=new Array();
+        $.each($("input[type=checkbox][name=checkbox]:checked"),function(k,v){
+            ar[k]=v.value
+        });
+        if(ar.length>0){
+            $.ajax({
+                type: "GET",
+                url: "/vote/index?do=able",
+                data: "ids="+ar,
+                dataType:'json',
+                cache:false,
+                success: function(msg){
+                    if(msg.error_code==0){
+                        window.location.reload();
+                        //$(obj).parent().parent().remove();
+                    }else{
+                        console.log(msg.error_msg)
+                    }
+                    
+                },
+                error:function(){alert('error')},
+                timeout:5000
+            });
+        }
+    });
+
+    $("#ableall").click(function(){
+        f=false;
+        $.each($("input[type=checkbox][name=checkbox]:checked"),function(k,v){
+            f=true;
+        });
+        if(f){
+            //$('#ableModal').modal('toggle'); 
+            showmodelbox('#ableModal','您确认要启用这些投票吗？',1);
+        }else{
+            //$(".msg_font").html('请选择要启用的记录');
+            //showmsgbox("msgbox");
+            modalmsg.alert("请选择要启用的投票");
+        }
+    });
+    {{/if}}
+    {{if $do eq 'add' || $do eq 'edit'}}
+    $("#f1").on('focus','.error',function(){
+        $(this).removeClass("error");
+    });
+    $(document).ready(function(){
+        $('.allow-ed').click(function(){
+            if($('.allow-ed:checked').length>0){
+                $('.time-of-od').css({'display':'block'});
+            }
+            else{
+                $('.time-of-od').css({'display':'none'});
+            }
+        });
+        $('.radio-inline').click(function(){
+            if($('.multi-select:checked').length>0){
+                $('.time-of-ch').css({'display':'block'});
+            }
+            else{
+                $('.time-of-ch').css({'display':'none'});
+            }
+        });
+        tmpi=2;
+        $('.btn-add-power').click(function(){
+            var newPower = document.createElement('div');
+            newPower.setAttribute("class","form-group form-group-power");
+            newPower.innerHTML='<div class="form-group-right"><label class="form-label form-group-left">选项<strong class="must"> *</strong></label><input class="form-power-right form-control require" type="text" name="voteitem[a_'+tmpi+'][fdTitle]" onblur="validatatext_ex(this,\'sfditem[a_'+tmpi+']\',\'请填写选项\',\'input-error\');" onfocus="clearme(\'sfditem[a_'+tmpi+']\',\'\')"><button type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button><div id="sfditem[a_'+tmpi+']"></div></div>';
+            $('.main-content form').append(newPower);
+            tmpi++;
+            $('.form-group-power .form-group-right .close').click(function(){
+                var powerClose;
+                powerClose=$(this);
+                powerClose.css({'display':'none'});
+                powerClose.parent().parent().remove();
+            });
+            requeired();
+        });
+        $('.form-group-power .form-group-right .close').click(function(){
+            var powerClose;
+            powerClose=$(this);
+            //powerClose.css({'display':'none'});
+            //powerClose.parent().parent().remove();
+            if(powerClose.attr("data")!=undefined){//调用ajax
+            id=powerClose.attr("data");
+            var ret;
+
+                $.ajax({
+                    type: "GET",
+                    url: "/vote/index?do=delitem",
+                    data: "ids="+id,
+                    dataType:'json',
+                    cache:false,
+                    success: function(msg){
+                        if(msg.error_code==0){
+                            powerClose.parent().remove();
+                        }else{
+                            alert(msg.error_msg)
+                        }
+                        
+                    },
+                    error:function(){alert('error')},
+                    timeout:5000
+                })
+            }else{
+                powerClose.parent().remove();
+            }
+        });
+    })
+    $("#stbtn").click(function(){
+        formchecker.check("#f1");
+        if(!formchecker.flag){
+            //$(".msg_font").html("请正确填写该字段内容");
+            //showmsgbox("msgbox");
+            return false;
+        }
+        var fdStartTime = $("#fdStartTime").val();
+        var fdEndTime = $("#fdEndTime").val();
+        var nowDay =  getNowDay();
+        var fdAllowCount = $("#fdAllowCount").val();
+        var fdNumberOfVote = $("#fdNumberOfVote").val();
+        var flag = 0; 
+        $("input[type='checkbox'][name='fdVoteEveryDay']:checked").each(function () { 
+            flag += 1;
+        })
+        {{if $do eq 'add'}}
+        if(nowDay>fdStartTime){
+            //$(".msg_font").html("开始时间不能小于当前时间");
+            //showmsgbox("msgbox");
+            modalmsg.alert("开始时间不能小于当前时间");
+            //$("#fdStartTime").focus();
+            return false;
+        }
+        {{/if}}
+        if(fdEndTime<fdStartTime){
+            //$(".msg_font").html("截止时间不能小于开始时间");
+            //showmsgbox("msgbox");
+            modalmsg.alert("截止时间不能小于开始时间");
+            //$("#fdEndTime").focus();
+            return false;
+        }
+        
+        if(fdAllowCount){
+            if(parseInt(fdAllowCount)!=fdAllowCount || fdAllowCount<=1){
+                //$(".msg_font").html("限制多选数量只能填大于1的数字");
+                //showmsgbox("msgbox");
+                modalmsg.alert("限制多选数量只能填大于1的数字");
+                $("#fdAllowCount").focus();
+                return false;
+            }
+        }
+        if(flag>0){
+            if(!fdNumberOfVote){
+                modalmsg.alert("每天投票次数不可为空");
+                $("#fdNumberOfVote").focus();
+                return false;
+            }else{
+                if(parseInt(fdNumberOfVote)!=fdNumberOfVote || fdNumberOfVote<1){
+                    modalmsg.alert("每天投票次数只能填不小于1的数字");
+                    $("#fdNumberOfVote").focus();
+                    return false;
+                }
+            }
+        }
+        //$('#finishModal').modal('toggle');
+        //$("#finish_yes").click(function(){
+            $("#f1").submit();
+        //})
+    });
+
+    function getNowDay(){
+       var mydate = new Date();
+       var str = "" + mydate.getFullYear() + "-";
+       var month = mydate.getMonth()+1;
+       if(month<10){
+        month = "0" + month;
+       }
+       var day = mydate.getDate();
+       if(day<10){
+        day = "0" + day;
+       }
+       str += month + "-" + day;
+       return str;
+    }
+    /*$("#cnt").on('click','.delitm',function(){
+        obj=$(this);
+        if(obj.attr("data")!=undefined){//调用ajax
+            id=obj.attr("data");
+            var ret;
+            ret=confirm("确认要删除吗？");
+            if(ret!=false){
+                $.ajax({
+                    type: "GET",
+                    url: "/vote/index?do=delitem",
+                    data: "ids="+id,
+                    dataType:'json',
+                    cache:false,
+                    success: function(msg){
+                        if(msg.error_code==0){
+                            obj.parent().remove();
+                        }else{
+                            alert(msg.error_msg)
+                        }
+                        
+                    },
+                    error:function(){alert('error')},
+                    timeout:5000
+                })
+            }
+        }else{
+            obj.parent().remove();
+        }
+    });*/
+    $('#fdStartTime').datetimepicker({
+        timepicker: false,
+        format: 'Y-m-d'
+    });
+    $('#fdEndTime').datetimepicker({
+        timepicker: false,
+        format: 'Y-m-d'
+    });
+
+    function validatatext_ex(obj,target,txt,cls){
+    ret=validateText($(obj).val(),target,txt,cls);
+    if(!ret){
+        $(obj).addClass("error");
+    }
+
+}
+    {{/if}}
+</script>
+</html>

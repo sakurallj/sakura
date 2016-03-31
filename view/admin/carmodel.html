@@ -1,0 +1,374 @@
+
+<!--正文-->
+<div class="content">
+    <div class="header">
+        {{if $do eq 'add'}}
+        <h1 class="page-title">新建车型</h1>
+        {{elseif $do eq 'edit'}}
+        <h1 class="page-title">编辑车型</h1>
+        {{elseif $do eq 'manage'}}
+        <h1 class="page-title">车型列表</h1>
+        {{/if}}
+        <ul class="breadcrumb">
+            <li><a href="">车型管理</a> </li>
+            {{if $do eq 'add'}}
+            <li class="active">新建车型</li>
+            {{elseif $do eq 'edit'}}
+            <li class="active">编辑车型</li>
+            {{elseif $do eq 'manage'}}
+            <li class="active">车型列表</li>
+            {{/if}}
+        </ul>
+    </div>
+    {{if $do eq 'manage'}}
+    
+    <div class="main-content">
+        <div class="btn-toolbar list-toolbar pull-left">
+            <!--<button class="btn btn-success" href="#ableModal" id="ableall">启用</button>-->
+            
+            <button class="btn btn-danger" href="#myModal" id="delall">删除</button>
+            <a href="/carmodel/index?do=add&brandid={{$brandid}}"><button class="btn btn-success">添加车型</button></a>
+            <form name="f1" id="f1" class="form-horizontal" method="get">
+            <div class=" search form-group-select">
+                <button class="btn btn-info" type="submit">搜索</button> 
+                
+
+                <input type="hidden" value="1" name="ye">
+                <input type="hidden" value="{{$brandid}}" name="brandid">
+                <input class="form-control" type="text" id="keyword" name="keyword" value="{{$search}}" placeholder="search">
+            </div>
+            </form>
+        </div>
+        <table class="table">
+            <thead>
+            <tr>
+                <th class="table-checkbox"><input type="checkbox" name="checkall" id="checkall"></th>
+                <th class="table-title">车型名</th>
+                <th>所属品牌</th>
+                <th style="width: 5em;">操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            {{foreach from=$ar name=nar item=row}}
+            <tr>
+                <td><input type="checkbox" name="checkbox" value="{{$row.id}}"></td>
+                <td>{{$row.fdTitle}}</td>
+                <td>{{$brandrow.fdTitle}}</td>
+                <td>
+                    <a href="/carmodel/index?do=edit&id={{$row.id}}&ye={{$ye}}&keyword={{$search}}&brandid={{$brandid}}"><i class="icon-pencil" title="编辑"></i></a>
+                    <a href="#myModal" role="button" name="delbtn" data="{{$row.id}}"><i class="icon-trash" title="删除"></i></a>
+                </td>
+            </tr>
+            {{/foreach}}
+            
+            </tbody>
+        </table>
+        <div class="clearfix"></div>
+        <!--<ul class="pagination">
+            <li><a href="#">«</a></li>
+            <li class="active"><a href="#">1</a></li>
+            <li><a href="#">2</a></li>
+            <li><a href="#">3</a></li>
+            <li><a href="#">4</a></li>
+            <li><a href="#">5</a></li>
+            <li><a href="#">»</a></li>
+        </ul>-->
+        <div class="page" style="text-align:center">
+        {{$sy}}
+        </div>
+       
+    </div>
+    {{/if}}
+    {{if $do eq 'add' || $do eq 'edit'}}
+
+    <div class="main-content">
+        <form name="f1" id="f1" method="post">
+            
+            <div class="form-group">
+                <label class="form-label form-group-left" for="fdTitle">车型名 <span class="must">*</span></label>
+                <input type="hidden" name="id" id="id" value="{{$row.id}}"/>
+                <input type="text" class="form-control form-group-right require" id="fdTitle" name="fdTitle" value="{{$row.fdTitle}}" placeholder=""onblur="validatatext_ex(this,'sfdtitle','请填写车型名','input-error');" onfocus="clearme('sfdtitle','')"><div id="sfdtitle" ></div>
+            </div>
+            <!--<div class="form-group">
+                <label class="form-label form-group-left" for="fdDescription">介绍</label>
+                <textarea class="form-control form-group-right" id="fdDescription" name="fdDescription" placeholder="">{{$row.fdDescription}}</textarea>
+            </div>-->
+            <div class="clearfix"></div>
+            <div class="form-group">
+                <label class="form-label form-group-left" for="fdFirstletter">所属品牌 <span class="must">*</span></label>
+                <input type="text" class="form-control form-group-right require" name="fdBrandid" value="{{$brandrow.fdTitle}}" readonly>
+            </div>
+            <div class="clearfix"></div>
+            <div class="form-group">
+                <label class="form-label form-group-left" for="img">车型logo <span class="must">*</span></label>
+                <div class="form-group-banner" style="width:100px;height:100px;background-image:url();">
+                    <div id="photo">
+                        {{if $row.fdLogo neq ''}}
+                        <img style="width: 100px;max-height: 100px;position: absolute" src="../var/uploads/{{$row.fdLogo}}" alt="" />
+                        {{else}}
+                        <div class="banner-auto">
+                            <!--<i class="icon-plus img-plus"></i>-->
+                            <div class="clearfix"></div>
+                            <!--<span class="font-plus">添加图片</span>-->
+                        </div>
+                        {{/if}}
+                    </div>
+                    <a class="form-group-a" href="#">
+                        <input type='hidden' id="pic" name="pic[]" value="{{$row.fdLogo}}" />
+                        <input  type="file" class="form-control form-control-banner"  name="fdLogo" id="fdLogo" style="width:100px;height:100px;">
+                    </a>
+                </div>
+            </div>
+            
+            
+        </form>
+        <div class="clearfix"></div>
+        <div class="finish">
+            <button class="btn btn-success" id="stbtn">完成</button>
+            {{if $do eq 'edit'}}
+            <a href="/carmodel/index?ye={{$ye}}&keyword={{$search}}&brandid={{$brandid}}"><button class="btn btn-default">取消</button></a>
+            {{/if}}
+        </div>
+        
+        {{/if}}
+        {{include file="confirmbox.html"}}
+        {{include file="fade.html"}}
+        <footer>
+            <hr>
+            <p class="pull-right">© 2016 <a href="" target="_blank">广州涛略科技有限公司</a></p>
+        </footer>
+    </div>
+</div>
+</body>
+
+<script>
+    {{if $do eq 'manage'}}
+
+    $("#id_yes").click(function(){
+        obj=$(this);
+        var ar=new Array();
+        $.each($("input[type=checkbox][name=checkbox]:checked"),function(k,v){
+            ar[k]=v.value
+        });
+        //alert(ar);return false;
+        if(ar.length>0){
+            $.ajax({
+                type: "GET",
+                url: "/carmodel/index?do=del",
+                data: "ids="+ar,
+                dataType:'json',
+                cache:false,
+                success: function(msg){
+                    if(msg.error_code==0){
+                        window.location.reload();
+                        //$(obj).parent().parent().remove();
+                    }else{
+                        console.log(msg.error_msg)
+                    }
+                    
+                },
+                error:function(){alert('error')},
+                timeout:5000
+            });
+        }
+    });
+
+    $("a[name=delbtn]").click(function(){
+        obj=$(this);
+        positionid=obj.attr("data");
+        //alert(voteid);return false;
+        showmodelbox('#myModal','您确认要删除该车型吗？<br>此操作无法撤销。',3);
+        $("#id_yes2").click(function(){
+            $.ajax({
+                type: "GET",
+                url: "/carmodel/index?do=del",
+                data: "ids="+positionid,
+                dataType:'json',
+                cache:false,
+                success: function(msg){
+                    if(msg.error_code==0){
+                        window.location.reload();
+                        //$(obj).parent().parent().remove();
+                    }else{
+                        console.log(msg.error_msg)
+                    }
+                    
+                },
+                error:function(){alert('error')},
+                timeout:5000
+            });
+        });
+    });
+
+    $("#delall").click(function(){
+        f=false;
+        $.each($("input[type=checkbox][name=checkbox]:checked"),function(k,v){
+            f=true;
+        });
+        if(f){
+            showmodelbox('#myModal','您确认要删除这些车型吗？<br>此操作无法撤销。',1);
+        }else{
+            modalmsg.alert("请选择要删除的车型");
+        }
+    });
+    {{/if}}
+    {{if $do eq 'add' || $do eq 'edit'}}
+    $("#f1").on('focus','.error',function(){
+        $(this).removeClass("error");
+    });
+    $(document).ready(function(){
+        $('.allow-ed').click(function(){
+            if($('.allow-ed:checked').length>0){
+                $('.time-of-od').css({'display':'block'});
+            }
+            else{
+                $('.time-of-od').css({'display':'none'});
+            }
+        });
+        $('.radio-inline').click(function(){
+            if($('.multi-select:checked').length>0){
+                $('.time-of-ch').css({'display':'block'});
+            }
+            else{
+                $('.time-of-ch').css({'display':'none'});
+            }
+        });
+        tmpi=2;
+        $('.btn-add-power').click(function(){
+            var newPower = document.createElement('div');
+            newPower.setAttribute("class","form-group form-group-power");
+            newPower.innerHTML='<div class="form-group-right"><label class="form-label form-group-left">选项<strong class="must"> *</strong></label><input class="form-power-right form-control require" type="text" name="voteitem[a_'+tmpi+'][fdTitle]" onblur="validatatext_ex(this,\'sfditem[a_'+tmpi+']\',\'请填写选项\',\'input-error\');" onfocus="clearme(\'sfditem[a_'+tmpi+']\',\'\')"><button type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button><div id="sfditem[a_'+tmpi+']"></div></div>';
+            $('.main-content form').append(newPower);
+            tmpi++;
+            $('.form-group-power .form-group-right .close').click(function(){
+                var powerClose;
+                powerClose=$(this);
+                powerClose.css({'display':'none'});
+                powerClose.parent().parent().remove();
+            });
+            requeired();
+        });
+        $('.form-group-power .form-group-right .close').click(function(){
+            var powerClose;
+            powerClose=$(this);
+            //powerClose.css({'display':'none'});
+            //powerClose.parent().parent().remove();
+            if(powerClose.attr("data")!=undefined){//调用ajax
+            id=powerClose.attr("data");
+            var ret;
+
+                $.ajax({
+                    type: "GET",
+                    url: "/vote/index?do=delitem",
+                    data: "ids="+id,
+                    dataType:'json',
+                    cache:false,
+                    success: function(msg){
+                        if(msg.error_code==0){
+                            powerClose.parent().remove();
+                        }else{
+                            alert(msg.error_msg)
+                        }
+                        
+                    },
+                    error:function(){alert('error')},
+                    timeout:5000
+                })
+            }else{
+                powerClose.parent().remove();
+            }
+        });
+    })
+    $("#stbtn").click(function(){
+        formchecker.check("#f1");
+        if(!formchecker.flag){
+            //$(".msg_font").html("请正确填写该字段内容");
+            //showmsgbox("msgbox");
+            return false;
+        }
+        var fdStart = $("#fdStart").val();
+        var fdEnd = $("#fdEnd").val();
+        var fdAdType = $("#fdPositionId").find("option:selected").attr("data");
+        //var fdLogo = $("#fdLogo").val();
+        var fdLogo = $("#pic").val();
+        var fdTitle = $.trim($("#fdTitle").val());
+        //alert(fdLogo);return false;
+        var nowDay =  getNowDay();
+        {{if $do eq 'add'}}
+        if(nowDay>fdStart){
+            modalmsg.alert("开始时间不能小于当前时间");
+            //$("#fdStartTime").focus();
+            return false;
+        }
+        {{/if}}
+        if(!fdTitle){
+            modalmsg.alert("标题不可为空");
+            return false;
+        }
+        if(fdEnd<fdStart){
+            modalmsg.alert("截止时间不能小于开始时间");
+            //$("#fdEndTime").focus();
+            return false;
+        }
+
+        if(fdAdType==1){
+            if(!fdLogo){
+                modalmsg.alert("图文类型的广告图片不可为空");
+                return false;
+            }
+        }
+        
+       
+        //$('#finishModal').modal('toggle');
+        //$("#finish_yes").click(function(){
+            $("#f1").submit();
+        //})
+    });
+
+    function getNowDay(){
+       var mydate = new Date();
+       var str = "" + mydate.getFullYear() + "-";
+       var month = mydate.getMonth()+1;
+       if(month<10){
+        month = "0" + month;
+       }
+       var day = mydate.getDate();
+       if(day<10){
+        day = "0" + day;
+       }
+       str += month + "-" + day;
+       return str;
+    }
+   
+    $('#fdStart').datetimepicker({
+        lang:'ch',
+        timepicker: true,
+        format: 'Y-m-d H:i'
+    });
+    $('#fdEnd').datetimepicker({
+        lang:'ch',
+        timepicker: true,
+        format: 'Y-m-d H:i'
+    });
+
+    function validatatext_ex(obj,target,txt,cls){
+        ret=validateText($(obj).val(),target,txt,cls);
+        if(!ret){
+            $(obj).addClass("error");
+        }
+
+    }
+
+    $('#fdLogo').change(function() {
+        var file = this.files[0];
+        var r = new FileReader();
+        r.readAsDataURL(file);
+        $(r).load(function() {
+            $('#photo').html('<img style="width: 100px;max-height: 100px;position: absolute" src="' + this.result + '" alt="" />');
+            $("#pic").val(this.result);
+            //$(".form-group-banner").css("background-image","url()");
+        })
+    });
+    {{/if}}
+</script>
+</html>

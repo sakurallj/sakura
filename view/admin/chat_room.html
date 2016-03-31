@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>叉叉直播中</title>
+    <link href="./{{$user_dir_theme}}/css/bootstrap.min.css" rel='stylesheet' type='text/css' />
+    <script src="./{{$user_dir_theme}}/js/jquery.min.js"></script>
+    <script type="text/javascript" src="http://v3.bootcss.com/assets/js/ie-emulation-modes-warning.js"></script>
+</head>
+<body style=" overflow-y : hidden">
+<div id="show_chat_room">
+
+</div>
+
+<script type="text/javascript">
+
+    function onLTChatRoomReady(){
+        chatroomcomp.init({
+            room:{
+                group:"test-g",
+                roomNum:'{{$roomNum}}',
+                roomName:'{{$roomName}}'
+            },
+            user:{
+                userNum:'{{$userNum}}',
+                userName:'{{$userName}}',
+                userHeaderImgUrl:'{{$userHeaderImgUrl}}',
+                province:'{{$province}}',//省
+                district:'{{$district}}',//区县
+                userId:"",
+                canTopDel:true,
+                city:'{{$city}}',//市
+                canStick:{{$canStick}},
+                address:'{{$address}}'//详细地址
+            },
+            presenter:{
+                show:false,
+                headerUrl:"http://img.woyaogexing.com/2016/02/27/71bb16dd3c532f40!200x200.jpg",
+                title:"[叉叉主播]混奥运",
+                desc:"每天12:00-00:00",
+                showFollow:true
+            },
+            refrehMsgMicTime:5000
+        });
+    }
+    window.onLTChatRoomReady = onLTChatRoomReady;
+
+</script>
+<script type="text/javascript" src="{{$chatRoomUrl}}?model=page&showid=show_chat_room"></script>
+</body>
+</html>

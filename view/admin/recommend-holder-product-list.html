@@ -1,0 +1,70 @@
+<table class="table">
+    <thead>
+    <tr>
+        <th class="table-checkbox"><input type="checkbox" value="-1"></th>
+        <th >商品编号</th>
+        <th >商品名称</th>
+        <th>所属类别</th>
+        <th>购买方式</th>
+        <th>添加时间</th>
+    </tr>
+    </thead>
+    <tbody>
+
+    {{foreach from=$products.ar name=nar item=row}}
+    <tr>
+        <td>
+            <input type="checkbox" value="{{$row.id}}" data-id="{{$row.id}}"
+                   data-name="{{$row.fdName}}" data-serial="{{$row.fdSerial}}">
+        </td>
+        <td>{{$row.fdSerial}}</td>
+        <td>{{$row.fdName}}</td>
+        <td>{{$row.columnName}}</td>
+        <td>
+            {{if $row.fdSellWay == "2"}}
+            积分兑换
+            {{elseif $row.fdSellWay == "3"}}
+            现金+积分兑换
+            {{else}}
+            现金
+            {{/if}}
+        </td>
+        <td>{{$row.fdCreated|date_format:'%Y-%m-%d %H:%M:%S'}}</td>
+    </tr>
+    {{/foreach}}
+    </tbody>
+</table>
+<div class="clearfix"></div>
+<div class="page" style="text-align:center">
+    {{$products.sy}}
+</div>
+<script>
+    $(function () {
+        $(".page a").unbind("click").bind("click",function(){
+            var name = $("#search_name").val();
+            var serial = $("#search_serial").val();
+            var href = $(this).attr("href");
+            $(this).attr("href","javascript:;");
+            var pageNum = $(this).attr("value");
+            if(pageNum){
+                $.ajax({
+                    type: "GET",
+                    url: "/product/index?do=getprodlisttorecommend",
+                    data: {
+                        ye:pageNum,
+                        name:name,
+                        serial:serial
+                    }
+                }).done(function(msg){
+                    if(msg){
+                        $("#modal-product-list").empty().append(msg);
+                    }else{
+                    }
+                });
+            }
+            else{
+            }
+        });
+        util.tableCheckboxClickEvent();
+    });
+</script>

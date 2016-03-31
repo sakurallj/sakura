@@ -1,0 +1,377 @@
+{{if $do eq 'manage'}}
+<div class="content">
+    <div class="header">
+        <h1 class="page-title">电台列表</h1>
+        <ul class="breadcrumb">
+            <li><a href="">电台管理</a> </li>
+            <li class="active">电台列表</li>
+        </ul>
+    </div>
+    <div class="main-content">
+        <div class="btn-toolbar list-toolbar pull-left">
+            <!--
+            <button class="btn btn-success">启用</button>
+            <button class="btn btn-default">停用</button>
+            -->
+            <a class="btn btn-danger" href="#myModal" id="delall">删除</a>
+            {{if $smarty.session.partnerid eq '1'}}
+            <form method="get">
+                <div class="form-group search">
+                <input typ="button" class="btn btn-info" type="submit" value="搜索"/>
+                <input type="hidden" value="1" name="ye">
+                <input class="form-control" type="text" name="keyword" value="{{$search}}" placeholder="search">
+                </div>
+            </form>
+            {{/if}}
+        </div>
+        <table class="table">
+            <thead>
+            <tr>
+                <th class="table-checkbox"><input type="checkbox"></th>
+                <th class="table-title">电台名称</th>
+                <th class="table-title">添加时间</th>
+                <th style="width: 3.5em;">操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            {{foreach from=$ar name=nar item=row}}
+            <tr>
+                <td><input type="checkbox" name="checkbox" value="{{$row.id}}" /></td>
+                <td>{{$row.fdName}}</td>
+                <td>{{$row.fdCreate}}</td>
+                <td>
+                    <a href="/partner/index?do=edit&id={{$row.id}}&ye={{$ye}}{{if $smarty.session.partnerid eq '1'}}&keyword={{$search}}{{/if}}"><i class="icon-pencil"></i></a>
+                    <a href="#myModal" role="button" data="{{$row.id}}" name="delbtn"><i class="icon-trash"></i></a>
+                </td>
+            </tr>
+            {{/foreach}}
+            </tbody>
+        </table>
+        <div class="clearfix"></div>
+        <div class="page">
+            {{$sy}}
+        </div>
+        <footer>
+            <hr>
+            <p class="pull-right">© 2016 <a href="" target="_blank">广州涛略科技有限公司</a></p>
+        </footer>
+    </div>
+</div>
+{{include file="confirmbox.html"}}
+{{include file="fade.html"}}
+<div style="display:none;">
+<script>
+$(document).ready(function(){
+    $("#id_yes").click(function(){
+        obj=$(this);
+        var ar=new Array();
+        $.each($("input[type=checkbox]:checked"),function(k,v){
+            ar[k]=v.value
+        });
+        if(ar.length>0){
+            $.ajax({
+                type: "GET",
+                url: "/partner/index?do=del",
+                data: "ids="+ar,
+                dataType:'json',
+                cache:false,
+                success: function(msg){
+                    if(msg.error_code==0){
+                        window.location.reload();
+                    }else{
+                        console.log(msg.error_msg)
+                    }
+                    
+                },
+                error:function(){alert('error')},
+                timeout:5000
+            });
+        }
+    });
+
+    $("a[name=delbtn]").click(function(){
+        //id=$(this).parent().parent().find("input:first").prop("checked");
+        id=$(this).attr('data');
+        showmodelbox('#myModal','您确认要删除该电台吗？<br>此操作无法撤销。',3);
+        $("#id_yes2").click(function(){
+                $.ajax({
+                    type: "GET",
+                    url: "/partner/index?do=del",
+                    data: "ids="+id,
+                    dataType:'json',
+                    cache:false,
+                    success: function(msg){
+                        if(msg.error_code==0){
+                            window.location.reload();
+                        }else{
+                            $(".msg_font").html(msg.error_msg);
+                            showmsgbox("msgbox");
+                        }
+                        
+                    },
+                    error:function(){alert('error')},
+                    timeout:5000
+                });
+        });
+    });
+    $("#delall").click(function(){
+        f=false;
+        $.each($("input[type=checkbox][name=checkbox]:checked"),function(k,v){
+            f=true;
+        });
+        if(f){
+            showmodelbox('#myModal','您确认要删除这些电台吗？<br>此操作无法撤销。',1);
+        }else{
+            showmodelbox('#myModal','请选择要删除的记录',2);
+        }
+    });
+});
+</script>
+</div>
+{{/if}}
+
+{{if $do eq 'add' || $do eq 'edit'}}
+<div class="content">
+    <div class="header">
+        <h1 class="page-title">{{if $do eq 'add'}}新建电台{{elseif $do eq 'edit'}}编辑电台{{/if}}</h1>
+        <ul class="breadcrumb">
+            <li><a href="">电台管理</a> </li>
+            <li class="active">{{if $do eq 'add'}}新建电台{{elseif $do eq 'edit'}}编辑电台{{/if}}</li>
+        </ul>
+    </div>
+    <div class="main-content">
+        <form name="f1" id="f1"  method="post">
+            <div class="form-group">
+                <input type="hidden" name="id" id="id" value="{{$row.id}}"/>
+                <label class="form-label form-group-left" for="form-title">电台名称<strong class="must"> *</strong></label>
+                <input type="text" class="form-control form-group-right require" id="fdName" placeholder="填写的内容应该在2-35字符之间" value="{{$row.fdName}}" name="fdName" onBlur="validateAjax_ex(this,'slogin','input-error','fdName=','')"><div id="slogin" class="input-error"></div>
+            </div>
+            <div class="clearfix"></div>
+            <div class="form-group">
+                <label class="form-label form-group-left" for="img">电台logo</label>
+
+                <div class="form-group-file">
+                    <div id="photo">
+                        {{if $row.fdLogo neq ''}}
+                        <img style="width: 200px;max-height: 200px;position: absolute" src="../var/uploads/{{$row.fdLogo}}" alt="" />
+                        {{else}}
+                        <div class="photo-auto">
+                            <i class="icon-plus img-plus"></i>
+                            <div class="clearfix"></div>
+                            <span class="font-plus">添加图片</span>
+                        </div>
+                        {{/if}}
+                    </div>
+                    <a class="form-group-a" href="#">
+                        <input type='hidden' id="pic" name="pic[]" value="" />
+                        <input  type="file" class="form-control form-control-banner"  name="fdLogo" id="fdLogo">
+                    </a>
+                </div>
+
+            </div>
+            <div class="clearfix"></div>
+
+            {{if $do eq 'edit'}}
+            <div class="form-group">
+                    <label class="form-label form-group-left" for="">采集密码</label>
+                    <input type="password" class="form-control form-group-right " id="fdPassword" placeholder="6~16个字符，区分大小写，不填表示不修改" name="fdPassword"  onBlur="validatep1()"><div id="spass" class="input-error"></div>
+            </div>
+            <div class="clearfix"></div>
+            <div class="form-group">
+                <label class="form-label form-group-left" for="">确认密码</label>
+                <input type="password" class="form-control form-group-right" id="fdPassword2" name="fdPassword2" placeholder="" onBlur="validatep2()" ><div id="spass2" class="input-error"></div>
+            </div>
+            <div class="clearfix"></div>
+            {{else}}
+            <div class="form-group">
+                    <label class="form-label form-group-left" for="">采集密码<strong class="must"> *</strong></label>
+                    <input type="password" class="form-control form-group-right require" id="fdPassword" placeholder="6~16个字符，区分大小写" name="fdPassword"  onBlur="validatep1()"><div id="spass" class="input-error"></div>
+            </div>
+            <div class="clearfix"></div>
+            <div class="form-group">
+                <label class="form-label form-group-left" for="">确认密码<strong class="must"> *</strong></label>
+                <input type="password" class="form-control form-group-right require" id="fdPassword2" name="fdPassword2" placeholder="" onBlur="validatep2()" ><div id="spass2" class="input-error"></div>
+            </div>
+            <div class="clearfix"></div>
+            {{/if}}
+            
+            <div class="form-group">
+                <label class="form-label form-group-left" for="">互动网址<strong class="must"> *</strong></label>
+                <input type="text" class="form-control form-group-right require" name="fdDefaultURL" id="fdDefaultURL" placeholder="摇电台识别成功后跳转的网页地址" value="{{$row.fdDefaultURL}}" onblur="validatetext_ex(this,'sfdurl','请填写默认互动网址','input-error');" onfocus="clearme('sfdurl','')"/><div id="sfdurl"></div>
+            </div>
+            <div class="clearfix"></div>
+
+            <div class="form-group">
+                <label class="form-label form-group-left" for="">权限</label>
+                <div class="form-group-right checkbox-group">
+                {{foreach from=$module name=nmodule item=isysmodule}}
+                    <label class="checkbox-inline" style="margin-left:0"> <input type="checkbox" class="allow-lo" name="partnermod[]" value="{{$isysmodule.id}}" {{foreach from=$privs name=mypri item=mypri }}{{if $mypri.fdModuleID eq $isysmodule.id}}checked="checked"{{/if}}{{/foreach}} />{{$isysmodule.fdName}}</label>
+                {{/foreach}}
+                </div>
+            </div>            
+
+        </form>
+        <div class="clearfix"></div>
+        <div class="finish">
+            <input type="button" id="stbtn" class="btn-success btn" value="完成"/>
+            {{if $do eq 'edit'}}{{if $do eq 'edit'}}<input onclick="window.location.href = window.document.referrer;" type="button" class="btn-default btn" value="取消"/>{{/if}}{{/if}}
+        </div>
+        <footer>
+            <hr>
+            <p class="pull-right">© 2016 <a href="" target="_blank">广州涛略科技有限公司</a></p>
+        </footer>
+    </div>
+</div>
+{{include file="confirmbox.html"}}
+<script src="./{{$user_dir_theme}}/js/md5.js"></script>
+<script>
+{{if $do eq 'edit'}}
+$("#fdName").focus();
+{{/if}}
+
+$('#fdLogo').change(function() {
+    var file = this.files[0];
+    var r = new FileReader();
+    r.readAsDataURL(file);
+    $(r).load(function() {
+        $('#photo').html('<img style="width: 200px;max-height: 200px;position: absolute" src="' + this.result + '" alt="" />');
+        $("#pic").val(this.result);
+    })
+});
+
+a1=false;
+a2=false;
+a3=false;
+a4=false;
+function validatep1(){
+    password1=$('#fdPassword').val();
+    {{if $do eq 'edit'}}
+        if(password1!=''){
+            rt=validatePWD(password1,'spass','input-error');
+            if(!rt){
+                $('#fdPassword').addClass("error");
+            }
+        }
+    {{else}}
+        rt=validatePWD(password1,'spass','input-error');
+        if(!rt){
+            $('#fdPassword').addClass("error");
+        }
+    {{/if}} 
+}
+function validatep2(){
+    password1=$('#fdPassword').val();
+    password2=$('#fdPassword2').val();
+    {{if $do eq 'edit'}}
+        if(password1!="" || password2!=""){
+            rt=validatePWD2(password1,password2,'spass2','input-error');
+            if(!rt){
+                $('#fdPassword2').addClass("error");
+            }
+        }
+    {{else}}
+        rt=validatePWD2(password1,password2,'spass2','input-error');
+        if(!rt){
+            $('#fdPassword2').addClass("error");
+        }
+    {{/if}}
+}
+
+$("#stbtn").click(function(){
+    fdname=$("#fdName").val();
+    validateAjax(fdname,'slogin','input-error','fdName=','该电台名称已存在');
+    if(a1==false){
+        $("#fdName").addClass("error");
+    }
+    password1=$('#fdPassword').val();
+    password2=$('#fdPassword2').val();
+    {{if $do eq 'edit'}}
+        if(password1=="" && password2==""){
+            a2=a3=true;
+        }else{
+            a2=validatePWD(password1,'spass','input-error');
+            a3=validatePWD2(password1,password2,'spass2','input-error');
+        }
+    {{else}}
+        a2=validatePWD(password1,'spass','input-error');
+        a3=validatePWD2(password1,password2,'spass2','input-error');
+    {{/if}}
+
+    
+    a4=validateText($("#fdDefaultURL").val(),'sfdurl','请填写默认互动网址','input-error');
+    if(a2==false){
+        $('#fdPassword').addClass("error");
+    }
+    if(a3==false){
+        $('#fdPassword2').addClass("error");
+    }
+    
+    if(a4==false){
+        $('#fdDefaultURL').addClass("error");
+    }
+    formchecker.check("#f1");
+    if(!formchecker.flag){
+        return false;
+    }
+
+    if(a1 && a2 && a3 &&a4){
+        if(password1!="" && password2!=""){
+            password1=hex_md5(password1);
+            password2=hex_md5(password2);
+            $("#fdPassword").val(password1);
+            $("#fdPassword2").val(password2);
+        }
+        $("#f1").submit();
+    }
+});
+
+// $("#id_yes").click(function(){
+//     formchecker.check("#f1");
+//     if(!formchecker.flag){
+//         $(".msg_font").html("请正确填写该字段内容");
+//         showmsgbox("msgbox");
+//         return false;
+//     }
+//     $("#f1").submit();
+// });
+
+function validateAjax_ex(obj,tar,cls,str,str2){
+   rt=validateAjax(obj.value,tar,cls,str,str2);
+   if(rt==false){
+        $(obj).addClass("error");
+   }
+}
+
+function validatetext_ex(obj,target,txt,cls){
+    ret=validateText($(obj).val(),target,txt,cls);
+    if(!ret){
+        $(obj).addClass("error");
+    }
+}
+
+function aj(dat,shw){
+    var tmp;
+    tmp=$.ajax({
+    type: "POST",
+    url: "/partner/ckuser?id={{$row.id}}",
+    data: dat,
+    success: function(msg){
+        str=''
+        if(msg=='u'){msg='电台名已经存在';a1=false}else{a1=true;}
+            $("#"+shw).html(msg);
+        }//如果调用php成功 
+    });
+}
+
+$('div').on('click','.sclose',function(){
+    $(this).parent().remove();
+    recreatefile();
+});
+
+$("#f1").on('focus','.error',function(){
+    $(this).removeClass("error");
+    $(this).next(".input-error").html('');
+});
+
+</script>
+{{/if}}
