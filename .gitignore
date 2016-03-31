@@ -2,3 +2,5 @@ var/*
 .idea
 app/cache
 app/log*
+public/templates_c
+public/route.cache
